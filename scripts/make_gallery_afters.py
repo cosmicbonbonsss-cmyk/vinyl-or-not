@@ -30,41 +30,76 @@ def make_plank_floor(
     grain_along: str = "x",
     rotate_tex90: bool = False,
     length_mult=(48.0, 80.0),
+    contrast: float = 1.04,
+    tex_scale: float = 2.0,
+    jitter=(0.88, 1.12),
+    seam_rgb=(16, 20, 26),
 ) -> np.ndarray:
+    """Build a plank sheet. contrast<1 calms busy grain; keep tex_scale>=1 for crisp edges."""
     t = tex_bgr
     if rotate_tex90:
         t = cv2.rotate(t, cv2.ROTATE_90_CLOCKWISE)
     th, tw = t.shape[:2]
-    t = cv2.resize(t, (tw * 2, th * 2), interpolation=cv2.INTER_CUBIC)
-    th, tw = t.shape[:2]
+    if abs(tex_scale - 1.0) > 1e-3:
+        t = cv2.resize(
+            t,
+            (max(8, int(round(tw * tex_scale))), max(8, int(round(th * tex_scale)))),
+            interpolation=cv2.INTER_AREA if tex_scale < 1.0 else cv2.INTER_CUBIC,
+        )
+        th, tw = t.shape[:2]
+    # Lower contrast on source (no blur) so knots/grain calm down without mush
+    if abs(contrast - 1.0) > 1e-3:
+        lab = cv2.cvtColor(t, cv2.COLOR_BGR2LAB).astype(np.float32)
+        L = lab[:, :, 0]
+        mean_L = float(L.mean())
+        lab[:, :, 0] = np.clip((L - mean_L) * contrast + mean_L, 0, 255)
+        # Slightly pull chroma toward mean to reduce busy color flecks
+        for c in (1, 2):
+            ch = lab[:, :, c]
+            m = float(ch.mean())
+            lab[:, :, c] = np.clip((ch - m) * min(1.0, contrast + 0.08) + m, 0, 255)
+        t = cv2.cvtColor(lab.astype(np.uint8), cv2.COLOR_LAB2BGR)
     floor = np.zeros((out_h, out_w, 3), dtype=np.uint8)
-    seam_color = np.array([16, 20, 26], dtype=np.uint8)
+    seam_color = np.array(seam_rgb, dtype=np.uint8)
 
     def sample_board(dst_w, dst_h, along="x"):
+        # Warm-oak already contains ~12–15 source planks — sample ~one plank
+        # strip so boards don't inherit internal seams. Mirror-tile along
+        # length to avoid a hard grid of identical repeats.
+        def mirror_tile_1d(band, axis, need, origin):
+            unit = band
+            flip = np.flip(band, axis=axis)
+            parts = []
+            while True:
+                total = sum(p.shape[axis] for p in parts) if parts else 0
+                if total - origin >= need:
+                    break
+                parts.append(unit if len(parts) % 2 == 0 else flip)
+                if len(parts) > 64:
+                    break
+            tiled = np.concatenate(parts, axis=axis)
+            if axis == 1:
+                return tiled[:, origin : origin + need]
+            return tiled[origin : origin + need]
+
         if along == "x":
-            band_h = max(12, min(th // 3, th - 1))
+            band_h = max(12, min(max(18, th // 11), th - 1))
             sy = int(RNG.integers(0, max(1, th - band_h)))
             band = t[sy : sy + band_h]
             ox = int(RNG.integers(0, tw))
-            tiled = np.concatenate([band] * 8, axis=1)
             need = max(dst_w + 32, tw)
-            if tiled.shape[1] - ox < need:
-                tiled = np.concatenate([tiled, tiled], axis=1)
-            patch = tiled[:, ox : ox + need]
+            patch = mirror_tile_1d(band, 1, need, ox)
             board = cv2.resize(patch, (dst_w, dst_h), interpolation=cv2.INTER_LINEAR)
         else:
-            band_w = max(12, min(tw // 3, tw - 1))
+            band_w = max(12, min(max(18, tw // 11), tw - 1))
             sx = int(RNG.integers(0, max(1, tw - band_w)))
             band = t[:, sx : sx + band_w]
             oy = int(RNG.integers(0, th))
-            tiled = np.concatenate([band] * 8, axis=0)
             need = max(dst_h + 32, th)
-            if tiled.shape[0] - oy < need:
-                tiled = np.concatenate([tiled, tiled], axis=0)
-            patch = tiled[oy : oy + need]
+            patch = mirror_tile_1d(band, 0, need, oy)
             board = cv2.resize(patch, (dst_w, dst_h), interpolation=cv2.INTER_LINEAR)
-        jitter = float(RNG.uniform(0.88, 1.12))
-        return np.clip(board.astype(np.float32) * jitter, 0, 255).astype(np.uint8)
+        j = float(RNG.uniform(*jitter))
+        return np.clip(board.astype(np.float32) * j, 0, 255).astype(np.uint8)
 
     if grain_along == "x":
         y, row = 0, 0
@@ -105,8 +140,9 @@ def make_plank_floor(
             x = x2 + seam
             col += 1
 
+    # Mild midtone tidy only — avoid re-punching contrast after calm pass
     lab = cv2.cvtColor(floor, cv2.COLOR_BGR2LAB).astype(np.float32)
-    lab[:, :, 0] = np.clip((lab[:, :, 0] - 128) * 1.04 + 128, 0, 255)
+    lab[:, :, 0] = np.clip((lab[:, :, 0] - 128) * 1.01 + 128, 0, 255)
     return cv2.cvtColor(lab.astype(np.uint8), cv2.COLOR_LAB2BGR)
 
 
@@ -136,14 +172,20 @@ def luminance_ratio(bgr, mask, blur=71):
     return np.clip(cv2.GaussianBlur(L, (k, k), 0) / mean_L, 0.62, 1.4)
 
 
-def composite(before, warped, floor_mask, occluder_mask=None, lighting=True):
+def composite(before, warped, floor_mask, occluder_mask=None, lighting=True, light_mix=1.0, light_clip=(0.62, 1.4)):
+    """light_mix<1 blends luminance toward 1.0 (calmer); light_clip tightens extremes."""
     fm = floor_mask.astype(np.float32) / 255.0
     if occluder_mask is not None:
         fm = fm * (1.0 - occluder_mask.astype(np.float32) / 255.0)
     m = fm[..., None]
     floor = warped.astype(np.float32)
     if lighting:
-        floor = np.clip(floor * luminance_ratio(before, (fm * 255).astype(np.uint8))[..., None], 0, 255)
+        ratio = luminance_ratio(before, (fm * 255).astype(np.uint8))
+        lo, hi = light_clip
+        ratio = np.clip(ratio, lo, hi)
+        if light_mix < 1.0:
+            ratio = light_mix * ratio + (1.0 - light_mix)
+        floor = np.clip(floor * ratio[..., None], 0, 255)
     out = before.astype(np.float32) * (1.0 - m) + floor * m
     return np.clip(out, 0, 255).astype(np.uint8)
 
@@ -167,22 +209,27 @@ def make_living():
     h, w = before.shape[:2]
     tex = cv2.imread(str(TEXTURES / "warm-oak.jpg"))
     sheet = make_plank_floor(
-        tex, out_w=5200, out_h=3000, plank_w=210, seam=3,
-        grain_along="x", rotate_tex90=True, length_mult=(55.0, 90.0),
+        tex, out_w=5200, out_h=3000, plank_w=420, seam=2,
+        grain_along="x", rotate_tex90=True, length_mult=(85.0, 140.0),
+        contrast=0.55, tex_scale=1.0, jitter=(0.97, 1.03),
+        seam_rgb=(36, 42, 50),
     )
     # Stay on floor only — top edge = baseboard under windows (~y 490–540)
     floor_poly = [
-        (0, h - 1), (w - 1, h - 1), (w - 1, 700),
-        (1160, 640), (1100, 600), (1020, 560), (940, 535),
-        (860, 518), (800, 508), (740, 502), (680, 498),
-        (600, 496), (500, 494), (400, 492), (300, 491),
-        (200, 494), (100, 512), (0, 542),
+        (0, h - 1), (w - 1, h - 1), (w - 1, 680),
+        (1160, 620), (1100, 575), (1020, 545), (940, 528),
+        (860, 512), (800, 502), (740, 496), (680, 492),
+        (600, 490), (500, 488), (400, 486), (300, 486),
+        (200, 490), (100, 508), (0, 538),
     ]
-    floor_mask = poly_mask((h, w), floor_poly, feather=1)
+    floor_mask = poly_mask((h, w), floor_poly, feather=0)
     dst = np.array([[0, h - 1], [w - 1, h - 1], [1080, 500], [40, 535]], np.float32)
-    src = np.array([[50, 2900], [5150, 2900], [5150, 2900 - 210 * 6], [50, 2900 - 210 * 6]], np.float32)
+    src = np.array([[50, 2900], [5150, 2900], [5150, 2900 - 420 * 4], [50, 2900 - 420 * 4]], np.float32)
     warped = warp_floor(sheet, (h, w), src, dst)
-    after = composite(before, warped, floor_mask, None, lighting=True)
+    after = composite(
+        before, warped, floor_mask, None, lighting=True,
+        light_mix=0.65, light_clip=(0.80, 1.18),
+    )
     save_qa("living", before, floor_mask, None, after, sheet)
     path = GALLERY / "after-living-warm-oak.jpg"
     cv2.imwrite(str(path), after, [int(cv2.IMWRITE_JPEG_QUALITY), 94])
@@ -313,8 +360,10 @@ def make_open():
     h, w = before.shape[:2]
     tex = cv2.imread(str(TEXTURES / "warm-oak.jpg"))
     sheet = make_plank_floor(
-        tex, out_w=5000, out_h=4500, plank_w=185, seam=3,
-        grain_along="y", rotate_tex90=False, length_mult=(52.0, 88.0),
+        tex, out_w=5000, out_h=4500, plank_w=400, seam=2,
+        grain_along="y", rotate_tex90=False, length_mult=(85.0, 140.0),
+        contrast=0.52, tex_scale=1.0, jitter=(0.97, 1.03),
+        seam_rgb=(36, 42, 50),
     )
     # Floor envelope — do not climb furniture/walls; back edge ~y 400–420 at far carpet
     floor_poly = [
@@ -323,36 +372,57 @@ def make_open():
         (640, 412), (560, 420), (480, 450), (400, 510),
         (320, 575), (230, 650), (120, 720), (0, 770),
     ]
-    floor_mask = poly_mask((h, w), floor_poly, feather=1)
+    floor_mask = poly_mask((h, w), floor_poly, feather=0)
     # Wall safety: no overlay in top 38% of frame
     floor_mask[: int(h * 0.38), :] = 0
 
-    # Occluders: furniture (not carpet)
-    bgr = before.astype(np.float32)
-    brightness = bgr.mean(axis=2)
-    sat = bgr.max(axis=2) - bgr.min(axis=2)
-    carpet = ((brightness > 155) & (sat < 48)) | ((brightness > 125) & (brightness <= 155) & (sat < 38))
+    # Hard furniture silhouettes (beige fabric ~= carpet brightness, so NEVER
+    # use carpet-clear inside these — that was painting seats). Floor between
+    # chairs is simply outside these polys.
     occ = np.zeros((h, w), np.uint8)
-    cv2.fillPoly(occ, [np.array([(0, 450), (400, 440), (520, 565), (500, h - 1), (0, h - 1)], np.int32)], 255)
-    cv2.rectangle(occ, (300, 450), (415, 640), 255, -1)
-    for cx, cy, r in [(770, 530, 48), (860, 510, 48), (950, 530, 48), (800, 610, 38), (900, 620, 38), (980, 600, 38)]:
-        cv2.circle(occ, (cx, cy), r, 255, -1)
-    cv2.fillPoly(occ, [np.array([(460, 415), (650, 410), (730, 470), (700, 555), (510, 560), (440, 485)], np.int32)], 255)
-    cv2.ellipse(occ, (510, 470), (48, 62), 0, 0, 360, 255, -1)
-    # Keep furniture pixels; clear carpet between legs
-    furniture = (occ > 0) & (~carpet)
-    occ = furniture.astype(np.uint8) * 255
-    dining = np.zeros((h, w), np.uint8)
-    cv2.rectangle(dining, (700, 500), (1100, 700), 255, -1)
-    occ[(dining > 0) & carpet] = 0
-    for cx, cy, r in [(772, 575, 8), (852, 555, 8), (938, 575, 8), (814, 642, 7), (894, 655, 7), (974, 630, 7)]:
-        cv2.circle(occ, (cx, cy), r, 255, -1)
-    occ = cv2.GaussianBlur(occ, (5, 5), 0)
+    # Foreground left armchair body only — leave carpet in front / to the right for planks
+    cv2.fillPoly(
+        occ,
+        [np.array([
+            (0, 475), (230, 455), (305, 490), (335, 560),
+            (328, 655), (300, 705), (250, 725), (120, 735), (0, 720),
+        ], np.int32)],
+        255,
+    )
+    # Second armchair body + side table (not floor under/around)
+    cv2.fillPoly(
+        occ,
+        [np.array([
+            (290, 448), (420, 440), (485, 470), (510, 530),
+            (495, 600), (450, 640), (380, 645), (310, 615), (285, 540),
+        ], np.int32)],
+        255,
+    )
+    cv2.rectangle(occ, (405, 455), (515, 545), 255, -1)
+    # Mid: partial wall, plant, blue chair / lamp cluster
+    cv2.fillPoly(
+        occ,
+        [np.array([(450, 410), (650, 405), (735, 465), (705, 555), (520, 560), (440, 490)], np.int32)],
+        255,
+    )
+    cv2.ellipse(occ, (510, 470), (50, 64), 0, 0, 360, 255, -1)
+    # Dining chairs + table rim (ellipses cover seats/legs; gaps between = floor)
+    for cx, cy, rx, ry in [
+        (768, 515, 50, 66), (858, 500, 50, 64), (948, 515, 48, 66),
+        (805, 605, 44, 52), (898, 618, 44, 52), (978, 598, 44, 52),
+    ]:
+        cv2.ellipse(occ, (cx, cy), (rx, ry), 0, 0, 360, 255, -1)
+    cv2.ellipse(occ, (880, 468), (150, 26), 0, 0, 360, 255, -1)
+
+    occ = cv2.dilate(occ, np.ones((3, 3), np.uint8))
 
     dst = np.array([[0, h - 1], [w - 1, h - 1], [1020, 415], [80, 730]], np.float32)
-    src = np.array([[120, 4350], [4880, 4350], [4880, 4350 - 185 * 9], [120, 4350 - 185 * 9]], np.float32)
+    src = np.array([[120, 4350], [4880, 4350], [4880, 4350 - 400 * 5], [120, 4350 - 400 * 5]], np.float32)
     warped = warp_floor(sheet, (h, w), src, dst)
-    after = composite(before, warped, floor_mask, occ, lighting=True)
+    after = composite(
+        before, warped, floor_mask, occ, lighting=True,
+        light_mix=0.65, light_clip=(0.80, 1.18),
+    )
     save_qa("open", before, floor_mask, occ, after, sheet)
     path = GALLERY / "after-open-warm-oak.jpg"
     cv2.imwrite(str(path), after, [int(cv2.IMWRITE_JPEG_QUALITY), 94])
