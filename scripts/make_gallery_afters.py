@@ -3,7 +3,7 @@
 
 - Living/Open: warm-oak.jpg; Bath delegated to make_bath_after.
 - Living: LAB recolor of original floor (keeps plank perspective; no CUBIC smear).
-- Open: near-orthographic paste; dining force-fill; seat-local pale protect only.
+- Open: rembg+solid armchairs; seat tops only (no floor ovals); floor to fireplace.
 - Floor mask capped at wall–floor junctions; no climb onto walls/baseboards.
 """
 from __future__ import annotations
@@ -277,24 +277,24 @@ def make_living():
 
 
 def make_open():
-    """Warm-oak floor on open-plan carpet. Full chair silhouettes; gentle perspective."""
+    """Warm-oak floor on open-plan carpet. Rembg armchairs; continuous dining; floor to fireplace."""
     before = cv2.imread(str(GALLERY / "before-open-carpet.jpg"))
     h, w = before.shape[:2]
     tex = cv2.imread(str(TEXTURES / "warm-oak.jpg"))
-    # Depth-running planks with gentle taper (reads as receding floor)
-    sheet = make_planks(tex, along="y", plank_w=130, out_w=4000, out_h=3800)
     bgr = before.astype(np.float32)
     bright = bgr.mean(2)
     sat = bgr.max(2) - bgr.min(2)
     Bb, Rr = bgr[:, :, 0], bgr[:, :, 2]
+    Bb2, Gg2, Rr2 = bgr[:, :, 0], bgr[:, :, 1], bgr[:, :, 2]
 
     horizon = horizon_line(
         w,
         [
-            (0, 728), (60, 720), (140, 700), (220, 665), (300, 615),
-            (380, 558), (460, 508), (540, 468), (620, 442), (700, 422),
-            (780, 412), (860, 410), (940, 418), (1020, 438), (1100, 472), (1199, 522),
+            (0, 540), (50, 522), (120, 502), (200, 488), (280, 474),
+            (360, 462), (440, 452), (520, 446), (600, 442), (680, 440),
+            (760, 444), (840, 454), (920, 474), (1000, 498), (1080, 528), (1199, 562),
         ],
+        k=17,
     )
     env = np.zeros((h, w), np.uint8)
     cv2.fillPoly(
@@ -302,149 +302,164 @@ def make_open():
         [np.array([(0, h - 1), (w - 1, h - 1)] + [(x, int(round(horizon[x]))) for x in range(w - 1, -1, -1)], np.int32)],
         255,
     )
-    env[: int(h * 0.36)] = 0
     for x in range(w):
         env[: int(round(horizon[x])), x] = 0
 
-    # Armchairs — cover full bases including legs; morph-smooth
-    arm = np.zeros((h, w), np.uint8)
+    furn = np.zeros((h, w), np.uint8)
+    alpha_path = Path(__file__).resolve().parent / "masks" / "open-rembg-alpha.png"
+    alpha = cv2.imread(str(alpha_path), 0)
+    if alpha is None:
+        raise FileNotFoundError(f"missing rembg alpha mask: {alpha_path}")
+    arm = (alpha > 80).astype(np.uint8) * 255
+    keep = np.zeros((h, w), np.uint8)
+    keep[380:800, 0:540] = 255
+    arm = cv2.bitwise_and(arm, keep)
+    arm = cv2.morphologyEx(arm, cv2.MORPH_CLOSE, np.ones((15, 15), np.uint8))
+    arm = cv2.dilate(arm, np.ones((5, 5), np.uint8))
     cv2.fillPoly(
         arm,
         [np.array([
-            (0, 450), (245, 432), (318, 470), (350, 540), (348, 690),
-            (318, 742), (260, 762), (125, 768), (0, 752),
+            (0, 440), (200, 418), (280, 455), (325, 525), (335, 630), (330, 720), (305, 765),
+            (240, 785), (120, 792), (20, 788), (0, 770),
         ], np.int32)],
         255,
     )
     cv2.fillPoly(
         arm,
         [np.array([
-            (280, 435), (435, 428), (505, 458), (525, 522), (512, 610),
-            (468, 658), (385, 662), (298, 622), (278, 530),
+            (250, 410), (400, 400), (475, 435), (500, 505), (490, 585), (455, 635), (375, 648),
+            (285, 615), (255, 535), (248, 470),
         ], np.int32)],
         255,
     )
-    cv2.rectangle(arm, (395, 445), (525, 550), 255, -1)
+    table_roi = np.zeros((h, w), np.uint8)
     cv2.fillPoly(
-        arm,
-        [np.array([(448, 405), (660, 398), (740, 462), (715, 558), (535, 562), (442, 492)], np.int32)],
+        table_roi,
+        [np.array([
+            (455, 405), (560, 400), (575, 445), (570, 515), (545, 545), (490, 550), (460, 510), (450, 450),
+        ], np.int32)],
         255,
     )
-    arm = cv2.morphologyEx(arm, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
-    arm = cv2.morphologyEx(arm, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
-    # Trim a few px from bottom so floor meets fabric without blocky island of carpet
-    arm_bottom = arm.copy()
-    arm_bottom[:700] = 0
-    arm_bottom = cv2.erode(arm_bottom, np.ones((5, 5), np.uint8))
-    arm[700:] = arm_bottom[700:]
+    arm[(table_roi > 0) & (alpha > 80)] = 255
+    dark = (table_roi > 0) & (Rr > Bb + 8) & (bright > 40) & (bright < 110) & (sat > 18) & (sat < 70)
+    lamp = (table_roi > 0) & (bright > 170) & (sat < 40)
+    arm[dark | lamp] = 255
+    core = (alpha > 80).astype(np.uint8) * 255
+    core = cv2.bitwise_and(core, keep)
+    core = cv2.dilate(core, np.ones((9, 9), np.uint8))
+    core[dark | lamp] = 255
+    arm[(arm > 0) & (core == 0) & (bright > 145) & (sat < 42)] = 0
+    arm[:, 600:] = 0  # living furniture stays left of fireplace corridor
+    furn = np.maximum(furn, arm)
 
-    # Dining chairs: seat + back + wood legs only (no pale-carpet hole masks)
-    chair_defs = [
-        (806, 552, 38, 24, 450),
-        (898, 565, 38, 24, 465),
-        (978, 550, 38, 24, 450),
-        (768, 475, 36, 26, 392),
-        (858, 464, 36, 24, 382),
-        (948, 476, 36, 26, 392),
-    ]
-    seat_core = np.zeros((h, w), np.uint8)
-    chair_back = np.zeros((h, w), np.uint8)
-    leg_geo = np.zeros((h, w), np.uint8)
-    for cx, cy, rx, ry, back_top in chair_defs:
-        cv2.ellipse(seat_core, (cx, cy), (rx, ry), 0, 0, 360, 255, -1)
-        # backrest above seat — do not extend to floor
-        cv2.rectangle(chair_back, (cx - rx + 6, back_top), (cx + rx - 6, cy - ry + 4), 255, -1)
-        for dx in (-rx + 12, rx - 16):
-            cv2.rectangle(leg_geo, (cx + dx - 3, cy + 4), (cx + dx + 3, min(h - 1, cy + ry + 70)), 255, -1)
-        for dx in (-rx + 16, rx - 20):
-            cv2.rectangle(leg_geo, (cx + dx - 3, cy - 2), (cx + dx + 3, min(h - 1, cy + ry + 50)), 255, -1)
+    blue_roi = np.zeros((h, w), np.uint8)
+    cv2.fillPoly(
+        blue_roi,
+        [np.array([(530, 395), (580, 392), (592, 435), (582, 470), (545, 478), (525, 440)], np.int32)],
+        255,
+    )
+    furn[(blue_roi > 0) & (Bb2 > Rr2 + 12) & (Bb2 > Gg2 + 5) & (bright > 35) & (bright < 140)] = 255
+    plant = np.zeros((h, w), np.uint8)
+    cv2.ellipse(plant, (548, 428), (15, 30), 0, 0, 360, 255, -1)
+    cv2.ellipse(plant, (548, 456), (11, 9), 0, 0, 360, 255, -1)
+    furn[(plant > 0) & (((Gg2 > Rr2 + 10) & (Gg2 > Bb2 + 8)) | (bright < 80))] = 255
 
-    pale_fab = (bright > 135) & (bright < 205) & (sat < 50)
-    wood_leg = (Rr > Bb + 10) & (bright > 40) & (bright < 140) & (sat > 18) & (sat < 90)
-    # ONLY pale fabric inside seat ellipses — never restore carpet (that punches white holes)
-    seats = ((seat_core > 0) & pale_fab).astype(np.uint8) * 255
-    seats = cv2.morphologyEx(seats, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
-    backs = ((chair_back > 0) & pale_fab & (bright < 195)).astype(np.uint8) * 255
-    legs = ((leg_geo > 0) & wood_leg).astype(np.uint8) * 255
-    legs = cv2.morphologyEx(legs, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    pale = (bright > 125) & (bright < 205) & (sat < 48)
+    wood = (Rr > Bb + 10) & (bright > 30) & (bright < 125) & (sat > 12) & (sat < 90)
+    for cx, cy, rx, ry, bt, lb in [
+        (806, 548, 32, 16, 448, 630), (898, 560, 32, 16, 458, 645), (978, 545, 32, 16, 442, 628),
+        (768, 472, 30, 14, 390, 550), (858, 460, 30, 14, 380, 538), (948, 472, 30, 14, 390, 550),
+    ]:
+        back = np.zeros((h, w), np.uint8)
+        cv2.rectangle(back, (cx - rx + 6, bt), (cx + rx - 6, cy - ry + 2), 255, -1)
+        furn[(back > 0) & pale] = 255
+        seat = np.zeros((h, w), np.uint8)
+        cv2.ellipse(seat, (cx, cy), (rx - 2, max(ry - 2, 6)), 0, 0, 360, 255, -1)
+        seat[cy:, :] = 0  # seat surface only — no floor ovals
+        furn[(seat > 0) & pale] = 255
+        for dx in (-rx + 12, rx - 14, -rx + 17, rx - 19):
+            leg = np.zeros((h, w), np.uint8)
+            cv2.rectangle(leg, (cx + dx - 2, cy + 10), (cx + dx + 2, lb), 255, -1)
+            furn[(leg > 0) & wood] = 255
+    tt = np.zeros((h, w), np.uint8)
+    cv2.ellipse(tt, (885, 498), (150, 36), 0, 0, 360, 255, -1)
+    furn[(tt > 0) & (bright < 125) & (Rr > Bb + 2)] = 255
 
-    table = np.zeros((h, w), np.uint8)
-    cv2.ellipse(table, (880, 500), (170, 45), 0, 0, 360, 255, -1)
-    table_keep = ((table > 0) & (bright < 125) & (Rr > Bb + 5)).astype(np.uint8) * 255
-
-    furn = np.maximum(np.maximum(np.maximum(arm, seats), np.maximum(backs, legs)), table_keep)
-
-    # Floor: entire env below horizon minus furniture (force continuous oak)
     mask = env.copy()
     mask[furn > 0] = 0
-    # Force pale carpet anywhere in env that's not furniture
-    carpet = (env > 0) & (furn == 0) & (bright > 85) & (bright < 240) & (sat < 80)
-    mask[carpet] = 255
-    # Dining under-table force
-    dzone = np.zeros((h, w), bool)
-    dzone[440:780, 630:1145] = True
-    mask[dzone & (furn == 0) & (bright > 90) & (sat < 70)] = 255
-    mask[furn > 0] = 0
-    for x in range(w):
-        mask[: int(round(horizon[x])), x] = 0
-    for _ in range(12):
-        dil = cv2.dilate(mask, np.ones((3, 3), np.uint8))
-        grow = (dil > 0) & (env > 0) & (furn == 0) & (mask == 0) & (bright > 90) & (sat < 75)
-        if not grow.any():
-            break
-        mask[grow] = 255
+    sm = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+    near = cv2.dilate(furn, np.ones((13, 13), np.uint8)) > 0
+    mask = np.where(near, mask, sm)
     mask[furn > 0] = 0
     for x in range(w):
         mask[: int(round(horizon[x])), x] = 0
 
+    dz = np.zeros((h, w), bool)
+    dz[490:775, 695:1145] = True
+    mask[dz & (env > 0) & (furn == 0)] = 255
+    fz = np.zeros((h, w), bool)
+    fz[440:560, 450:850] = True
+    mask[fz & (env > 0) & (furn == 0)] = 255
+    lab = cv2.cvtColor(before, cv2.COLOR_BGR2LAB).astype(np.float32)
+    seeds = [(600, 760), (900, 640), (700, 500), (550, 520), (1000, 590), (650, 480), (720, 490)]
+    cmu = np.mean([lab[y, x] for x, y in seeds], 0)
+    cd = np.sqrt(((lab - cmu) ** 2).sum(2))
+    mask[(env > 0) & (furn == 0) & (cd < 30) & (bright > 95) & (sat < 55)] = 255
+    mask[furn > 0] = 0
+    for x in range(w):
+        mask[: int(round(horizon[x])), x] = 0
+
+    sheet = make_planks(tex, along="y", plank_w=125, out_w=4200, out_h=4000)
     warped = ortho(sheet, h, w, int(horizon.min()) - 2, taper=0.14)
-    L0 = cv2.cvtColor(before, cv2.COLOR_BGR2LAB)[:, :, 0].astype(np.float32)
+    L0 = lab[:, :, 0]
     Lt = cv2.cvtColor(warped, cv2.COLOR_BGR2LAB)[:, :, 0].astype(np.float32)
     ratio = np.clip(
-        cv2.GaussianBlur(L0, (61, 61), 0) / np.maximum(cv2.GaussianBlur(Lt, (61, 61), 0), 1),
-        0.78, 1.22,
+        cv2.GaussianBlur(L0, (81, 81), 0) / np.maximum(cv2.GaussianBlur(Lt, (81, 81), 0), 1),
+        0.82, 1.18,
     )
     m = mask > 128
-    shift = 92.0 / max(float(L0[m].mean()) if m.any() else 92.0, 1)
-    floor = np.clip(warped.astype(np.float32) * (ratio * shift * 0.88)[..., None], 0, 255)
+    shift = 100.0 / max(float(L0[m].mean()) if m.any() else 100.0, 1)
+    yy = np.linspace(0.0, 1.0, h).astype(np.float32)[:, None]
+    depth = 0.86 + 0.22 * yy
+    ao = np.ones((h, w), np.float32)
+    ao -= 0.11 * (cv2.dilate(furn, np.ones((23, 23), np.uint8)).astype(np.float32) / 255)
+    floor = np.clip(warped.astype(np.float32) * (ratio * shift)[..., None] * depth[..., None] * ao[..., None], 0, 255)
 
-    fm = m.astype(np.float32)
-    fm[furn > 128] = 0
-    soft = cv2.GaussianBlur(fm, (0, 0), 0.5)
-    near_f = cv2.dilate(furn, np.ones((5, 5), np.uint8)) > 0
-    fm = np.where(near_f, fm, soft)
-    fm[furn > 128] = 0
+    fm = (mask > 128).astype(np.float32)
+    fm[furn > 0] = 0
+    for x in range(w):
+        fm[: int(round(horizon[x])), x] = 0
+    soft = cv2.GaussianBlur(fm, (0, 0), 0.35)
+    fm = np.where(near, fm, soft)
+    fm[furn > 0] = 0
 
     after = np.clip(before.astype(np.float32) * (1 - fm[..., None]) + floor * fm[..., None], 0, 255).astype(np.uint8)
     after[furn > 0] = before[furn > 0]
-
-    for _ in range(16):
+    for _ in range(40):
         diff = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(2)
         below = np.zeros((h, w), bool)
         for x in range(w):
             below[int(round(horizon[x])) :, x] = True
-        still = (
-            below & (furn == 0) & (diff < 20) & (bright > 90) & (bright < 235) & (sat < 70)
-        )
-        # don't fill seat cores
-        still &= seat_core == 0
+        still = below & (furn == 0) & (diff < 15) & (cd < 32) & (bright > 90) & (sat < 55)
+        still |= (dz | fz) & (furn == 0) & (diff < 18) & below
         if not still.any():
             break
         after[still] = np.clip(floor[still], 0, 255).astype(np.uint8)
         after[furn > 0] = before[furn > 0]
-
-    after[seats > 0] = before[seats > 0]
-    after[backs > 0] = before[backs > 0]
-    after[legs > 0] = before[legs > 0]
-    after[arm > 0] = before[arm > 0]
-    after[table_keep > 0] = before[table_keep > 0]
+    after[furn > 0] = before[furn > 0]
+    for x in range(w):
+        after[: int(round(horizon[x])), x] = before[: int(round(horizon[x])), x]
 
     save_qa("open", before, mask, after, furn)
     path = GALLERY / "after-open-warm-oak.jpg"
     cv2.imwrite(str(path), after, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
     applied = (mask > 128) & (furn < 128)
     ys = np.where(applied)[0]
-    print("open", path, "floor_y", int(ys.min()) if len(ys) else None, "-", int(ys.max()) if len(ys) else None, "cov", round(float(applied.mean()), 4))
+    print(
+        "open", path,
+        "floor_y", int(ys.min()) if len(ys) else None, "-", int(ys.max()) if len(ys) else None,
+        "cov", round(float(applied.mean()), 4),
+    )
     return after
 
 
