@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vinyl or Not — Hard-Surface Flooring Photo Reports</title>
-  <meta name="description" content="Quick photo-based flooring type reports. Free one-line guess; unlock the full report for $10–$15 (default $12). Guided checklist, not AI vision." />
+  <title>Vinyl or Not — DIY Flooring Project Guide</title>
+  <meta name="description" content="A practical DIY flooring starting point: get a photo report, learn how to measure, visualize LVP, and browse real before-and-after projects." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -19,7 +19,7 @@
           <a href="./" aria-current="page">Home</a>
           <a href="measure.html">Measure</a>
           <a href="visualize.html">Visualize</a>
-          <a href="pros.html">For pros</a>
+          <a class="pro-nav-link" href="pros.html">For pros</a>
           <a href="projects.html">Projects</a>
         </nav>
       </div>
@@ -29,22 +29,42 @@
   <main class="wrap">
     <!-- Landing -->
     <section id="landing" class="card hero">
-      <h1>Is it vinyl — or something else?</h1>
+      <p class="eyebrow">For DIY homeowners</p>
+      <h1>Plan your flooring project with a clearer starting point.</h1>
       <p class="pitch">
-        Snap a few photos of your hard-surface floor. Answer a short guided checklist.
-        Get a free one-line type guess, then unlock a plain-English photo report for
-        <strong>$10–$15</strong> (default <strong>$12</strong>) — seams, wear, and replace-vs-refinish notes.
+        Figure out what is underfoot, get your room ready, and picture the finished space —
+        without an app install or a hard sell. Start with the tool that fits your project.
       </p>
+
+      <div class="homeowner-tools" aria-label="DIY homeowner tools">
+        <article class="homeowner-tool homeowner-tool-featured">
+          <p class="tool-kicker">Start here</p>
+          <h2>Photo report</h2>
+          <p>Snap 1–3 photos, answer a short checklist, and get a free flooring type guess plus a plain-English report.</p>
+          <button type="button" class="btn primary" id="start-btn">Start photo report</button>
+        </article>
+        <a class="homeowner-tool" href="measure.html">
+          <p class="tool-kicker">Before you buy</p>
+          <h2>Measure tips <span aria-hidden="true">→</span></h2>
+          <p>Estimate square footage, waste, doorways, and closets before ordering materials.</p>
+        </a>
+        <a class="homeowner-tool" href="visualize.html">
+          <p class="tool-kicker">See the possibility</p>
+          <h2>Visualize <span aria-hidden="true">→</span></h2>
+          <p>Upload a room photo, tap four corners, and preview an LVP floor overlay.</p>
+        </a>
+        <a class="homeowner-tool" href="projects.html">
+          <p class="tool-kicker">Get inspired</p>
+          <h2>Before &amp; after <span aria-hidden="true">→</span></h2>
+          <p>Browse real project examples to help shape your next flooring update.</p>
+        </a>
+      </div>
+
       <ul class="bullets">
-        <li>No app install — works in your phone browser</li>
         <li>Photos stay on your device until you choose to share them</li>
         <li>Guided checklist — <em>not</em> computer vision or AI inspection</li>
       </ul>
-      <p><a class="measure-link" href="measure.html">Room measurement tips — length × width, waste %, doorways &amp; closets →</a></p>
-      <p><a class="measure-link" href="visualize.html">Try the LVP floor overlay — upload a photo, tap 4 corners, preview planks →</a></p>
-      <p><a class="measure-link" href="pros.html">For pros — installers, property managers &amp; designers: trade pricing, quotes &amp; specs →</a></p>
-      <p><a class="measure-link" href="projects.html">Project gallery — before &amp; after flooring jobs →</a></p>
-      <button type="button" class="btn primary" id="start-btn">Start photo report</button>
+      <p class="pro-note">Installing for clients? <a href="pros.html">See the quieter path for pros →</a></p>
     </section>
 
     <!-- Photos -->
