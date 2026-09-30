@@ -1,0 +1,30 @@
+Subfloor prep checklist — Vinyl or Not (planning aid)
+=====================================================
+Disclaimer: Planning aid only — not a manufacturer specification sheet
+or warranty. Site conditions vary; follow product install guides and
+local code.
+
+Before ordering / install day
+-----------------------------
+[ ] Identify subfloor type: concrete slab, plywood/OSB, existing vinyl, etc.
+[ ] Confirm product is approved over that substrate (and over existing floors
+    if leaving them in place).
+[ ] Check flatness: typically within ~3/16" in 10 ft (confirm brand limits).
+[ ] Mark high/low spots; plan leveling compound or sanding as needed.
+[ ] Moisture: concrete slabs need testing (see moisture-testing-notes.txt).
+[ ] Remove debris, nails, adhesive ridges that would telegraph through.
+[ ] Address squeaks / loose panels on wood subfloors.
+[ ] Plan underlayment / vapor barrier per manufacturer.
+[ ] Confirm radiant heat compatibility and max surface temperature if present.
+[ ] Measure transitions: door clearances, reducers, T-moldings, stair nosing.
+[ ] Protect adjacent finishes; plan for expansion gaps at walls and posts.
+
+Red flags (pause and get a pro opinion)
+---------------------------------------
+- Soft, spongy, or water-stained areas
+- Musty odor or visible mold
+- Crumbling concrete or large cracks with height change
+- Existing floor that is not well bonded
+- Below-grade or slab-on-grade with no moisture history
+
+Related: measure.html · pros.html · moisture-testing-notes.txt

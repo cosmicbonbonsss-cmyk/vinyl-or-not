@@ -1,0 +1,37 @@
+Waste factor guide — Vinyl or Not (planning aid)
+================================================
+Disclaimer: Planning aid only — not a manufacturer specification sheet
+or contractor takeoff. Confirm quantities with your installer before
+ordering, especially for stairs and irregular shapes.
+
+What "waste" covers
+-------------------
+Cuts at walls, pattern matching, mistakes, damaged planks, and a small
+attic stock for future repairs / matching dye lots.
+
+Typical ranges (LVP / plank / tile)
+-----------------------------------
+- Simple rectangular rooms, straight lay: about 10%
+- Moderate cuts, multiple rooms, doorways: about 10–12%
+- Diagonal / herringbone / busy patterns, many angles: about 12–15%+
+- Stairs, landings, and custom cuts: often separate — ask the installer
+
+How to apply
+------------
+1. Measure each room (length × width) — see measure.html
+2. Sum square footage
+3. Multiply by (1 + waste%), e.g. 147 sq ft × 1.10 ≈ 162 sq ft
+4. Round up to full boxes / cartons (never order exact bare feet)
+
+Multi-unit / property managers
+------------------------------
+- Same product across units: order together when possible for dye-lot match
+- Keep labeled attic stock per building or floor
+- Slightly higher waste % if crews rotate or units have odd layouts
+
+Designers
+---------
+- Pattern direction and feature walls change waste — note layout intent
+  on the quote so the takeoff matches the presentation boards.
+
+Related: measure.html · pros.html

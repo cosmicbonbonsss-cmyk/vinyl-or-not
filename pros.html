@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For pros — Vinyl or Not</title>
+  <meta name="description" content="For flooring installers, property managers, and designers: trade pricing samples, quick quotes, bulk packs, specs, and planning tools." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap wide">
+      <div class="header-row">
+        <div>
+          <a class="logo" href="./">Vinyl or Not</a>
+          <p class="tagline">For flooring pros</p>
+        </div>
+        <nav class="site-nav" aria-label="Site">
+          <a href="./">Home</a>
+          <a href="measure.html">Measure</a>
+          <a href="visualize.html">Visualize</a>
+          <a href="pros.html" aria-current="page">For pros</a>
+          <a href="projects.html">Projects</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap wide">
+    <section class="card hero" id="top">
+      <p class="badge">Installers · Property managers · Designers</p>
+      <h1>For flooring pros — installers, property managers &amp; designers</h1>
+      <p class="pitch">
+        Same Vinyl or Not toolkit, oriented for trade work: sample volume pricing,
+        project inquiries, rental turnovers, client look boards, and downloadable planning aids.
+        Consumer photo reports stay on the <a href="./">home page</a> — nothing here bills live.
+      </p>
+      <nav class="jump-nav" aria-label="Audience sections">
+        <a class="btn secondary" href="#installers">Installers</a>
+        <a class="btn secondary" href="#property-managers">Property managers</a>
+        <a class="btn secondary" href="#designers">Designers</a>
+        <a class="btn ghost" href="#trade-account">Trade account</a>
+        <a class="btn ghost" href="#quote">Quick quote</a>
+        <a class="btn ghost" href="#specs">Spec downloads</a>
+        <a class="btn ghost" href="#pro-tools">Paid pro tools</a>
+        <a class="btn ghost" href="projects.html">Project gallery</a>
+      </nav>
+      <div class="nav-row" style="justify-content: flex-start; margin-top: 1rem;">
+        <a class="btn ghost" href="measure.html">Measurement tips</a>
+        <a class="btn ghost" href="visualize.html">Floor overlay</a>
+        <a class="btn ghost" href="projects.html">Before &amp; after gallery</a>
+        <a class="btn ghost" href="./">Photo report</a>
+      </div>
+    </section>
+
+    <!-- Trade account -->
+    <section class="card" id="trade-account">
+      <h2>Trade / pro account</h2>
+      <p class="hint">
+        Lightweight stub saved in this browser only (localStorage) — no real login yet.
+        Fields are labeled for a future signed-in account. Prefills the quote form.
+      </p>
+      <p id="account-status" class="account-status hidden" aria-live="polite"></p>
+      <form id="trade-account-form" class="form-grid">
+        <label>
+          Role
+          <select name="role" id="account-role">
+            <option value="installer">Installer / flooring contractor</option>
+            <option value="pm">Property manager</option>
+            <option value="designer">Designer</option>
+          </select>
+        </label>
+        <label>
+          Company / firm name
+          <input type="text" name="company" id="account-company" autocomplete="organization" placeholder="e.g. Ridge Flooring Co." />
+        </label>
+        <label>
+          Contact email
+          <input type="email" name="email" id="account-email" autocomplete="email" placeholder="you@company.com" />
+        </label>
+        <label>
+          Phone
+          <input type="tel" name="phone" id="account-phone" autocomplete="tel" placeholder="(555) 555-0100" />
+        </label>
+        <label>
+          Service area ZIP
+          <input type="text" name="zip" id="account-zip" autocomplete="postal-code" placeholder="ZIP or city" />
+        </label>
+        <label class="full">
+          Preferred retailer notes
+          <textarea name="retailerNotes" id="account-retailer" rows="2" placeholder="Preferred SKUs, distributors, or house vendors…"></textarea>
+        </label>
+        <div class="form-actions full">
+          <button type="submit" class="btn primary">Save to this browser</button>
+          <button type="button" class="btn ghost" id="account-signout">Sign out (clear)</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Installers -->
+    <section class="card" id="installers">
+      <p class="badge">Installers &amp; flooring contractors</p>
+      <h2>Trade pricing, job quotes &amp; field tools</h2>
+      <p class="pitch">
+        Volume photo-report packs for multi-address projects, a quick project inquiry,
+        and links to measure + visualize on site.
+      </p>
+
+      <h3>Trade / volume pricing <span class="badge">Sample / prototype — not live billing</span></h3>
+      <p class="hint">
+        Illustrative only. Consumer one-off reports stay at about <strong>$12</strong>.
+        Trade packs below show how per-report discounts might work for crews — not checkout products.
+      </p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <thead>
+            <tr>
+              <th>Pack</th>
+              <th>Reports</th>
+              <th>Illustrative total</th>
+              <th>Per report</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Consumer (one-off)</td>
+              <td>1</td>
+              <td>$12</td>
+              <td>$12.00</td>
+            </tr>
+            <tr>
+              <td>Trade 10</td>
+              <td>10</td>
+              <td>$99</td>
+              <td>$9.90</td>
+            </tr>
+            <tr>
+              <td>Trade 25</td>
+              <td>25</td>
+              <td>$225</td>
+              <td>$9.00</td>
+            </tr>
+            <tr>
+              <td>Trade 50</td>
+              <td>50</td>
+              <td>$400</td>
+              <td>$8.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="bullets">
+        <li><strong>Bulk job photo packs</strong> — same checklist flow, oriented for crew job folders</li>
+        <li><strong>Multi-address projects</strong> — track several sites from one inquiry (see quote form)</li>
+        <li>Photos stay on-device in this prototype; no server upload</li>
+      </ul>
+      <div class="nav-row" style="justify-content: flex-start;">
+        <a class="btn primary" href="#quote">Quick quote / project inquiry</a>
+        <a class="btn secondary" href="measure.html">Measure tips</a>
+        <a class="btn ghost" href="visualize.html">Visualize planks</a>
+      </div>
+    </section>
+
+    <!-- Property managers -->
+    <section class="card" id="property-managers">
+      <p class="badge">Property managers</p>
+      <h2>Turnovers, multi-unit packs &amp; maintenance flags</h2>
+      <p class="pitch">
+        Portfolio-oriented pricing illustration, when to spot-repair vs replace LVP,
+        and walkthrough photo tips for rentals.
+      </p>
+
+      <h3>Multi-unit / portfolio pricing <span class="badge">Sample / prototype</span></h3>
+      <p class="hint">Not live billing — planning numbers for conversations with vendors.</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <thead>
+            <tr>
+              <th>Use case</th>
+              <th>Illustration</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Single unit turnover report</td>
+              <td>~$12 / unit</td>
+              <td>Same consumer checklist flow</td>
+            </tr>
+            <tr>
+              <td>Building pack (10–25 units)</td>
+              <td>Trade 10 / 25 rates</td>
+              <td>See installer table above</td>
+            </tr>
+            <tr>
+              <td>Portfolio / recurring</td>
+              <td>Custom conversation</td>
+              <td>Use bulk inquiry on the quote form</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Replace vs spot-repair (LVP)</h3>
+      <ul class="bullets">
+        <li><strong>Spot-repair</strong> when a few planks are damaged, dye lot matches attic stock, and the click system still locks cleanly.</li>
+        <li><strong>Replace the room / unit</strong> when wear-through is widespread, seams are peaking, moisture is under the floor, or matching product is discontinued.</li>
+        <li>LVP is generally <em>not</em> refinished like hardwood — plan replace, not sand-and-coat.</li>
+      </ul>
+
+      <h3>Turnover walkthrough photo tips</h3>
+      <ul class="bullets">
+        <li>Wide shot of each room + close-ups of seams, transitions, and wet areas (kitchen, bath, patio door)</li>
+        <li>Note unit number and date on your notes; photos stay local in this prototype</li>
+        <li>Flag soft spots, musty odors, and appliance leaks before calling for install bids</li>
+      </ul>
+
+      <h3>Rental moisture / red-flag checklist</h3>
+      <ul class="bullets">
+        <li>Recurring leaks (sinks, dishwashers, water heaters)</li>
+        <li>Soft or stained flooring at exterior doors and tub surrounds</li>
+        <li>Musty closets on slabs — see <a href="specs/moisture-testing-notes.txt">moisture-testing-notes.txt</a></li>
+        <li>Document before/after on turnovers when replacing floors</li>
+      </ul>
+
+      <div class="nav-row" style="justify-content: flex-start;">
+        <a class="btn primary" href="#quote">Bulk / multi-unit inquiry</a>
+        <a class="btn secondary" href="specs/subfloor-prep-checklist.txt">Subfloor checklist</a>
+        <a class="btn ghost" href="./">Photo report tool</a>
+      </div>
+    </section>
+
+    <!-- Designers -->
+    <section class="card" id="designers">
+      <p class="badge">Designers</p>
+      <h2>Specs, looks &amp; client presentation aids</h2>
+      <p class="pitch">
+        Downloadable planning aids, links to the photo overlay and texture gallery,
+        and finish notes you can hand to clients — without claiming manufacturer authority.
+      </p>
+
+      <h3>Visual references</h3>
+      <ul class="bullets">
+        <li><a href="visualize.html">LVP floor overlay</a> — upload a room photo, tap four corners, preview seamless plank textures</li>
+        <li>Texture set: warm oak, gray oak, walnut, whitewash, wide plank, and more (CC0 via ambientCG) — pick looks for mood boards</li>
+        <li>Known limits: manual corners, no AI floor detection, lighting not matched — set client expectations</li>
+      </ul>
+
+      <h3>Finish / look notes for presentations</h3>
+      <ul class="bullets">
+        <li>Call out wear-layer mils vs core thickness separately (clients often conflate them)</li>
+        <li>Note waterproof language carefully — plank waterproof ≠ flood-proof subfloor</li>
+        <li>Direction of lay and pattern (straight vs diagonal) change waste % — see waste-factor guide</li>
+        <li>Print the <a href="specs/printable-planning-aid.html">planning aid HTML</a> for job folders</li>
+      </ul>
+
+      <div class="nav-row" style="justify-content: flex-start;">
+        <a class="btn primary" href="visualize.html">Open floor overlay</a>
+        <a class="btn secondary" href="#specs">Spec downloads</a>
+        <a class="btn ghost" href="measure.html">Measure + waste</a>
+      </div>
+    </section>
+
+    <!-- Specs -->
+    <section class="card" id="specs">
+      <h2>Spec sheets / material data downloads</h2>
+      <p class="hint">Generic educational files. Each carries a one-line disclaimer: planning aid, not manufacturer spec.</p>
+      <ul class="download-list">
+        <li>
+          <a href="specs/lvp-click-lock-overview.txt">lvp-click-lock-overview.txt</a>
+          <span>Wear layer, core, waterproof claims language, install notes</span>
+        </li>
+        <li>
+          <a href="specs/subfloor-prep-checklist.txt">subfloor-prep-checklist.txt</a>
+          <span>Pre-install flatness, moisture, transitions</span>
+        </li>
+        <li>
+          <a href="specs/moisture-testing-notes.txt">moisture-testing-notes.txt</a>
+          <span>Why moisture matters; rental red flags</span>
+        </li>
+        <li>
+          <a href="specs/waste-factor-guide.txt">waste-factor-guide.txt</a>
+          <span>10–15% waste ranges; ties to measure tips</span>
+        </li>
+        <li>
+          <a href="specs/printable-planning-aid.html">printable-planning-aid.html</a>
+          <span>Simple printable job sheet</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Quote form -->
+    <section class="card" id="quote">
+      <h2>Quick quote / project inquiry</h2>
+      <p class="hint">
+        Client-side only. On submit you’ll get a confirmation plus a mailto draft and clipboard copy —
+        we do <strong>not</strong> send email unless you open the mail link yourself.
+        Last draft is remembered in localStorage for repeats.
+      </p>
+      <form id="quote-form" class="form-grid">
+        <label>
+          Inquiry type
+          <select name="inquiryType" id="quote-inquiry-type">
+            <option value="installer">Installer / single job</option>
+            <option value="bulk">Property manager / bulk units</option>
+            <option value="design">Designer / presentation project</option>
+          </select>
+        </label>
+        <label>
+          Company / firm
+          <input type="text" name="company" id="quote-company" required autocomplete="organization" />
+        </label>
+        <label>
+          Contact name
+          <input type="text" name="contact" id="quote-contact" required autocomplete="name" />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" id="quote-email" required autocomplete="email" />
+        </label>
+        <label>
+          Phone
+          <input type="tel" name="phone" id="quote-phone" autocomplete="tel" />
+        </label>
+        <label>
+          Job site city / ZIP
+          <input type="text" name="site" id="quote-site" placeholder="City or ZIP" />
+        </label>
+        <label id="units-wrap" class="hidden">
+          Unit / door count (bulk)
+          <input type="number" name="units" id="quote-units" min="1" step="1" placeholder="e.g. 12" />
+        </label>
+        <label>
+          Property / project name
+          <input type="text" name="property" id="quote-property" placeholder="Optional" />
+        </label>
+        <label>
+          Approx sq ft
+          <input type="text" name="sqft" id="quote-sqft" placeholder="e.g. 850" />
+        </label>
+        <label>
+          Flooring interest
+          <select name="flooring" id="quote-flooring">
+            <option value="LVP">LVP</option>
+            <option value="Tile">Tile</option>
+            <option value="Hardwood">Hardwood</option>
+            <option value="Unsure">Unsure</option>
+          </select>
+        </label>
+        <label>
+          Timeline
+          <input type="text" name="timeline" id="quote-timeline" placeholder="e.g. 3–4 weeks / next turnover" />
+        </label>
+        <label>
+          Optional photo count
+          <input type="number" name="photos" id="quote-photos" min="0" max="50" placeholder="0" />
+        </label>
+        <label class="full">
+          Notes
+          <textarea name="notes" id="quote-notes" rows="3" placeholder="Multi-address list, attic stock needs, layout direction…"></textarea>
+        </label>
+        <div class="form-actions full">
+          <button type="submit" class="btn primary">Build inquiry summary</button>
+          <button type="button" class="btn ghost" id="quote-load-draft">Load last draft</button>
+        </div>
+      </form>
+
+      <div id="quote-result" class="quote-result hidden" aria-live="polite">
+        <h3>Inquiry ready</h3>
+        <pre id="quote-summary" class="quote-summary"></pre>
+        <div class="nav-row" style="justify-content: flex-start;">
+          <a class="btn primary" id="quote-mailto" href="#">Open email draft</a>
+          <button type="button" class="btn secondary" id="quote-copy">Copy to clipboard</button>
+        </div>
+        <p class="hint" id="quote-copy-status"></p>
+      </div>
+    </section>
+
+    <!-- Paid pro tools -->
+    <section class="card" id="pro-tools">
+      <p class="badge">Paid platform · $10–$15 (default $12)</p>
+      <h2>Contractor platform tools</h2>
+      <p class="pitch">
+        Blueprint uploads, job receipts, and a personal contractor profile.
+        Public <a href="projects.html">project gallery</a> browsing &amp; free uploads stay free;
+        paid contractors get <strong>Featured</strong> placement on gallery jobs.
+      </p>
+      <div id="pro-unlock-banner" class="unlock-box">
+        <h3>Unlock pro tools — <span id="pro-price-label">$12</span></h3>
+        <p>
+          Same one-time paid tier as the photo report (<span id="pro-price-band">$10–$15</span>).
+          Demo: use <code>?pro=1</code> or the button below — no charge in this prototype.
+        </p>
+        <a id="pro-checkout-btn" class="btn primary" href="#" rel="noopener">Pay with Stripe (test)</a>
+        <button type="button" class="btn secondary" id="pro-demo-unlock">Simulate pro unlock</button>
+        <p class="hint" id="pro-unlock-hint"></p>
+      </div>
+      <p id="pro-unlocked-banner" class="account-status hidden" aria-live="polite">
+        Pro tools unlocked for this browser session. Your contractor gallery uploads can show as <strong>Featured</strong>.
+      </p>
+
+      <div class="pro-tools-grid">
+        <div class="pro-tool-card" id="tool-blueprints" data-locked="1">
+          <div class="lock-overlay" hidden>
+            <p class="badge">Locked</p>
+            <p>Blueprint uploads unlock with paid pro tools.</p>
+            <a class="btn secondary" href="#pro-tools">Unlock</a>
+          </div>
+          <h3 id="pro-blueprints">Blueprints</h3>
+          <p class="hint">PDF or image floor plans — stored as data URLs in this browser under your trade account.</p>
+          <div class="locked-only-msg hint">Unlock to upload blueprints.</div>
+          <div class="unlocked-only hidden">
+            <label class="file-label">
+              <span class="btn secondary">Add blueprint</span>
+              <input type="file" id="blueprint-input" accept="application/pdf,image/*" multiple />
+            </label>
+            <ul id="blueprint-list" class="file-store-list"></ul>
+          </div>
+        </div>
+
+        <div class="pro-tool-card" id="tool-receipts" data-locked="1">
+          <div class="lock-overlay" hidden>
+            <p class="badge">Locked</p>
+            <p>Receipt uploads unlock with paid pro tools.</p>
+            <a class="btn secondary" href="#pro-tools">Unlock</a>
+          </div>
+          <h3 id="pro-receipts">Receipts</h3>
+          <p class="hint">Material or job receipts for your records — local only in this prototype.</p>
+          <div class="locked-only-msg hint">Unlock to upload receipts.</div>
+          <div class="unlocked-only hidden">
+            <label class="file-label">
+              <span class="btn secondary">Add receipt</span>
+              <input type="file" id="receipt-input" accept="image/*,application/pdf" multiple />
+            </label>
+            <ul id="receipt-list" class="file-store-list"></ul>
+          </div>
+        </div>
+
+        <div class="pro-tool-card full" id="tool-profile" data-locked="1">
+          <div class="lock-overlay" hidden>
+            <p class="badge">Locked</p>
+            <p>Full profile editor unlocks with paid pro tools.</p>
+            <a class="btn secondary" href="#pro-tools">Unlock</a>
+          </div>
+          <h3 id="pro-profile">Personal contractor profile</h3>
+          <p class="hint">Shown on featured gallery cards when you post as a paid contractor.</p>
+          <div class="locked-only-msg hint">Unlock to edit your public-facing profile fields.</div>
+          <form id="profile-form" class="form-grid unlocked-only hidden">
+            <label>
+              Business name
+              <input type="text" name="businessName" id="profile-business" autocomplete="organization" />
+            </label>
+            <label>
+              License # (optional)
+              <input type="text" name="license" id="profile-license" placeholder="Optional" />
+            </label>
+            <label>
+              Service area
+              <input type="text" name="serviceArea" id="profile-area" placeholder="Cities / ZIP radius" />
+            </label>
+            <label>
+              Years experience
+              <input type="number" name="years" id="profile-years" min="0" max="80" />
+            </label>
+            <label class="full">
+              Bio
+              <textarea name="bio" id="profile-bio" rows="3" placeholder="Short pitch for featured gallery cards…"></textarea>
+            </label>
+            <label class="full">
+              Portfolio note
+              <input type="text" name="portfolio" id="profile-portfolio" placeholder="Links to your featured jobs on the project gallery" />
+            </label>
+            <div class="form-actions full">
+              <button type="submit" class="btn primary">Save profile</button>
+              <a class="btn ghost" href="projects.html">Open project gallery</a>
+            </div>
+          </form>
+          <p class="hint" id="profile-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap wide">
+      <p>
+        Vinyl or Not · for pros · guided checklist, not AI vision ·
+        <a href="./">Home</a> ·
+        <a href="projects.html">Project gallery</a> ·
+        <a href="measure.html">Measurement tips</a> ·
+        <a href="visualize.html">Floor overlay</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="stripe-config.js"></script>
+  <script src="pros.js"></script>
+</body>
+</html>

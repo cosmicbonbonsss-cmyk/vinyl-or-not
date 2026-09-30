@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project gallery — Vinyl or Not</title>
+  <meta name="description" content="Before & after flooring project gallery. Browse seeded demos; add your own jobs on this device. Free to browse." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap wide">
+      <div class="header-row">
+        <div>
+          <a class="logo" href="./">Vinyl or Not</a>
+          <p class="tagline">Before &amp; after project gallery</p>
+        </div>
+        <nav class="site-nav" aria-label="Site">
+          <a href="./">Home</a>
+          <a href="measure.html">Measure</a>
+          <a href="visualize.html">Visualize</a>
+          <a href="pros.html">For pros</a>
+          <a href="projects.html" aria-current="page">Projects</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap wide">
+    <section class="card hero">
+      <p class="badge">Free to browse</p>
+      <h1>Project gallery — before &amp; after</h1>
+      <p class="pitch">
+        Real-looking job examples for homeowners and crews. Seeded demos ship with the site;
+        anything you add here stays in <strong>this browser</strong> until a real backend exists.
+      </p>
+      <p class="hint">
+        Demo gallery — projects you add stay on this device. Seeded examples are public for everyone.
+      </p>
+      <div class="jump-nav">
+        <a class="btn primary" href="#gallery">Browse gallery</a>
+        <a class="btn secondary" href="#add-project">Add a project</a>
+        <a class="btn ghost" href="#import-export">Import / export JSON</a>
+      </div>
+    </section>
+
+    <section class="card" id="gallery">
+      <h2>Gallery</h2>
+      <p class="hint" id="gallery-count"></p>
+      <div id="gallery-grid" class="gallery-grid"></div>
+    </section>
+
+    <section class="card" id="add-project">
+      <h2>Add a project</h2>
+      <p class="hint">
+        Homeowners and contractors can both submit. Photos are read with FileReader and stored in localStorage
+        (keep images small — browsers have storage limits). Free for public gallery posts.
+      </p>
+      <form id="project-form" class="form-grid">
+        <label>
+          Title
+          <input type="text" name="title" id="proj-title" required placeholder="e.g. Kitchen refresh — warm oak LVP" />
+        </label>
+        <label>
+          Location (city optional)
+          <input type="text" name="location" id="proj-location" placeholder="e.g. Portland, OR" />
+        </label>
+        <label>
+          Flooring type
+          <select name="flooring" id="proj-flooring">
+            <option value="LVP">LVP</option>
+            <option value="Tile">Tile</option>
+            <option value="Hardwood">Hardwood</option>
+            <option value="Laminate">Laminate</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>
+          Submitter role
+          <select name="role" id="proj-role">
+            <option value="customer">Customer / homeowner</option>
+            <option value="contractor">Contractor / installer</option>
+            <option value="pm">Property manager</option>
+            <option value="designer">Designer</option>
+          </select>
+        </label>
+        <label class="full">
+          Short notes
+          <textarea name="notes" id="proj-notes" rows="2" placeholder="What changed, product look, room type…"></textarea>
+        </label>
+        <label>
+          Before photo(s)
+          <input type="file" name="before" id="proj-before" accept="image/*" multiple />
+        </label>
+        <label>
+          After photo(s)
+          <input type="file" name="after" id="proj-after" accept="image/*" multiple />
+        </label>
+        <div class="form-actions full">
+          <button type="submit" class="btn primary">Add to gallery (this device)</button>
+        </div>
+      </form>
+      <p class="hint" id="project-form-status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" id="import-export">
+      <h2>Import / export project pack</h2>
+      <p class="hint">Share a JSON pack between browsers for demos. Large data URLs make files big — use sparingly.</p>
+      <div class="nav-row" style="justify-content: flex-start;">
+        <button type="button" class="btn secondary" id="export-json">Export JSON</button>
+        <label class="file-label">
+          <span class="btn ghost">Import JSON</span>
+          <input type="file" id="import-json" accept="application/json,.json" />
+        </label>
+        <button type="button" class="btn ghost" id="clear-local">Clear my local projects</button>
+      </div>
+      <p class="hint" id="ie-status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap wide">
+      <p>
+        Vinyl or Not · project gallery ·
+        <a href="./">Home</a> ·
+        <a href="pros.html">For pros</a> ·
+        <a href="measure.html">Measure</a> ·
+        <a href="visualize.html">Visualize</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="projects.js"></script>
+</body>
+</html>

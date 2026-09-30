@@ -1,0 +1,36 @@
+Moisture testing notes — Vinyl or Not (planning aid)
+====================================================
+Disclaimer: Planning aid only — not a manufacturer specification sheet,
+lab procedure, or warranty. Moisture failures are a leading cause of
+flooring claims — use qualified testers and brand-approved methods.
+
+Why it matters
+--------------
+Trapped moisture under floating LVP/laminate can cause peaking, cupping,
+mold risk at edges, and voided warranties even when the plank is labeled
+"waterproof."
+
+Common approaches (confirm with manufacturer)
+---------------------------------------------
+- Concrete: in-situ relative humidity (RH) probes (e.g. ASTM F2170) and/or
+  calcium chloride (ASTM F1869) — brand docs specify which and the limits.
+- Wood subfloors: pin or pinless meters; compare to ambient RH and
+  manufacturer max moisture content %.
+- Always record date, weather, HVAC status, and test locations on a sketch.
+
+Practical tips for pros & property managers
+-------------------------------------------
+- Test after the building is enclosed and HVAC is running (when required).
+- Retest after major water events or before multi-unit turnover installs.
+- Do not rely on "it looks dry" or a single surface reading.
+- If readings exceed limits: mitigate (dry, seal, barrier) before install —
+  do not hope the floor will "breathe it out."
+
+Rental / turnover red flags
+---------------------------
+- Recurring leaks under sinks, dishwashers, water heaters
+- Soft spots at patio doors or tub surrounds
+- Musty closets on slabs
+- Recent flooding without documented dry-out
+
+Related: subfloor-prep-checklist.txt · pros.html

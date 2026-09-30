@@ -1,0 +1,41 @@
+LVP click-lock overview — Vinyl or Not (planning aid)
+======================================================
+Disclaimer: Planning aid only — not a manufacturer specification sheet
+or warranty. Confirm product data, install instructions, and warranties
+with the brand and your installer before ordering.
+
+Wear layer
+----------
+- Measured in mils (thousandths of an inch). Higher mils generally mean
+  better scratch and wear resistance for traffic.
+- Residential: often 6–12 mil; light commercial / busy homes: 12–20+ mil.
+- Wear layer is a clear protective coat over the printed design layer —
+  it is not the core thickness.
+
+Core
+----
+- Rigid-core (SPC / WPC) products resist dents better than flexible glue-down
+  or loose-lay vinyl in many installs.
+- Thickness (e.g. 4–8 mm total) affects underfoot feel and sound; it is
+  separate from wear-layer mils.
+- Attached underlayment pads vary — check compatibility with radiant heat
+  and moisture barriers.
+
+Waterproof claims (read the fine print)
+---------------------------------------
+- "Waterproof" usually means the plank itself resists water; it does not
+  always mean flood-proof or that water under the floor is fine.
+- Edges, transitions, and subfloor still matter. Standing water can damage
+  adjacent materials and trapped moisture under floating floors.
+- Always follow manufacturer moisture limits for concrete slabs.
+
+Install notes (generic)
+-----------------------
+- Click-lock = floating floor in most cases; leave expansion gaps at walls.
+- Subfloor should be clean, dry, and flat within manufacturer tolerances.
+- Acclimate product per brand instructions when required.
+- Stagger end joints; avoid short pieces at doorways when possible.
+- Use approved underlayment / vapor barriers only.
+
+Related tools on Vinyl or Not: measure.html (sq ft + waste), visualize.html
+(plank look preview), pros.html (pro hub).
