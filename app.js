@@ -126,15 +126,14 @@
     if (url) {
       btn.href = url;
       btn.target = "_blank";
-      btn.textContent = "Pay " + price + " with Stripe (test)";
-      hint.textContent = "Opens Stripe Test Payment Link. Success should redirect back with ?report=1.";
+      btn.textContent = "Unlock full report — " + price;
+      hint.textContent = "Secure one-time checkout. After payment you return here with the full report unlocked.";
     } else {
       btn.href = "?report=1";
       btn.removeAttribute("target");
-      btn.textContent = "Continue to demo unlock (" + price + " placeholder)";
+      btn.textContent = "View sample full report";
       hint.textContent =
-        "No Stripe Payment Link set yet — checkoutUrl is empty in stripe-config.js. " +
-        "Demo unlock uses ?report=1. See README.";
+        "Checkout link not configured yet — open a sample full report on this device.";
     }
   }
 

@@ -161,7 +161,7 @@ function updateSharedNotice() {
     sharedNotice.hidden = true;
     sharedNotice.textContent = "";
   }
-  if (submitBtn) submitBtn.textContent = "Add to gallery";
+  if (submitBtn) submitBtn.textContent = "Save on this device";
 }
 
 async function render() {
@@ -253,9 +253,9 @@ if (form) {
         form.reset();
         const share = "projects.html?id=" + encodeURIComponent(saved.id);
         formStatus.innerHTML =
-          'Added to the gallery. <a href="' +
+          'Saved on this device. <a href="' +
           escapeHtml(share) +
-          '">Open share link</a>';
+          '">Open local link</a>';
         return render();
       })
       .catch(function (err) {
