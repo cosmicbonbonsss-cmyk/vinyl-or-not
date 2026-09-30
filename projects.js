@@ -33,9 +33,9 @@ function seedProjects() {
       flooring: "LVP",
       role: "customer",
       notes:
-        "Click-lock warm oak over a leveled slab — empty-room before photo.",
-      before: [{ src: "gallery/before-living-empty.jpg", label: "Before" }],
-      after: [{ src: "textures/warm-oak.jpg", label: "After" }],
+        "Example composite: warm oak plank look on the empty-room before photo (not a finished install photo).",
+      before: [{ src: "gallery/before-living-empty.jpg?v=20260930", label: "Before" }],
+      after: [{ src: "gallery/after-living-warm-oak.jpg?v=20260930", label: "After" }],
       createdAt: "2026-01-12T12:00:00.000Z"
     },
     {
@@ -45,9 +45,10 @@ function seedProjects() {
       location: "Denver, CO",
       flooring: "LVP",
       role: "customer",
-      notes: "Old checkered bath floor out; medium oak planks in.",
-      before: [{ src: "gallery/before-bath-checkered.jpg", label: "Before" }],
-      after: [{ src: "textures/medium-oak.jpg", label: "After" }],
+      notes:
+        "Example composite: checkered bath floor visible in before; medium oak plank look in after (not a finished install photo).",
+      before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930", label: "Before" }],
+      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930", label: "After" }],
       createdAt: "2026-02-03T15:00:00.000Z"
     },
     {
@@ -57,9 +58,10 @@ function seedProjects() {
       location: "Seattle, WA",
       flooring: "LVP",
       role: "customer",
-      notes: "Warm oak plank look for an open-plan space.",
-      before: [{ src: "gallery/before-open-carpet.jpg", label: "Before" }],
-      after: [{ src: "textures/warm-oak.jpg", label: "After" }],
+      notes:
+        "Example composite: warm oak plank look on the open-plan before photo (not a finished install photo).",
+      before: [{ src: "gallery/before-open-carpet.jpg?v=20260930", label: "Before" }],
+      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930", label: "After" }],
       createdAt: "2026-03-20T18:00:00.000Z"
     }
   ];
