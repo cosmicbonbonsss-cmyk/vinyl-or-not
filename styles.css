@@ -393,14 +393,20 @@ fieldset input { margin-right: 0.45rem; }
 
 .measure-link:hover { text-decoration: underline; }
 
+.site-footer,
+.site-footer p,
+.site-footer a,
+.site-footer a:visited {
+  color: #f0e2cf;
+}
 .site-footer a {
-  color: #b7e0cf;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
-.site-footer a:hover {
-  color: #dff3ea;
+.site-footer a:hover,
+.site-footer a:focus {
+  color: #fff8ef;
 }
 
 /* Wider wrap for pros hub */
