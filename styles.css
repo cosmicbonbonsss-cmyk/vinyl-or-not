@@ -1,8 +1,8 @@
 :root {
   --bg: #ebe4d6;
   --bg-deep: #e3d9c8;
-  --card: #fffaf2;
-  --card-soft: #f7f1e6;
+  --card: rgba(255, 250, 242, 0.95);
+  --card-soft: rgba(247, 241, 230, 0.94);
   --ink: #1c1a17;
   --muted: #5c564c;
   --accent: #2f5d50;
@@ -25,7 +25,8 @@ body {
   background:
     radial-gradient(ellipse 80% 50% at 0% 0%, rgba(47, 93, 80, 0.1) 0%, transparent 55%),
     radial-gradient(ellipse 70% 45% at 100% 8%, rgba(196, 154, 98, 0.14) 0%, transparent 50%),
-    linear-gradient(180deg, #f0ebe1 0%, var(--bg) 38%, var(--bg-deep) 100%);
+    linear-gradient(180deg, rgba(240, 235, 225, 0.84) 0%, rgba(235, 228, 214, 0.88) 38%, rgba(227, 217, 200, 0.9) 100%),
+    url("textures/warm-oak.jpg") center top / 760px auto repeat;
   line-height: 1.55;
   min-height: 100vh;
 }
@@ -780,7 +781,25 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 /* DIY-first homepage */
-.landing { margin-bottom: 0.5rem; }
+.landing {
+  position: relative;
+  z-index: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* A second, very quiet plank wash gives the homepage sections a warm backdrop
+   while the cream scrim keeps copy and controls crisp between cards. */
+.landing::before {
+  content: "";
+  position: absolute;
+  inset: -0.35rem -0.5rem 0;
+  z-index: -1;
+  border-radius: 24px;
+  background:
+    linear-gradient(rgba(255, 250, 242, 0.78), rgba(247, 241, 230, 0.84)),
+    url("textures/honey-oak.jpg") center / 680px auto repeat;
+  box-shadow: 0 10px 30px rgba(75, 51, 28, 0.06);
+}
 
 .eyebrow,
 .tool-kicker {
