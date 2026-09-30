@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { addProject, isSharedConfigured } from "./gallery-store.js";
+import { addProject } from "./gallery-store.js";
 
 const TEXTURES = [
   { id: "white-oak", label: "White oak", file: "textures/white-oak.jpg", repeat: [6, 6] },
@@ -60,7 +60,7 @@ const renderer = new THREE.WebGLRenderer({
   preserveDrawingBuffer: true
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-renderer.setClearColor(0x1c1a17, 1);
+renderer.setClearColor(0xf3e6c8, 1);
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
@@ -100,6 +100,15 @@ const texCache = new Map();
 
 function setStatus(msg) {
   statusEl.textContent = msg;
+}
+
+const vizEmpty = document.getElementById("viz-empty");
+
+function setEmptyState(show) {
+  if (!vizEmpty) return;
+  vizEmpty.classList.toggle("hidden", !show);
+  vizEmpty.setAttribute("aria-hidden", show ? "false" : "true");
+  if (stage) stage.classList.toggle("has-photo", !show);
 }
 
 function updateHint() {
@@ -339,6 +348,7 @@ function setPhotoFromFile(file) {
     resetBtn.disabled = false;
     clearBtn.disabled = false;
     setPickerEnabled(true);
+    setEmptyState(false);
     fitCamera();
     setStatus("Step 2: tap four floor corners — front-left, front-right, back-right, back-left.");
     updateHint();
@@ -381,6 +391,7 @@ function clearPhoto() {
   resetBtn.disabled = true;
   clearBtn.disabled = true;
   setPickerEnabled(false);
+  setEmptyState(true);
   fitCamera();
   setStatus("Step 1: upload a photo of a room with a visible floor.");
   updateMeasureUI();
@@ -546,7 +557,7 @@ function buildPicker() {
       }
       loadFloorTexture(t.id)
         .then(() => {
-          setStatus("Applied “" + t.label + "”. Adjust tile scale if planks look too large/small.");
+          setStatus("Applied “" + t.label + "”. Adjust plank scale if planks look too large/small.");
           updateMeasureUI();
           render();
         })
@@ -652,9 +663,7 @@ if (saveGalleryBtn) {
       return;
     }
     if (shareStatus) {
-      shareStatus.textContent = isSharedConfigured()
-        ? "Saving to shared gallery…"
-        : "Saving locally (shared mode not configured)…";
+      shareStatus.textContent = "Saving to gallery…";
     }
     saveGalleryBtn.disabled = true;
     try {
@@ -726,6 +735,7 @@ if (webShareBtn) {
 
 buildPicker();
 fitCamera();
+setEmptyState(true);
 setStatus("Step 1: upload a photo of a room with a visible floor.");
 updateHint();
 updateMeasureUI();

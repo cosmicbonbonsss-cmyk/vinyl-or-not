@@ -136,9 +136,20 @@ main { padding: 1.25rem 0 3rem; }
 .nav-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  justify-content: space-between;
+  gap: 0.65rem;
+  justify-content: flex-start;
+  align-items: center;
   margin-top: 1.25rem;
+}
+
+.nav-row .btn {
+  flex: 0 1 auto;
+}
+
+/* Page bottom CTAs: consistent pill row, no orphan lonely stretched button */
+.cta-row {
+  justify-content: flex-start;
+  gap: 0.65rem;
 }
 
 .hint { color: var(--muted); font-size: 0.9rem; }
@@ -1232,11 +1243,13 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 .next-steps-cta .cta-links a {
-  display: block;
-  padding: 0.65rem 0.9rem;
-  background: #eef3f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.2rem;
+  background: var(--accent-soft);
   border: 1px solid #c9d9d2;
-  border-radius: 8px;
+  border-radius: 999px;
   color: var(--accent);
   font-weight: 600;
   text-decoration: none;

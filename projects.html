@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Before &amp; after projects for how to install vinyl plank flooring | Vinyl or Not</title>
-  <meta name="description" content="Before &amp; after gallery for how to install vinyl plank flooring — seeded DIY demos plus a shared public project feed." />
-  <link rel="stylesheet" href="styles.css?v=wood9" />
+  <meta name="description" content="Before &amp; after gallery for how to install vinyl plank flooring — DIY inspiration and visitor projects." />
+  <link rel="stylesheet" href="styles.css?v=wood10" />
 </head>
 <body>
   <header class="site-header">
@@ -32,11 +32,10 @@
     <section class="card hero">
       <h1 class="page-title">Project gallery — before &amp; after</h1>
       <p class="pitch">
-        DIY inspiration for how to install vinyl plank flooring. This gallery is a
-        <strong>shared public feed</strong> — seeded demos ship with the site, and visitor uploads are meant for everyone to browse.
+        DIY inspiration for how to install vinyl plank flooring — browse example rooms and share your own before &amp; after.
       </p>
       <p class="hint">
-        Three seeded demos always appear first. When Firebase is configured, new projects sync across visitors; until then, uploads stay on this device with a clear notice below.
+        Example projects appear first. Add yours below to share a before &amp; after with the gallery.
       </p>
       <div class="jump-nav">
         <a class="btn primary" href="#gallery">Browse gallery</a>
@@ -58,8 +57,7 @@
     <section class="card" id="add-project">
       <h2>Add a project</h2>
       <p class="hint">
-        Share your DIY before &amp; after with the public feed. Keep photos reasonably small;
-        when shared mode is live they go to the backend (Storage when available).
+        Share your DIY before &amp; after. Keep photos reasonably small for a faster upload.
       </p>
       <form id="project-form" class="form-grid">
         <label>
@@ -101,7 +99,7 @@
           <input type="file" name="after" id="proj-after" accept="image/*" multiple />
         </label>
         <div class="form-actions full">
-          <button type="submit" class="btn primary" id="proj-submit">Add to shared gallery</button>
+          <button type="submit" class="btn primary" id="proj-submit">Add to gallery</button>
         </div>
       </form>
       <p class="hint" id="project-form-status" aria-live="polite"></p>
@@ -110,8 +108,7 @@
     <section class="card" id="import-export">
       <h2>Optional local backup</h2>
       <p class="hint">
-        Import/export JSON is an optional backup for this browser only — not the shared feed.
-        Large data URLs make files big; use sparingly. Clearing local backup does not remove seeded demos or Firebase projects.
+        Optional JSON backup for projects saved in this browser. Large photo files make exports big — use sparingly.
       </p>
       <div class="nav-row" style="justify-content: flex-start;">
         <button type="button" class="btn secondary" id="export-json">Export local backup</button>

@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Visualize a vinyl plank vs tile look — Vinyl or Not</title>
   <meta name="description" content="Preview a vinyl plank vs tile look: upload a room photo and overlay LVP textures." />
-  <link rel="stylesheet" href="styles.css?v=wood9" />
-  <link rel="stylesheet" href="visualize.css?v=wood9" />
+  <link rel="stylesheet" href="styles.css?v=wood10" />
+  <link rel="stylesheet" href="visualize.css?v=wood10" />
 </head>
 <body>
   <header class="site-header">
@@ -14,7 +14,7 @@
       <div class="header-row">
         <div>
           <a class="logo" href="./">Vinyl or Not</a>
-          <p class="tagline">Photo-only LVP overlay (prototype)</p>
+          <p class="tagline">Preview LVP planks in your room photo</p>
         </div>
                 <nav class="site-nav" aria-label="Site">
           <a href="./">Home</a>
@@ -50,6 +50,17 @@
 
       <div id="stage" class="viz-stage" aria-label="Floor overlay canvas">
         <canvas id="c"></canvas>
+        <div id="viz-empty" class="viz-empty" aria-hidden="false">
+          <div class="viz-empty-inner">
+            <p class="viz-empty-kicker">Visualize</p>
+            <p class="viz-empty-title">Upload a room photo to begin</p>
+            <ol class="viz-empty-steps">
+              <li>Upload a photo with a clear view of the floor</li>
+              <li>Tap the four corners of the floor area</li>
+              <li>Pick a plank texture and adjust plank scale</li>
+            </ol>
+          </div>
+        </div>
         <div id="corner-hint" class="corner-hint hidden"></div>
       </div>
 
@@ -58,7 +69,7 @@
         <p class="hint">CC0 seamless floors from ambientCG — tap to apply after four corners are set.</p>
         <div id="texture-picker" class="texture-picker" role="listbox" aria-label="LVP texture options"></div>
         <label class="scale-row">
-          Tile scale
+          Plank scale
           <input type="range" id="tile-scale" min="2" max="14" step="0.5" value="6" />
           <span id="tile-scale-val">6</span>
         </label>
@@ -126,7 +137,7 @@
         </ul>
       </div>
 
-      <div class="nav-row">
+      <div class="nav-row cta-row">
         <a class="btn ghost" href="./">← Back to Vinyl or Not</a>
         <a class="btn secondary" href="measure.html">Measurement tips</a>
         <a class="btn secondary" href="guide.html">LVP guide</a>
@@ -137,7 +148,7 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Vinyl or Not · overlay prototype · textures: ambientCG CC0 · <a href="textures/CREDITS.md">credits</a> · <a href="guide.html">LVP guide</a> · <a href="diy-install.html">Install</a> · <a href="projects.html">Project gallery</a></p>
+      <p>Vinyl or Not · LVP overlay · textures: ambientCG CC0 · <a href="textures/CREDITS.md">credits</a> · <a href="guide.html">LVP guide</a> · <a href="diy-install.html">Install</a> · <a href="projects.html">Project gallery</a></p>
     </div>
   </footer>
 

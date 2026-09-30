@@ -1,8 +1,6 @@
 import {
   listProjects,
   addProject,
-  isSharedConfigured,
-  getMode,
   listLocalBackup,
   replaceLocalBackup,
   clearLocalBackup,
@@ -35,7 +33,7 @@ function seedProjects() {
       flooring: "LVP",
       role: "customer",
       notes:
-        "Click-lock warm oak over a leveled slab. Seeded DIY demo with a real empty-room before photo.",
+        "Click-lock warm oak over a leveled slab — empty-room before photo.",
       before: [{ src: "gallery/before-living-empty.jpg", label: "Before" }],
       after: [{ src: "textures/warm-oak.jpg", label: "After" }],
       createdAt: "2026-01-12T12:00:00.000Z"
@@ -47,7 +45,7 @@ function seedProjects() {
       location: "Denver, CO",
       flooring: "LVP",
       role: "customer",
-      notes: "Homeowner upload demo. Old checkered bath floor out; medium oak planks in.",
+      notes: "Old checkered bath floor out; medium oak planks in.",
       before: [{ src: "gallery/before-bath-checkered.jpg", label: "Before" }],
       after: [{ src: "textures/medium-oak.jpg", label: "After" }],
       createdAt: "2026-02-03T15:00:00.000Z"
@@ -59,7 +57,7 @@ function seedProjects() {
       location: "Seattle, WA",
       flooring: "LVP",
       role: "customer",
-      notes: "DIY mood-board style demo using a warm oak plank texture preview.",
+      notes: "Warm oak plank look for an open-plan space.",
       before: [{ src: "gallery/before-open-carpet.jpg", label: "Before" }],
       after: [{ src: "textures/warm-oak.jpg", label: "After" }],
       createdAt: "2026-03-20T18:00:00.000Z"
@@ -111,7 +109,7 @@ function renderMedia(items, kind) {
         escapeHtml(m.label || kind) +
         "</span><figcaption>" +
         escapeHtml(m.label || kind) +
-        " (demo)</figcaption></figure>"
+        "</figcaption></figure>"
       );
     })
     .join("");
@@ -119,10 +117,7 @@ function renderMedia(items, kind) {
 
 function cardHtml(p, highlightId) {
   const badges = [];
-  if (p.seed) badges.push('<span class="badge">Seeded demo</span>');
-  else if (getMode() === "firebase")
-    badges.push('<span class="badge success">Shared feed</span>');
-  else badges.push('<span class="badge">Local backup</span>');
+  if (p.seed) badges.push('<span class="badge success">Example</span>');
   badges.push('<span class="badge">' + escapeHtml(roleLabel(p.role)) + "</span>");
 
   const featured = highlightId && p.id === highlightId ? " featured" : "";
@@ -159,21 +154,12 @@ function cardHtml(p, highlightId) {
 }
 
 function updateSharedNotice() {
-  if (!sharedNotice) return;
-  if (isSharedConfigured()) {
+  // Keep config/status banners hidden from visitors.
+  if (sharedNotice) {
     sharedNotice.hidden = true;
     sharedNotice.textContent = "";
-  } else {
-    sharedNotice.hidden = false;
-    sharedNotice.innerHTML =
-      "<strong>Shared gallery isn’t configured yet.</strong> " +
-      "Firebase keys in <code>gallery-config.js</code> are empty, so new uploads stay in this browser’s localStorage until shared mode is turned on. Seeded demos still show for everyone.";
   }
-  if (submitBtn) {
-    submitBtn.textContent = isSharedConfigured()
-      ? "Add to shared gallery"
-      : "Add to gallery (this device until shared mode is live)";
-  }
+  if (submitBtn) submitBtn.textContent = "Add to gallery";
 }
 
 async function render() {
@@ -184,21 +170,13 @@ async function render() {
   try {
     remote = await listProjects();
   } catch (e) {
-    if (countEl) countEl.textContent = "Could not load shared projects: " + (e.message || e);
+    if (countEl) countEl.textContent = "Could not load projects right now.";
     remote = [];
   }
   const list = sortProjects(seedProjects().concat(remote));
-  const sharedCount = remote.filter(function (p) {
-    return !p.seed;
-  }).length;
   if (countEl) {
-    const mode = getMode();
     countEl.textContent =
-      list.length +
-      " project(s) · " +
-      sharedCount +
-      (mode === "firebase" ? " from shared feed" : " on this device (local fallback)") +
-      " · 3 seeded demos.";
+      list.length === 1 ? "1 project" : list.length + " projects";
   }
   grid.innerHTML =
     '<div class="gallery-section">' +
@@ -226,7 +204,7 @@ function readFilesAsDataUrls(fileList, maxFiles) {
         reader.onload = function () {
           const url = String(reader.result || "");
           if (url.length > MAX_DATA_URL_CHARS) {
-            reject(new Error("Image too large for demo storage — try a smaller photo."));
+            reject(new Error("Image too large — try a smaller photo."));
             return;
           }
           resolve({ src: url, label: file.name });
@@ -257,9 +235,7 @@ if (form) {
         if (!before.length && !after.length) {
           throw new Error("Add at least one before or after photo.");
         }
-        formStatus.textContent = isSharedConfigured()
-          ? "Uploading to shared gallery…"
-          : "Saving on this device…";
+        formStatus.textContent = "Saving to gallery…";
         return addProject({
           title: form.title.value.trim(),
           location: form.location.value.trim(),
@@ -275,10 +251,7 @@ if (form) {
         form.reset();
         const share = "projects.html?id=" + encodeURIComponent(saved.id);
         formStatus.innerHTML =
-          (isSharedConfigured()
-            ? "Added to the shared gallery. "
-            : "Saved locally (shared mode not configured). ") +
-          '<a href="' +
+          'Added to the gallery. <a href="' +
           escapeHtml(share) +
           '">Open share link</a>';
         return render();
@@ -346,7 +319,7 @@ if (clearBtn) {
   clearBtn.addEventListener("click", function () {
     clearLocalBackup();
     if (ieStatus)
-      ieStatus.textContent = "Cleared local backup (seeded demos and shared feed unchanged).";
+      ieStatus.textContent = "Cleared local backup.";
     render();
   });
 }
