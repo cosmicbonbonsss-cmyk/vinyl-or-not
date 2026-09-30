@@ -23,50 +23,6 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function seedProjects() {
-  return [
-    {
-      id: "seed-1",
-      seed: true,
-      title: "Living room — warm oak LVP",
-      location: "Austin, TX",
-      flooring: "LVP",
-      role: "customer",
-      notes:
-        "Example composite: warm oak plank look on the empty-room before photo (not a finished install photo).",
-      before: [{ src: "gallery/before-living-empty.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-living-warm-oak.jpg?v=20260930f", label: "After" }],
-      createdAt: "2026-01-12T12:00:00.000Z"
-    },
-    {
-      id: "seed-2",
-      seed: true,
-      title: "Guest bath — medium oak refresh",
-      location: "Denver, CO",
-      flooring: "LVP",
-      role: "customer",
-      notes:
-        "Visualize-tool overlay: medium oak LVP texture warped onto the bath photo via the site's four-corner floor preview (not a finished install photo; furniture/fixtures stay under the overlay).",
-      before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930i", label: "After" }],
-      createdAt: "2026-02-03T15:00:00.000Z"
-    },
-    {
-      id: "seed-3",
-      seed: true,
-      title: "Open plan — warm oak plank look",
-      location: "Seattle, WA",
-      flooring: "LVP",
-      role: "customer",
-      notes:
-        "Visualize-tool overlay: warm oak LVP texture warped onto the open-plan photo via the site's four-corner floor preview (not a finished install photo; furniture stays under the overlay).",
-      before: [{ src: "gallery/before-open-carpet.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930i", label: "After" }],
-      createdAt: "2026-03-20T18:00:00.000Z"
-    }
-  ];
-}
-
 function sortProjects(list) {
   return list.slice().sort(function (a, b) {
     return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
@@ -118,9 +74,7 @@ function renderMedia(items, kind) {
 }
 
 function cardHtml(p, highlightId) {
-  const badges = [];
-  if (p.seed) badges.push('<span class="badge success">Example</span>');
-  badges.push('<span class="badge">' + escapeHtml(roleLabel(p.role)) + "</span>");
+  const badges = ['<span class="badge">' + escapeHtml(roleLabel(p.role)) + "</span>"];
 
   const featured = highlightId && p.id === highlightId ? " featured" : "";
 
@@ -175,7 +129,7 @@ async function render() {
     if (countEl) countEl.textContent = "Could not load projects right now.";
     remote = [];
   }
-  const list = sortProjects(seedProjects().concat(remote));
+  const list = sortProjects(remote);
   if (countEl) {
     countEl.textContent =
       list.length === 1 ? "1 project" : list.length + " projects";
