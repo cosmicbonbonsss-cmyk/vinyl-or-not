@@ -48,7 +48,7 @@ function seedProjects() {
       notes:
         "Example composite: checkered bath floor visible in before; medium oak plank look in after (not a finished install photo).",
       before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930b", label: "After" }],
+      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930c", label: "After" }],
       createdAt: "2026-02-03T15:00:00.000Z"
     },
     {
