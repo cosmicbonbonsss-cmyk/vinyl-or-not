@@ -1,19 +1,19 @@
 :root {
-  --bg: #ebe4d6;
-  --bg-deep: #e3d9c8;
-  --card: rgba(255, 250, 242, 0.95);
-  --card-soft: rgba(247, 241, 230, 0.94);
+  --bg: #5a351e;
+  --bg-deep: #321b10;
+  --card: rgba(255, 248, 237, 0.91);
+  --card-soft: rgba(248, 233, 211, 0.88);
   --ink: #1c1a17;
   --muted: #5c564c;
   --accent: #2f5d50;
   --accent-hover: #244a40;
   --accent-soft: #e6efe9;
-  --border: #d6cbb8;
+  --border: rgba(112, 76, 43, 0.42);
   --warn: #8a5a12;
   --ok: #1f6b4a;
   --radius: 16px;
-  --shadow: 0 12px 32px rgba(40, 32, 22, 0.1);
-  --shadow-soft: 0 4px 14px rgba(40, 32, 22, 0.06);
+  --shadow: 0 14px 34px rgba(37, 18, 9, 0.28), 0 2px 0 rgba(255, 226, 176, 0.28) inset;
+  --shadow-soft: 0 7px 18px rgba(37, 18, 9, 0.2), 0 1px 0 rgba(255, 226, 176, 0.24) inset;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
@@ -22,11 +22,23 @@
 body {
   margin: 0;
   color: var(--ink);
-  background:
-    radial-gradient(ellipse 80% 50% at 0% 0%, rgba(47, 93, 80, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 45% at 100% 8%, rgba(196, 154, 98, 0.14) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(240, 235, 225, 0.84) 0%, rgba(235, 228, 214, 0.88) 38%, rgba(227, 217, 200, 0.9) 100%),
-    url("textures/warm-oak.jpg") center top / 760px auto repeat;
+  background-color: var(--bg-deep);
+  /* Full-bleed walnut wall: the 320px repeat establishes vertical planks,
+     while the walnut map keeps real grain visible instead of washing it out. */
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(35, 16, 8, 0.58) 0 2px,
+      rgba(240, 185, 105, 0.12) 2px 5px,
+      transparent 5px 316px,
+      rgba(35, 16, 8, 0.42) 316px 320px
+    ),
+    linear-gradient(90deg, rgba(39, 18, 9, 0.38), rgba(170, 103, 46, 0.2) 48%, rgba(37, 17, 8, 0.48)),
+    url("textures/walnut.jpg");
+  background-size: 320px 100%, 100% 100%, 1040px auto;
+  background-position: center top;
+  background-repeat: repeat, no-repeat, repeat;
+  background-blend-mode: multiply, soft-light, normal;
   line-height: 1.55;
   min-height: 100vh;
 }
@@ -43,8 +55,8 @@ body {
 .site-header {
   padding: 1.25rem 0 0.5rem;
   border-bottom: 1px solid rgba(214, 203, 184, 0.85);
-  background: rgba(255, 250, 242, 0.9);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 248, 237, 0.9);
+  backdrop-filter: blur(8px) saturate(0.9);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -67,10 +79,11 @@ body {
 main { padding: 1.25rem 0 3rem; }
 
 .card {
-  background: var(--card);
+  background: linear-gradient(145deg, rgba(255, 249, 240, 0.94), rgba(245, 228, 204, 0.88));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(8px) saturate(0.92);
   padding: 1.45rem 1.35rem 1.6rem;
   margin-bottom: 1.1rem;
 }
@@ -757,8 +770,8 @@ fieldset input { margin-right: 0.45rem; }
   margin-bottom: 0.5rem;
 }
 
-/* A second, very quiet plank wash gives the homepage sections a warm backdrop
-   while the cream scrim keeps copy and controls crisp between cards. */
+/* Keep the homepage gutters on the same walnut wall as every other page;
+   only the cards below provide the readable warm-white scrim. */
 .landing::before {
   content: "";
   position: absolute;
@@ -766,9 +779,9 @@ fieldset input { margin-right: 0.45rem; }
   z-index: -1;
   border-radius: 24px;
   background:
-    linear-gradient(rgba(255, 250, 242, 0.78), rgba(247, 241, 230, 0.84)),
-    url("textures/honey-oak.jpg") center / 680px auto repeat;
-  box-shadow: 0 10px 30px rgba(75, 51, 28, 0.06);
+    linear-gradient(90deg, rgba(43, 20, 9, 0.3), rgba(177, 111, 51, 0.14) 50%, rgba(43, 20, 9, 0.34)),
+    url("textures/dark-walnut.jpg") center / 960px auto repeat;
+  box-shadow: inset 0 0 0 1px rgba(241, 190, 112, 0.18), 0 12px 32px rgba(37, 18, 9, 0.26);
 }
 
 .eyebrow,
