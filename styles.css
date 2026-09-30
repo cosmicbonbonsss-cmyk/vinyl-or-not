@@ -257,27 +257,6 @@ fieldset input { margin-right: 0.45rem; }
   font-size: 1.1rem;
 }
 
-.affiliate-shop-strip {
-  background: rgba(255, 250, 242, 0.9);
-  box-shadow: var(--shadow-soft);
-}
-
-.affiliate-shop-strip h2 {
-  margin: 0 0 0.4rem;
-  font-size: 1.15rem;
-  color: var(--accent);
-}
-
-.affiliate-shop-strip > p {
-  margin-bottom: 0.85rem;
-}
-
-.affiliate-disclosure {
-  margin: 0.75rem 0 0 !important;
-  font-size: 0.78rem !important;
-  font-style: italic;
-}
-
 .where-to-buy > p {
   margin: 0 0 0.85rem;
   color: var(--muted);
