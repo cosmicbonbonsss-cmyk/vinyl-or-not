@@ -181,7 +181,8 @@ async function addToFirebase(project) {
     id
   );
   // Firestore doc id = project id for shareable ?id=
-  const { id: _drop, ...rest } = payload;
+  const rest = Object.assign({}, payload);
+  delete rest.id;
   await mods.fsMod.setDoc(mods.fsMod.doc(db, colName, id), rest);
   return payload;
 }

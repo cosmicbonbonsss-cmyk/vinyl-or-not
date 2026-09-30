@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { addProject, isSharedConfigured } from "./gallery-store.js";
 
 const TEXTURES = [
   { id: "medium-oak", label: "Medium oak", file: "textures/medium-oak.jpg", repeat: [6, 6] },
@@ -23,6 +24,20 @@ const clearBtn = document.getElementById("clear-photo");
 const picker = document.getElementById("texture-picker");
 const tileScale = document.getElementById("tile-scale");
 const tileScaleVal = document.getElementById("tile-scale-val");
+const measurePanel = document.getElementById("measure-panel");
+const measureResults = document.getElementById("measure-results");
+const sharePanel = document.getElementById("share-panel");
+const shareStatus = document.getElementById("share-status");
+const shareTitle = document.getElementById("share-title");
+const refLengthFt = document.getElementById("ref-length-ft");
+const plankLenIn = document.getElementById("plank-len-in");
+const plankWidIn = document.getElementById("plank-wid-in");
+const priceSqft = document.getElementById("price-sqft");
+const wastePct = document.getElementById("waste-pct");
+const downloadPngBtn = document.getElementById("download-png");
+const saveGalleryBtn = document.getElementById("save-gallery");
+const copyShareBtn = document.getElementById("copy-share");
+const webShareBtn = document.getElementById("web-share");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -56,6 +71,10 @@ let imgW = 0;
 let imgH = 0;
 /** @type {string|null} */
 let photoUrl = null;
+/** @type {string|null} */
+let photoOriginalDataUrl = null;
+/** @type {string|null} */
+let lastShareId = null;
 /** Corners in world coords (origin center, y up) — order FL, FR, BR, BL */
 /** @type {THREE.Vector2[]} */
 let corners = [];
@@ -273,8 +292,21 @@ function loadFloorTexture(id) {
 function setPhotoFromFile(file) {
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   clearScenePhoto();
+  photoOriginalDataUrl = null;
+  lastShareId = null;
+  setShareButtons(null);
+  if (shareStatus) shareStatus.textContent = "";
 
   photoUrl = URL.createObjectURL(file);
+  fileToDataUrl(file)
+    .then((url) => compressDataUrl(url, 1600, 0.75))
+    .then((url) => {
+      photoOriginalDataUrl = url;
+    })
+    .catch(() => {
+      photoOriginalDataUrl = null;
+    });
+
   const img = new Image();
   img.onload = () => {
     imgW = img.naturalWidth;
@@ -296,6 +328,7 @@ function setPhotoFromFile(file) {
     fitCamera();
     setStatus("Step 2: tap four floor corners — front-left, front-right, back-right, back-left.");
     updateHint();
+    updateMeasureUI();
     render();
   };
   img.onerror = () => setStatus("Could not load that image. Try another photo.");
@@ -325,6 +358,10 @@ function clearScenePhoto() {
 function clearPhoto() {
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   photoUrl = null;
+  photoOriginalDataUrl = null;
+  lastShareId = null;
+  setShareButtons(null);
+  if (shareStatus) shareStatus.textContent = "";
   photoInput.value = "";
   clearScenePhoto();
   resetBtn.disabled = true;
@@ -332,6 +369,7 @@ function clearPhoto() {
   setPickerEnabled(false);
   fitCamera();
   setStatus("Step 1: upload a photo of a room with a visible floor.");
+  updateMeasureUI();
   render();
 }
 
@@ -346,7 +384,129 @@ function resetCorners() {
   rebuildMarkers();
   setStatus("Corners cleared — tap four floor corners again.");
   updateHint();
+  updateMeasureUI();
   render();
+}
+
+
+function shoelaceArea(pts) {
+  // pts: array of {x,y}; absolute area
+  let sum = 0;
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    sum += pts[i].x * pts[j].y - pts[j].x * pts[i].y;
+  }
+  return Math.abs(sum) / 2;
+}
+
+function dist2(a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  return Math.hypot(dx, dy);
+}
+
+/** Rough estimate from photo quad + one reference length on front edge (1→2). */
+function computeEstimate() {
+  if (corners.length !== 4) return null;
+  const refFt = parseFloat(refLengthFt && refLengthFt.value) || 0;
+  if (refFt <= 0) return null;
+  const [fl, fr, br, bl] = corners;
+  const areaWorld = shoelaceArea([fl, fr, br, bl]);
+  const edgeWorld = dist2(fl, fr); // front edge corners 1→2
+  if (edgeWorld < 1e-6) return null;
+  const ftPerWorld = refFt / edgeWorld;
+  const areaSqFt = areaWorld * ftPerWorld * ftPerWorld;
+  const pLen = parseFloat(plankLenIn.value) || 48;
+  const pWid = parseFloat(plankWidIn.value) || 7;
+  const price = parseFloat(priceSqft.value) || 0;
+  const waste = parseFloat(wastePct.value) || 0;
+  const plankSqFt = (pLen * pWid) / 144;
+  const areaWithWaste = areaSqFt * (1 + waste / 100);
+  const plankCount = plankSqFt > 0 ? Math.ceil(areaWithWaste / plankSqFt) : 0;
+  const cost = areaWithWaste * price;
+  return { areaSqFt, areaWithWaste, plankCount, cost, plankSqFt, refFt, edgeWorld };
+}
+
+function formatMoney(n) {
+  return "$" + (Math.round(n * 100) / 100).toFixed(2);
+}
+
+function updateMeasureUI() {
+  const ready = corners.length === 4 && !!activeFloorTex && !!photoMesh;
+  if (measurePanel) measurePanel.classList.toggle("hidden", !ready);
+  if (sharePanel) sharePanel.classList.toggle("hidden", !ready);
+  if (!ready || !measureResults) return;
+
+  const est = computeEstimate();
+  if (!est) {
+    measureResults.innerHTML = "<p>Enter a positive reference length (feet) for the front edge.</p>";
+    return;
+  }
+  measureResults.innerHTML =
+    "<dl>" +
+    "<dt>Estimated floor area</dt><dd>" + est.areaSqFt.toFixed(1) + " sq ft</dd>" +
+    "<dt>Area with waste</dt><dd>" + est.areaWithWaste.toFixed(1) + " sq ft</dd>" +
+    "<dt>Plank count (ceil)</dt><dd>" + est.plankCount + "</dd>" +
+    "<dt>Rough material cost</dt><dd>" + formatMoney(est.cost) + "</dd>" +
+    "</dl>" +
+    '<p class="hint" style="margin:0.65rem 0 0">Based on a ' +
+    est.refFt +
+    " ft front edge (corners 1→2) and a flat-floor assumption. Perspective and camera angle can skew this.</p>";
+}
+
+function compressDataUrl(dataUrl, maxW, quality) {
+  return new Promise((resolve) => {
+    if (!dataUrl || !dataUrl.startsWith("data:")) {
+      resolve(dataUrl);
+      return;
+    }
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, (maxW || 1280) / img.naturalWidth);
+      const w = Math.max(1, Math.round(img.naturalWidth * scale));
+      const h = Math.max(1, Math.round(img.naturalHeight * scale));
+      const c = document.createElement("canvas");
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL("image/jpeg", quality || 0.72));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Could not read photo"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function canvasSnapshotDataUrl() {
+  render();
+  return canvas.toDataURL("image/png");
+}
+
+function shareUrlFor(id) {
+  const base = window.location.href.replace(/[^/]*$/, "");
+  return base + "projects.html?id=" + encodeURIComponent(id);
+}
+
+function setShareButtons(id) {
+  lastShareId = id || null;
+  if (copyShareBtn) copyShareBtn.disabled = !id;
+  if (webShareBtn) {
+    if (id && typeof navigator.share === "function") {
+      webShareBtn.classList.remove("hidden");
+    } else {
+      webShareBtn.classList.add("hidden");
+    }
+  }
 }
 
 function setPickerEnabled(on) {
@@ -373,6 +533,7 @@ function buildPicker() {
       loadFloorTexture(t.id)
         .then(() => {
           setStatus("Applied “" + t.label + "”. Adjust tile scale if planks look too large/small.");
+          updateMeasureUI();
           render();
         })
         .catch(() => setStatus("Texture failed to load."));
@@ -409,7 +570,10 @@ function onPointer(e) {
     updateHint();
     if (corners.length === 4) {
       setStatus("Quad complete — choose a plank texture below.");
-      loadFloorTexture(selectedTexId).then(() => render());
+      loadFloorTexture(selectedTexId).then(() => {
+        updateMeasureUI();
+        render();
+      });
     } else {
       setStatus("Corner " + corners.length + "/4 set — next: " + CORNER_LABELS[corners.length]);
     }
@@ -448,10 +612,109 @@ window.addEventListener("resize", () => {
   render();
 });
 
+
+[refLengthFt, plankLenIn, plankWidIn, priceSqft, wastePct].forEach((el) => {
+  if (el) el.addEventListener("input", updateMeasureUI);
+});
+
+if (downloadPngBtn) {
+  downloadPngBtn.addEventListener("click", () => {
+    if (!photoMesh || corners.length !== 4) {
+      if (shareStatus) shareStatus.textContent = "Set photo, corners, and texture first.";
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = canvasSnapshotDataUrl();
+    a.download = "vinyl-or-not-visualize.png";
+    a.click();
+    if (shareStatus) shareStatus.textContent = "PNG downloaded.";
+  });
+}
+
+if (saveGalleryBtn) {
+  saveGalleryBtn.addEventListener("click", async () => {
+    if (!photoMesh || corners.length !== 4 || !activeFloorTex) {
+      if (shareStatus) shareStatus.textContent = "Set photo, four corners, and a texture first.";
+      return;
+    }
+    if (shareStatus) {
+      shareStatus.textContent = isSharedConfigured()
+        ? "Saving to shared gallery…"
+        : "Saving locally (shared mode not configured)…";
+    }
+    saveGalleryBtn.disabled = true;
+    try {
+      const afterPng = canvasSnapshotDataUrl();
+      const afterJpeg = await compressDataUrl(afterPng, 1400, 0.78);
+      let beforeSrc = photoOriginalDataUrl;
+      if (!beforeSrc && photoUrl) {
+        // fallback: snapshot without floor is hard; use current canvas photo mesh only
+        beforeSrc = afterJpeg;
+      }
+      const beforeComp = beforeSrc ? await compressDataUrl(beforeSrc, 1400, 0.72) : afterJpeg;
+      const texMeta = TEXTURES.find((t) => t.id === selectedTexId);
+      const title =
+        (shareTitle && shareTitle.value.trim()) ||
+        ("Visualize preview — " + ((texMeta && texMeta.label) || "LVP"));
+      const saved = await addProject({
+        title,
+        location: "",
+        flooring: "LVP",
+        role: "customer",
+        notes: "Saved from Visualize overlay (photo + plank preview).",
+        before: [{ src: beforeComp, label: "Before" }],
+        after: [{ src: afterJpeg, label: "After (visualize)" }],
+        source: "visualize"
+      });
+      const url = shareUrlFor(saved.id);
+      setShareButtons(saved.id);
+      if (shareStatus) {
+        const label = "projects.html?id=" + encodeURIComponent(saved.id);
+        shareStatus.innerHTML =
+          "Saved. Open <a href=\"" + url + "\">" + label + "</a>";
+      }
+    } catch (err) {
+      if (shareStatus) shareStatus.textContent = err.message || String(err);
+    } finally {
+      saveGalleryBtn.disabled = false;
+    }
+  });
+}
+
+if (copyShareBtn) {
+  copyShareBtn.addEventListener("click", async () => {
+    if (!lastShareId) return;
+    const url = shareUrlFor(lastShareId);
+    try {
+      await navigator.clipboard.writeText(url);
+      if (shareStatus) shareStatus.textContent = "Share link copied.";
+    } catch (e) {
+      if (shareStatus) shareStatus.textContent = "Copy failed — select the link manually.";
+    }
+  });
+}
+
+if (webShareBtn) {
+  webShareBtn.addEventListener("click", async () => {
+    if (!lastShareId || typeof navigator.share !== "function") return;
+    const url = shareUrlFor(lastShareId);
+    try {
+      await navigator.share({
+        title: (shareTitle && shareTitle.value) || "Vinyl or Not project",
+        text: "Before & after flooring preview",
+        url
+      });
+    } catch (e) {
+      /* user cancelled */
+    }
+  });
+}
+
 buildPicker();
 fitCamera();
 setStatus("Step 1: upload a photo of a room with a visible floor.");
 updateHint();
+updateMeasureUI();
 loop();
 
 // Prefetch default texture into cache (optional)

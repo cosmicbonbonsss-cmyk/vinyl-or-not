@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Visualize a vinyl plank vs tile look — Vinyl or Not</title>
   <meta name="description" content="Preview a vinyl plank vs tile look: upload a room photo and overlay LVP textures." />
-  <link rel="stylesheet" href="styles.css?v=wood6" />
-  <link rel="stylesheet" href="visualize.css" />
+  <link rel="stylesheet" href="styles.css?v=wood7" />
+  <link rel="stylesheet" href="visualize.css?v=wood7" />
 </head>
 <body>
   <header class="site-header">
@@ -19,6 +19,7 @@
                 <nav class="site-nav" aria-label="Site">
           <a href="./">Home</a>
           <a href="guide.html">Guide</a>
+          <a href="diy-install.html">Install</a>
           <a href="guide/tools.html">Tools</a>
           <a href="measure.html">Measure</a>
           <a href="visualize.html" aria-current="page">Visualize</a>
@@ -63,6 +64,57 @@
         </label>
       </div>
 
+
+      <div id="measure-panel" class="measure-panel hidden" aria-live="polite">
+        <h2>Measure &amp; estimate</h2>
+        <p class="hint">
+          Scale depends on your reference measurement and a flat-floor assumption.
+          Perspective warp means this is a rough estimate — not a bid.
+        </p>
+        <div class="form-grid measure-grid">
+          <label>
+            Reference wall length (ft)
+            <input type="number" id="ref-length-ft" min="1" max="100" step="0.1" value="12" />
+            <span class="field-hint">Corresponds to the front edge (corners 1→2)</span>
+          </label>
+          <label>
+            Plank length (in)
+            <input type="number" id="plank-len-in" min="12" max="96" step="0.5" value="48" />
+          </label>
+          <label>
+            Plank width (in)
+            <input type="number" id="plank-wid-in" min="3" max="12" step="0.25" value="7" />
+          </label>
+          <label>
+            Price per sq ft ($)
+            <input type="number" id="price-sqft" min="0" max="50" step="0.05" value="3.50" />
+          </label>
+          <label>
+            Waste (%)
+            <input type="number" id="waste-pct" min="0" max="40" step="1" value="10" />
+          </label>
+        </div>
+        <div id="measure-results" class="measure-results">
+          <p>Enter a reference length after four corners and a texture are set.</p>
+        </div>
+      </div>
+
+      <div id="share-panel" class="share-panel hidden">
+        <h2>Save &amp; share</h2>
+        <p class="hint">Download a PNG of the overlay, or save before/after to the project gallery.</p>
+        <label class="share-title-label">
+          Gallery title
+          <input type="text" id="share-title" placeholder="e.g. Living room — warm oak preview" />
+        </label>
+        <div class="viz-toolbar">
+          <button type="button" class="btn secondary" id="download-png">Download PNG</button>
+          <button type="button" class="btn primary" id="save-gallery">Save to gallery</button>
+          <button type="button" class="btn ghost" id="copy-share" disabled>Copy share link</button>
+          <button type="button" class="btn ghost hidden" id="web-share">Share…</button>
+        </div>
+        <p class="hint" id="share-status" aria-live="polite"></p>
+      </div>
+
       <div class="limits-box">
         <h2>Known limits</h2>
         <ul>
@@ -85,7 +137,7 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Vinyl or Not · overlay prototype · textures: ambientCG CC0 · <a href="textures/CREDITS.md">credits</a> · <a href="guide.html">LVP guide</a> · <a href="projects.html">Project gallery</a></p>
+      <p>Vinyl or Not · overlay prototype · textures: ambientCG CC0 · <a href="textures/CREDITS.md">credits</a> · <a href="guide.html">LVP guide</a> · <a href="diy-install.html">Install</a> · <a href="projects.html">Project gallery</a></p>
     </div>
   </footer>
 
@@ -96,6 +148,7 @@
     }
   }
   </script>
+  <script src="gallery-config.js"></script>
   <script type="module" src="visualize.js"></script>
 </body>
 </html>

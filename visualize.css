@@ -124,3 +124,87 @@
   .viz-stage { aspect-ratio: 3 / 4; }
   .texture-picker { grid-template-columns: repeat(3, 1fr); }
 }
+
+.measure-panel,
+.share-panel {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem 1.15rem;
+  background: #fffaf0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.measure-panel.hidden,
+.share-panel.hidden,
+.hidden {
+  display: none !important;
+}
+
+.measure-panel h2,
+.share-panel h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+
+.measure-grid {
+  margin-top: 0.75rem;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+.measure-results {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  background: #f7fbf9;
+  border: 1px solid rgba(47, 93, 80, 0.25);
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.measure-results dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 1rem;
+  margin: 0;
+}
+
+.measure-results dt { color: var(--muted); }
+.measure-results dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  color: var(--ink);
+}
+
+.share-title-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0.65rem;
+}
+
+.share-title-label input {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+}
+
+.shop-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.shop-list li { margin-bottom: 0.45rem; }

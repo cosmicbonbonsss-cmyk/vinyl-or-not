@@ -1376,3 +1376,12 @@ h3 {
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
+
+
+/* DIY install shop links */
+.shop-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+}
+.shop-list li { margin-bottom: 0.45rem; }
+.shop-list a[data-affiliate] { font-weight: 600; }
