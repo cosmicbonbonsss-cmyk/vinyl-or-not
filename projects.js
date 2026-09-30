@@ -118,9 +118,40 @@ function updateSharedNotice() {
   if (submitBtn) submitBtn.textContent = "Save on this device";
 }
 
+const SEED_IDS = { "seed-1": 1, "seed-2": 1, "seed-3": 1 };
+
+function isSeedProject(p) {
+  if (!p) return false;
+  if (p.seed || p.source === "seed") return true;
+  if (SEED_IDS[p.id]) return true;
+  const media = [].concat(p.before || [], p.after || []);
+  return media.some(function (m) {
+    const src = String((m && m.src) || "");
+    return (
+      src.indexOf("gallery/before-living-empty") !== -1 ||
+      src.indexOf("gallery/after-living-warm-oak") !== -1 ||
+      src.indexOf("gallery/before-bath-checkered") !== -1 ||
+      src.indexOf("gallery/after-bath-medium-oak") !== -1 ||
+      src.indexOf("gallery/before-open-carpet") !== -1 ||
+      src.indexOf("gallery/after-open-warm-oak") !== -1
+    );
+  });
+}
+
+function purgeSeedProjectsFromLocal() {
+  try {
+    const list = listLocalBackup();
+    const kept = list.filter(function (p) {
+      return !isSeedProject(p);
+    });
+    if (kept.length !== list.length) replaceLocalBackup(kept);
+  } catch (e) {}
+}
+
 async function render() {
   if (!grid) return;
   updateSharedNotice();
+  purgeSeedProjectsFromLocal();
   const highlightId = queryId();
   let remote = [];
   try {
@@ -129,7 +160,9 @@ async function render() {
     if (countEl) countEl.textContent = "Could not load projects right now.";
     remote = [];
   }
-  const list = sortProjects(remote);
+  const list = sortProjects(remote.filter(function (p) {
+    return !isSeedProject(p);
+  }));
   if (countEl) {
     countEl.textContent =
       list.length === 1 ? "1 project" : list.length + " projects";
