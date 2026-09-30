@@ -1,18 +1,9 @@
 import * as THREE from "three";
 
 const TEXTURES = [
-  { id: "light-oak", label: "Light oak", file: "textures/light-oak.jpg", repeat: [6, 6] },
   { id: "medium-oak", label: "Medium oak", file: "textures/medium-oak.jpg", repeat: [6, 6] },
   { id: "warm-oak", label: "Warm oak", file: "textures/warm-oak.jpg", repeat: [6, 6] },
-  { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] },
-  { id: "gray-oak", label: "Gray oak", file: "textures/gray-oak.jpg", repeat: [6, 6] },
-  { id: "ash-gray", label: "Ash gray", file: "textures/ash-gray.jpg", repeat: [6, 6] },
-  { id: "whitewash", label: "Whitewash", file: "textures/whitewash.jpg", repeat: [6, 6] },
-  { id: "bleached-oak", label: "Bleached oak", file: "textures/bleached-oak.jpg", repeat: [6, 6] },
-  { id: "walnut", label: "Walnut", file: "textures/walnut.jpg", repeat: [5, 5] },
-  { id: "dark-walnut", label: "Dark walnut", file: "textures/dark-walnut.jpg", repeat: [5, 5] },
-  { id: "narrow-oak", label: "Narrow oak", file: "textures/narrow-oak.jpg", repeat: [8, 8] },
-  { id: "wide-plank-oak", label: "Wide plank", file: "textures/wide-plank-oak.jpg", repeat: [4, 4] }
+  { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] }
 ];
 
 const CORNER_LABELS = [

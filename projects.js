@@ -54,19 +54,19 @@
         role: "customer",
         notes: "Homeowner upload demo. Old sheet vinyl out; gray oak planks in.",
         before: [{ label: "Before", css: "demo-before-b" }],
-        after: [{ src: "textures/gray-oak.jpg", label: "After" }],
+        after: [{ src: "textures/medium-oak.jpg", label: "After" }],
         createdAt: "2026-02-03T15:00:00.000Z"
       },
       {
         id: "seed-3",
         seed: true,
-        title: "Open plan — wide plank walnut look",
+        title: "Open plan — warm oak plank look",
         location: "Seattle, WA",
         flooring: "LVP",
         role: "customer",
-        notes: "DIY mood-board style demo using a wide-plank texture preview.",
+        notes: "DIY mood-board style demo using a warm oak plank texture preview.",
         before: [{ label: "Before", css: "demo-before-c" }],
-        after: [{ src: "textures/wide-plank-oak.jpg", label: "After" }],
+        after: [{ src: "textures/warm-oak.jpg", label: "After" }],
         createdAt: "2026-03-20T18:00:00.000Z"
       }
     ];
