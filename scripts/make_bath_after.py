@@ -4,8 +4,8 @@
 - textures/medium-oak.jpg → depth-running planks, CUBIC warp + unsharp
 - before-bath-checkered.jpg never written
 - Toilet porcelain fully restored (zero plank on porcelain core)
-- Planks low (floor only; wainscoting untouched)
-- Full floor poly minus tight fixtures — no white holes around pot/stool/toilet
+- Planks low (floor only; wainscoting untouched) — y >= ~724
+- Full floor poly minus tight fixtures — fill white holes around pot/stool/toilet
 """
 from __future__ import annotations
 
@@ -96,134 +96,153 @@ def make_bath() -> Path:
     green = (bgr[:, :, 1] > bgr[:, :, 2] + 12) & (bgr[:, :, 1] > bgr[:, :, 0] + 12)
     smooth = local_var < 180
 
-    # Full floor envelope — fill everything, then punch tight fixtures
+    # Floor envelope — slightly BELOW wainscot/baseboard (cap at y>=724)
+    FLOOR_TOP = 724
     floor_mask = np.zeros((h, w), np.uint8)
     pts = np.array(
         [
             [0, h - 1],
             [w - 1, h - 1],
-            [w - 1, 808],
-            [1140, 786],
-            [1040, 766],
-            [940, 750],
-            [840, 736],
-            [740, 728],
-            [640, 724],
-            [540, 722],
-            [440, 724],
-            [340, 730],
-            [240, 742],
-            [140, 756],
-            [60, 770],
-            [0, 780],
+            [w - 1, 812],
+            [1140, 790],
+            [1040, 770],
+            [940, 754],
+            [840, 740],
+            [740, 732],
+            [640, 728],
+            [540, 726],
+            [440, 728],
+            [340, 734],
+            [240, 746],
+            [140, 760],
+            [60, 774],
+            [0, 784],
         ],
         np.int32,
     )
     cv2.fillPoly(floor_mask, [pts], 255)
-    floor_mask[:720, :] = 0
+    floor_mask[:FLOOR_TOP, :] = 0
 
-    # ---- Tight occluders ----
-    # Toilet: hull ∩ porcelain; tiny edge dilate; NEVER keep black tiles
+    # ---- Soft fixture occluders (porcelain/color gated, not fat geometric chunks) ----
     toilet_hull = np.zeros((h, w), np.uint8)
-    cv2.ellipse(toilet_hull, (748, 748), (142, 132), 0, 0, 360, 255, -1)
-    cv2.ellipse(toilet_hull, (752, 808), (128, 82), 0, 0, 360, 255, -1)
-    cv2.ellipse(toilet_hull, (755, 858), (140, 40), 0, 0, 360, 255, -1)
-    cv2.rectangle(toilet_hull, (650, 620), (845, 745), 255, -1)
-    cv2.circle(toilet_hull, (912, 818), 26, 255, -1)
+    cv2.ellipse(toilet_hull, (748, 748), (138, 128), 0, 0, 360, 255, -1)
+    cv2.ellipse(toilet_hull, (752, 808), (124, 80), 0, 0, 360, 255, -1)
+    cv2.ellipse(toilet_hull, (755, 858), (136, 38), 0, 0, 360, 255, -1)
+    cv2.rectangle(toilet_hull, (655, 625), (840, 745), 255, -1)
+    # brush holder right of toilet
+    cv2.circle(toilet_hull, (912, 818), 18, 255, -1)
 
     toilet = (
         (toilet_hull > 0)
         & ~black
-        & (bright > 130)
-        & (sat < 52)
-        & (smooth | ((local_var < 350) & (bright > 155)))
+        & (bright > 125)
+        & (sat < 55)
+        & (smooth | ((local_var < 400) & (bright > 145)))
     ).astype(np.uint8) * 255
+    # Soft core always protected
     core = np.zeros((h, w), np.uint8)
-    cv2.ellipse(core, (750, 780), (115, 112), 0, 0, 360, 255, -1)
-    cv2.ellipse(core, (755, 850), (105, 36), 0, 0, 360, 255, -1)
+    cv2.ellipse(core, (750, 775), (118, 115), 0, 0, 360, 255, -1)
+    cv2.ellipse(core, (755, 848), (108, 38), 0, 0, 360, 255, -1)
+    cv2.ellipse(core, (748, 720), (90, 70), 0, 0, 360, 255, -1)
     toilet = np.maximum(
-        toilet, ((core > 0) & ~black & (bright > 125)).astype(np.uint8) * 255
+        toilet, ((core > 0) & ~black & (bright > 120)).astype(np.uint8) * 255
     )
-    toilet = cv2.dilate(toilet, np.ones((3, 3), np.uint8))
+    # Soft edge: small dilate then strip black tiles back
+    toilet = cv2.dilate(toilet, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
     toilet[black] = 0
 
-    # Stool: seat slabs + 4 thin legs (floor BETWEEN legs stays planks)
+    # Stool: seat + thin legs only (floor BETWEEN legs stays planks)
     stool = np.zeros((h, w), np.uint8)
     cv2.fillPoly(
-        stool, [np.array([[402, 788], [534, 788], [536, 812], [400, 812]], np.int32)], 255
+        stool, [np.array([[404, 788], [532, 788], [534, 812], [402, 812]], np.int32)], 255
     )
     cv2.fillPoly(
-        stool, [np.array([[392, 812], [544, 812], [546, 840], [390, 840]], np.int32)], 255
+        stool, [np.array([[394, 812], [542, 812], [544, 838], [392, 838]], np.int32)], 255
     )
-    for lx in (396, 416, 518, 538):
-        cv2.rectangle(stool, (lx - 4, 840), (lx + 4, 899), 255, -1)
-    stool_u8 = ((stool > 0) & ~black & (bright > 145) & (sat < 48)).astype(np.uint8) * 255
+    for lx in (398, 418, 516, 536):
+        cv2.rectangle(stool, (lx - 3, 838), (lx + 3, 899), 255, -1)
+    stool_u8 = ((stool > 0) & ~black & (bright > 140) & (sat < 50)).astype(np.uint8) * 255
     stool_u8 = cv2.dilate(stool_u8, np.ones((2, 2), np.uint8))
     stool_u8[black] = 0
 
     # Pedestal
     ped = np.zeros((h, w), np.uint8)
-    cv2.ellipse(ped, (288, 868), (40, 26), 0, 0, 360, 255, -1)
-    cv2.ellipse(ped, (282, 810), (17, 40), 0, 0, 360, 255, -1)
-    ped_u8 = ((ped > 0) & ~black & (bright > 135) & (sat < 48)).astype(np.uint8) * 255
-    ped_u8 = cv2.dilate(ped_u8, np.ones((3, 3), np.uint8))
+    cv2.ellipse(ped, (288, 868), (38, 24), 0, 0, 360, 255, -1)
+    cv2.ellipse(ped, (282, 810), (16, 38), 0, 0, 360, 255, -1)
+    ped_u8 = ((ped > 0) & ~black & (bright > 130) & (sat < 50)).astype(np.uint8) * 255
+    ped_u8 = cv2.dilate(ped_u8, np.ones((2, 2), np.uint8))
     ped_u8[black] = 0
 
-    # Plant pot (not surrounding floor)
+    # Plant pot (tight — not surrounding floor)
     plant = np.zeros((h, w), np.uint8)
-    cv2.ellipse(plant, (150, 840), (72, 38), 0, 0, 360, 255, -1)
-    cv2.ellipse(plant, (110, 765), (40, 58), -12, 0, 360, 255, -1)
+    cv2.ellipse(plant, (150, 842), (68, 36), 0, 0, 360, 255, -1)
+    cv2.ellipse(plant, (112, 768), (36, 54), -12, 0, 360, 255, -1)
     plant_u8 = (
-        ((plant > 0) & (((bright > 135) & (sat < 48)) | green) & ~black)
+        ((plant > 0) & (((bright > 130) & (sat < 50)) | green) & ~black)
     ).astype(np.uint8) * 255
-    plant_u8 = cv2.dilate(plant_u8, np.ones((3, 3), np.uint8))
+    plant_u8 = cv2.dilate(plant_u8, np.ones((2, 2), np.uint8))
     plant_u8[black] = 0
 
     occ = np.maximum(np.maximum(toilet, stool_u8), np.maximum(ped_u8, plant_u8))
 
-    # Strip checkered floor tiles wrongly claimed by fixture dilate (white holes fix)
-    white = (bright > 168) & (sat < 48)
-    black_near = cv2.dilate(black.astype(np.uint8) * 255, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25))) > 0
-    white_checker = white & black_near
-    occ[black] = 0
-    occ[white_checker] = 0
-    # Restore toilet core after strip (porcelain is white but NOT checker-adjacent the same way)
-    core2 = np.zeros((h, w), np.uint8)
-    cv2.ellipse(core2, (750, 775), (110, 105), 0, 0, 360, 255, -1)
-    cv2.ellipse(core2, (755, 848), (100, 34), 0, 0, 360, 255, -1)
-    occ = np.maximum(occ, ((core2 > 0) & ~black & (bright > 130)).astype(np.uint8) * 255)
-
-    floor_mask[occ > 0] = 0
-    # Black checker tiles inside poly always get planks
-    poly_only = np.zeros((h, w), np.uint8)
-    cv2.fillPoly(poly_only, [pts], 255)
-    poly_only[:720, :] = 0
-    # Force checker tiles (black + white-adjacent-to-black) as floor — kills white holes
-    white = (bright > 168) & (sat < 48)
+    # Strip checkered tiles wrongly claimed by fixture dilate
+    white = (bright > 155) & (sat < 55)
     black_near = (
-        cv2.dilate(black.astype(np.uint8) * 255, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25)))
+        cv2.dilate(black.astype(np.uint8) * 255, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (45, 45)))
         > 0
     )
     white_checker = white & black_near
+    occ[black] = 0
+    occ[white_checker] = 0
+    # Restore toilet core after strip
+    occ = np.maximum(occ, ((core > 0) & ~black & (bright > 125)).astype(np.uint8) * 255)
+
+    floor_mask[occ > 0] = 0
+    poly_only = np.zeros((h, w), np.uint8)
+    cv2.fillPoly(poly_only, [pts], 255)
+    poly_only[:FLOOR_TOP, :] = 0
+
+    # Force ALL checker tiles inside poly as floor (kills white holes)
     floor_mask[(poly_only > 0) & black] = 255
     floor_mask[(poly_only > 0) & white_checker] = 255
+    # Also force any mid-tone tile-like pixel in poly that's not a fixture
+    tileish = (
+        (poly_only > 0)
+        & (occ == 0)
+        & (toilet == 0)
+        & ~green
+        & (bright > 40)
+        & (bright < 230)
+        & (sat < 55)
+    )
+    floor_mask[tileish] = 255
+
     floor_mask = cv2.morphologyEx(
         floor_mask,
         cv2.MORPH_CLOSE,
-        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)),
-        iterations=1,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)),
+        iterations=2,
     )
-    # Re-punch true fixture silhouettes (not checker)
+    # Re-punch soft fixtures
     floor_mask[toilet > 0] = 0
     floor_mask[stool_u8 > 0] = 0
     floor_mask[ped_u8 > 0] = 0
     floor_mask[plant_u8 > 0] = 0
+    # Checker always wins over accidental fixture bleed
     floor_mask[(poly_only > 0) & black] = 255
     floor_mask[(poly_only > 0) & white_checker] = 255
-    floor_mask[:720, :] = 0
+    floor_mask[:FLOOR_TOP, :] = 0
+
+
+    # Aggressive hole fill using TIGHT fixtures only (not dilated occ)
+    tight = (toilet > 0) | (stool_u8 > 0) | (ped_u8 > 0) | (plant_u8 > 0)
+    floor_mask[(poly_only > 0) & ~tight] = 255
+    floor_mask[tight] = 0
+    floor_mask[(poly_only > 0) & black] = 255
+    floor_mask[:FLOOR_TOP, :] = 0
 
     sheet = make_depth_planks(tex)
-    dst = np.array([[0, h - 1], [w - 1, h - 1], [1100, 726], [25, 770]], np.float32)
+    dst = np.array([[0, h - 1], [w - 1, h - 1], [1100, 730], [25, 776]], np.float32)
     src = np.array(
         [[80, 4300], [5120, 4300], [5120, 4300 - 200 * 14], [80, 4300 - 200 * 14]],
         np.float32,
@@ -250,28 +269,29 @@ def make_bath() -> Path:
     bbox = np.zeros((h, w), bool)
     bbox[615:895, 620:940] = True
     diff = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
-    near = cv2.dilate(toilet, np.ones((21, 21), np.uint8)) > 0
+    near = cv2.dilate(toilet, np.ones((25, 25), np.uint8)) > 0
     restore = (
         bbox
         & near
-        & (bright > 140)
-        & (sat < 50)
+        & (bright > 135)
+        & (sat < 55)
         & ~black
-        & (diff > 8)
-        & (local_var < 300)
+        & ~white_checker
+        & (diff > 6)
+        & (local_var < 350)
     )
     after[restore] = before[restore]
     tu = np.maximum(toilet, restore.astype(np.uint8) * 255)
 
     applied = (floor_mask > 0) & (tu == 0) & (occ == 0)
-    # Also count black-forced floor
     applied = applied | ((poly_only > 0) & black & (tu == 0))
     sharp = unsharp(after, amount=1.35, sigma=0.65)
     after[applied] = sharp[applied]
     after[tu > 0] = before[tu > 0]
     after[occ > 0] = before[occ > 0]
-    # Final: black tiles that are still before → force plank (in case occ ate them)
-    still_black_hole = (poly_only > 0) & black & (
+
+    # Final: black tiles still matching before → force plank
+    still_black_hole = (poly_only > 0) & black & (tu == 0) & (
         np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2) < 6
     )
     if still_black_hole.any():
@@ -282,6 +302,33 @@ def make_bath() -> Path:
             255,
         ).astype(np.uint8)
         after[still_black_hole] = unsharp(after, amount=1.35, sigma=0.65)[still_black_hole]
+
+    # Also fill white-checker holes still matching before
+    still_white_hole = (poly_only > 0) & white_checker & (tu == 0) & (occ == 0) & (
+        np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2) < 6
+    )
+    if still_white_hole.any():
+        after[still_white_hole] = np.clip(
+            warped[still_white_hole].astype(np.float32)
+            * ratio[still_white_hole][..., None],
+            0,
+            255,
+        ).astype(np.uint8)
+        after[still_white_hole] = unsharp(after, amount=1.35, sigma=0.65)[still_white_hole]
+
+
+    # Post-pass: fill leftover checker holes outside toilet core
+    diff2 = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
+    leftover = (poly_only > 0) & (tu == 0) & (diff2 < 7) & (black | white_checker)
+    if leftover.any():
+        after[leftover] = np.clip(
+            warped[leftover].astype(np.float32) * ratio[leftover][..., None], 0, 255
+        ).astype(np.uint8)
+        after[leftover] = unsharp(after, amount=1.35, sigma=0.65)[leftover]
+        after[tu > 0] = before[tu > 0]
+
+    # Absolute wall band restore
+    after[:FLOOR_TOP, :] = before[:FLOOR_TOP, :]
 
     # Metrics
     diff = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
@@ -299,8 +346,13 @@ def make_bath() -> Path:
         float(diff[porc].mean()) if porc.any() else 0,
         "toilet_porc_diff>15",
         int((diff[porc] > 15).sum()) if porc.any() else 0,
+        "wallΔ",
+        float(diff[:FLOOR_TOP].mean()),
         "black_covered",
-        float(((black) & (poly_only > 0) & (diff > 12)).sum() / max(1, ((black) & (poly_only > 0)).sum())),
+        float(
+            ((black) & (poly_only > 0) & (diff > 12)).sum()
+            / max(1, ((black) & (poly_only > 0)).sum())
+        ),
     )
 
     path = GALLERY / "after-bath-medium-oak.jpg"
@@ -312,7 +364,7 @@ def make_bath() -> Path:
         [int(cv2.IMWRITE_JPEG_QUALITY), 95],
     )
     mask_viz = before.copy()
-    m = (diff > 12)
+    m = diff > 12
     mask_viz[m] = (mask_viz[m].astype(np.float32) * 0.4 + np.array([0, 180, 255]) * 0.6).astype(
         np.uint8
     )

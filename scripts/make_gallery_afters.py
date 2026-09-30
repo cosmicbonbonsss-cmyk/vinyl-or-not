@@ -2,8 +2,8 @@
 """Gallery AFTER composites: site plank textures, perspective-warped onto floor.
 
 Constraints:
-- Never paint over the bath toilet (restore full toilet from before).
-- Keep plank overlay at true floor height; do not run planks up the walls.
+- Floor ONLY — planks must not climb walls, wainscoting, baseboards, radiators, sills.
+- Never paint over bath toilet porcelain (delegated to make_bath_after).
 - CUBIC warp + unsharp for crisp plank edges/grain (no Gaussian mush).
 """
 from __future__ import annotations
@@ -36,7 +36,6 @@ def make_plank_floor(
     jitter=(0.88, 1.12),
     seam_rgb=(16, 20, 26),
 ) -> np.ndarray:
-    """Build a plank sheet. CUBIC upscale; mild contrast calm; crisp seams."""
     t = tex_bgr
     if rotate_tex90:
         t = cv2.rotate(t, cv2.ROTATE_90_CLOCKWISE)
@@ -149,14 +148,19 @@ def warp_floor(sheet, dst_hw, src_quad, dst_quad):
     )
 
 
-def poly_mask(shape, poly, feather=0):
-    h, w = shape
-    mask = np.zeros((h, w), dtype=np.uint8)
+def horizon_mask(h, w, horizon_pts):
+    xs = np.array([p[0] for p in horizon_pts], dtype=np.float64)
+    ys = np.array([p[1] for p in horizon_pts], dtype=np.float64)
+    horizon = np.interp(np.arange(w), xs, ys)
+    k = 11
+    pad = np.pad(horizon, (k // 2, k // 2), mode="edge")
+    horizon = np.convolve(pad, np.ones(k) / k, mode="valid")
+    mask = np.zeros((h, w), np.uint8)
+    poly = [(0, h - 1), (w - 1, h - 1)] + [
+        (x, int(round(horizon[x]))) for x in range(w - 1, -1, -1)
+    ]
     cv2.fillPoly(mask, [np.array(poly, np.int32)], 255)
-    if feather > 0:
-        k = feather * 2 + 1
-        mask = cv2.GaussianBlur(mask, (k, k), 0.3)
-    return mask
+    return mask, horizon
 
 
 def luminance_ratio(bgr, mask, blur=71):
@@ -184,7 +188,6 @@ def composite(
     light_clip=(0.62, 1.4),
     sharpen=True,
 ):
-    """light_mix<1 blends luminance toward 1.0 (calmer); light_clip tightens extremes."""
     fm = floor_mask.astype(np.float32) / 255.0
     if occluder_mask is not None:
         fm = fm * (1.0 - occluder_mask.astype(np.float32) / 255.0)
@@ -220,13 +223,8 @@ def save_qa(name, before, floor_mask, occ, after, sheet=None):
     )
     cv2.imwrite(str(WORK / f"{name}-mask-ov.jpg"), ov, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
     cv2.imwrite(str(WORK / f"{name}-after.jpg"), after, [int(cv2.IMWRITE_JPEG_QUALITY), 94])
-    if sheet is not None:
-        cv2.imwrite(
-            str(WORK / f"{name}-sheet.jpg"), sheet[:1200, :1200], [int(cv2.IMWRITE_JPEG_QUALITY), 92]
-        )
 
 
-# ---- Living: horizontal warm-oak planks, full floor to baseboards ----
 def make_living():
     before = cv2.imread(str(GALLERY / "before-living-empty.jpg"))
     h, w = before.shape[:2]
@@ -245,147 +243,143 @@ def make_living():
         jitter=(0.96, 1.04),
         seam_rgb=(28, 34, 42),
     )
-    floor_poly = [
-        (0, h - 1),
-        (w - 1, h - 1),
-        (w - 1, 680),
-        (1160, 620),
-        (1100, 575),
-        (1020, 545),
-        (940, 528),
-        (860, 512),
-        (800, 502),
-        (740, 496),
-        (680, 492),
-        (600, 490),
-        (500, 488),
-        (400, 486),
-        (300, 486),
-        (200, 490),
-        (100, 508),
-        (0, 538),
+
+    # Cap BELOW baseboard under window (~y580) and follow right-wall junction.
+    # Do NOT dip to ~y428 — that paints wood-toned wainscot/panels.
+    horizon_pts = [
+        (0, 588),
+        (80, 584),
+        (160, 580),
+        (240, 576),
+        (320, 572),
+        (400, 568),
+        (460, 562),
+        (520, 555),
+        (560, 545),
+        (600, 520),
+        (640, 500),
+        (680, 488),
+        (720, 480),
+        (760, 485),
+        (800, 508),
+        (840, 522),
+        (880, 536),
+        (920, 548),
+        (960, 560),
+        (1000, 570),
+        (1040, 580),
+        (1080, 590),
+        (1120, 602),
+        (1160, 614),
+        (1199, 622),
     ]
-    floor_mask = poly_mask((h, w), floor_poly, feather=0)
-    dst = np.array([[0, h - 1], [w - 1, h - 1], [1080, 500], [40, 535]], np.float32)
+    floor_mask, horizon = horizon_mask(h, w, horizon_pts)
+
+    # Strip gray wall pixels at the top edge of the mask
+    lab = cv2.cvtColor(before, cv2.COLOR_BGR2LAB).astype(np.float32)
+    chroma = np.sqrt((lab[:, :, 1] - 128) ** 2 + (lab[:, :, 2] - 128) ** 2)
+    wallish = (chroma < 12) & (lab[:, :, 0] > 155)
+    for x in range(w):
+        y0 = int(round(horizon[x]))
+        for y in range(y0, min(h, y0 + 12)):
+            if wallish[y, x]:
+                floor_mask[y, x] = 0
+            else:
+                break
+
+    dst = np.array(
+        [[0, h - 1], [w - 1, h - 1], [1050, float(horizon[1050])], [100, float(horizon[100])]],
+        np.float32,
+    )
     src = np.array(
-        [[50, 2900], [5150, 2900], [5150, 2900 - 400 * 4], [50, 2900 - 400 * 4]], np.float32
+        [[100, 2900], [5100, 2900], [5100, 2900 - 400 * 4], [100, 2900 - 400 * 4]], np.float32
     )
     warped = warp_floor(sheet, (h, w), src, dst)
     after = composite(
-        before,
-        warped,
-        floor_mask,
-        None,
-        lighting=True,
-        light_mix=0.70,
-        light_clip=(0.78, 1.20),
-        sharpen=True,
+        before, warped, floor_mask, None,
+        lighting=True, light_mix=0.70, light_clip=(0.78, 1.20), sharpen=True,
     )
     save_qa("living", before, floor_mask, None, after, sheet)
     path = GALLERY / "after-living-warm-oak.jpg"
     cv2.imwrite(str(path), after, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
     ys = np.where(floor_mask > 128)[0]
     gray = cv2.cvtColor(after[int(h * 0.55) :, :], cv2.COLOR_BGR2GRAY)
+    wall_band = np.zeros((h, w), bool)
+    for x in range(w):
+        wall_band[: max(0, int(horizon[x]) - 4), x] = True
+    diff = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
     print(
-        "living",
-        path,
-        "floor_y",
-        int(ys.min()),
-        "-",
-        int(ys.max()),
-        "cov",
-        float((floor_mask > 128).mean()),
-        "lap",
-        round(float(cv2.Laplacian(gray, cv2.CV_64F).var()), 1),
+        "living", path, "floor_y", int(ys.min()), "-", int(ys.max()),
+        "cov", float((floor_mask > 128).mean()),
+        "lap", round(float(cv2.Laplacian(gray, cv2.CV_64F).var()), 1),
+        "wallΔ", round(float(diff[wall_band].mean()), 3),
     )
     return after
 
 
-# ---- Open plan: warm oak into depth; hard furniture silhouettes ----
 def make_open():
     before = cv2.imread(str(GALLERY / "before-open-carpet.jpg"))
     h, w = before.shape[:2]
     tex = cv2.imread(str(TEXTURES / "warm-oak.jpg"))
     sheet = make_plank_floor(
         tex,
-        out_w=5000,
-        out_h=4500,
-        plank_w=380,
+        out_w=4800,
+        out_h=5200,
+        plank_w=360,
         seam=3,
         grain_along="y",
         rotate_tex90=False,
-        length_mult=(80.0, 130.0),
+        length_mult=(70.0, 110.0),
         contrast=0.70,
         tex_scale=1.35,
         jitter=(0.96, 1.04),
         seam_rgb=(28, 34, 42),
     )
-    floor_poly = [
-        (0, h - 1),
-        (w - 1, h - 1),
-        (w - 1, 500),
-        (1100, 460),
-        (980, 435),
-        (860, 420),
-        (740, 414),
-        (640, 412),
-        (560, 420),
-        (480, 450),
-        (400, 510),
-        (320, 575),
-        (230, 650),
-        (120, 720),
-        (0, 770),
+
+    # Conservative horizon — below walls/baseboards; left raised by chairs
+    horizon_pts = [
+        (0, 755),
+        (80, 748),
+        (160, 742),
+        (240, 720),
+        (300, 690),
+        (360, 655),
+        (420, 620),
+        (480, 575),
+        (540, 545),
+        (600, 520),
+        (660, 500),
+        (720, 455),
+        (780, 445),
+        (840, 440),
+        (900, 442),
+        (960, 450),
+        (1020, 465),
+        (1080, 485),
+        (1140, 515),
+        (1199, 548),
     ]
-    floor_mask = poly_mask((h, w), floor_poly, feather=0)
-    floor_mask[: int(h * 0.38), :] = 0
+    floor_mask, horizon = horizon_mask(h, w, horizon_pts)
+    floor_mask[: int(h * 0.42), :] = 0
+    for x in range(w):
+        floor_mask[: int(horizon[x]), x] = 0
 
     bgr = before.astype(np.float32)
     bright = bgr.mean(axis=2)
     sat = bgr.max(axis=2) - bgr.min(axis=2)
-    # BGR channels
     Bb, Gg, Rr = bgr[:, :, 0], bgr[:, :, 1], bgr[:, :, 2]
 
-    # Hard occluders: solid armchair bodies (beige ≈ carpet — geometric required)
     occ = np.zeros((h, w), np.uint8)
     cv2.fillPoly(
         occ,
-        [
-            np.array(
-                [
-                    (0, 470),
-                    (235, 450),
-                    (310, 485),
-                    (345, 555),
-                    (340, 670),
-                    (310, 725),
-                    (260, 745),
-                    (120, 755),
-                    (0, 740),
-                ],
-                np.int32,
-            )
-        ],
+        [np.array([(0, 470), (235, 450), (310, 485), (345, 555), (340, 670),
+                   (310, 725), (260, 745), (120, 755), (0, 740)], np.int32)],
         255,
     )
     cv2.fillPoly(
         occ,
-        [
-            np.array(
-                [
-                    (285, 445),
-                    (425, 438),
-                    (490, 468),
-                    (515, 530),
-                    (500, 605),
-                    (455, 648),
-                    (375, 652),
-                    (305, 620),
-                    (280, 535),
-                ],
-                np.int32,
-            )
-        ],
+        [np.array([(285, 445), (425, 438), (490, 468), (515, 530), (500, 605),
+                   (455, 648), (375, 652), (305, 620), (280, 535)], np.int32)],
         255,
     )
     cv2.rectangle(occ, (400, 450), (520, 550), 255, -1)
@@ -396,120 +390,96 @@ def make_open():
     )
     cv2.ellipse(occ, (510, 470), (48, 60), 0, 0, 360, 255, -1)
 
-    # Dining seats only (bright pale upholstery) — floor between chairs stays planks
     seats = np.zeros((h, w), np.uint8)
     for cx, cy, rx, ry in [
-        (768, 490, 36, 44),
-        (858, 478, 36, 42),
-        (948, 490, 34, 44),
-        (805, 568, 32, 36),
-        (898, 580, 32, 36),
-        (978, 565, 32, 36),
+        (768, 490, 40, 48), (858, 478, 40, 46), (948, 490, 38, 48),
+        (805, 568, 36, 40), (898, 580, 36, 40), (978, 565, 36, 40),
     ]:
         cv2.ellipse(seats, (cx, cy), (rx, ry), 0, 0, 360, 255, -1)
-    cv2.ellipse(seats, (880, 462), (125, 16), 0, 0, 360, 255, -1)
-    seat_occ = ((seats > 0) & (bright > 198) & (sat < 42)).astype(np.uint8) * 255
-    seat_occ = cv2.dilate(seat_occ, np.ones((3, 3), np.uint8))
+    cv2.ellipse(seats, (880, 458), (140, 18), 0, 0, 360, 255, -1)
+    # Broader seat gate + geometric seat ellipses as hard occ (beige ≈ carpet)
+    seat_occ = ((seats > 0) & (bright > 185) & (sat < 50)).astype(np.uint8) * 255
+    seat_occ = cv2.dilate(seat_occ, np.ones((5, 5), np.uint8))
 
-    # Wood legs: brownish (R elevated vs B), mid tone — color-gated, not fat rectangles
     wood_leg = (
-        (floor_mask > 0)
-        & (occ == 0)
-        & (Rr > Bb + 8)
-        & (Rr > Gg - 5)
-        & (bright > 70)
-        & (bright < 175)
-        & (sat > 18)
-        & (sat < 70)
+        (floor_mask > 0) & (occ == 0) & (Rr > Bb + 8) & (Rr > Gg - 5)
+        & (bright > 70) & (bright < 175) & (sat > 18) & (sat < 70)
     )
-    # Only keep wood_leg inside dining band where chairs live
     dining_band = np.zeros((h, w), bool)
-    dining_band[450:720, 720:1050] = True
-    # Require proximity to seat hulls so we don't paint random brown carpet
-    near_seat = cv2.dilate(seats, np.ones((35, 35), np.uint8)) > 0
+    dining_band[450:720, 700:1060] = True
+    near_seat = cv2.dilate(seats, np.ones((40, 40), np.uint8)) > 0
     leg_occ = (wood_leg & dining_band & near_seat).astype(np.uint8) * 255
     leg_occ = cv2.dilate(leg_occ, np.ones((2, 2), np.uint8))
 
+    arm_only = occ.copy()
     occ = np.maximum(np.maximum(occ, seat_occ), leg_occ)
 
-    # Floor = full poly minus furniture
     combined = floor_mask.copy()
     combined[occ > 0] = 0
-    # Dining carpet between chairs: force any carpet-like pixel back as floor
-    # (seat_occ already removed bright seats; this undoes over-broad wood-leg claims)
     dining_carpet = (
-        dining_band
-        & (floor_mask > 0)
-        & (bright > 150)
-        & (bright < 198)
-        & (sat < 40)
-        & (Bb > 130)
-        & (seat_occ == 0)
+        dining_band & (floor_mask > 0) & (bright > 140) & (bright < 205)
+        & (sat < 45) & (seat_occ == 0)
     )
     combined[dining_carpet] = 255
-    # Close hairline gaps under thin legs
     combined = cv2.morphologyEx(
-        combined,
-        cv2.MORPH_CLOSE,
-        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)),
-        iterations=1,
+        combined, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)), iterations=2,
     )
     combined[seat_occ > 0] = 0
-    combined[occ > 0] = 0
-    # Re-apply dining carpet after occ (occ includes armchair polys outside dining — fine)
+    combined[arm_only > 0] = 0
     combined[dining_carpet] = 255
     combined[seat_occ > 0] = 0
+    combined[arm_only > 0] = 0
     combined[floor_mask == 0] = 0
-    combined[: int(h * 0.38), :] = 0
-    # Don't let wood-leg occ punch dining carpet back out during composite
-    occ[dining_carpet] = 0
-    occ[combined > 0] = 0
+    combined[: int(h * 0.42), :] = 0
 
-    dst = np.array([[0, h - 1], [w - 1, h - 1], [1020, 415], [80, 730]], np.float32)
+    occ2 = np.maximum(seat_occ, arm_only)
+
+    dst = np.array(
+        [[40, h - 1], [w - 40, h - 1], [1000, float(horizon[1000])], [200, float(horizon[200])]],
+        np.float32,
+    )
     src = np.array(
-        [[120, 4350], [4880, 4350], [4880, 4350 - 380 * 5], [120, 4350 - 380 * 5]], np.float32
+        [[200, 5000], [4600, 5000], [4600, 5000 - 360 * 8], [200, 5000 - 360 * 8]], np.float32
     )
     warped = warp_floor(sheet, (h, w), src, dst)
     after = composite(
-        before,
-        warped,
-        combined,
-        occ,
-        lighting=True,
-        light_mix=0.70,
-        light_clip=(0.78, 1.20),
-        sharpen=True,
+        before, warped, combined, occ2,
+        lighting=True, light_mix=0.70, light_clip=(0.78, 1.20), sharpen=True,
     )
-    after[occ > 0] = before[occ > 0]
+    after[occ2 > 0] = before[occ2 > 0]
+    # Post: restore pale dining/armchair upholstery if planks leaked on
+    pale_band = np.zeros((h, w), bool)
+    pale_band[460:620, 740:1020] = True
+    pale_band[480:640, 40:500] = True
+    pale = pale_band & (bright > 190) & (sat < 50)
+    diff_tmp = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
+    after[pale & (diff_tmp > 15)] = before[pale & (diff_tmp > 15)]
 
-    save_qa("open", before, combined, occ, after, sheet)
+    save_qa("open", before, combined, occ2, after, sheet)
     path = GALLERY / "after-open-warm-oak.jpg"
     cv2.imwrite(str(path), after, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
-    applied = (combined > 128) & (occ < 128)
+    applied = (combined > 128) & (occ2 < 128)
     ys = np.where(applied)[0]
     gray = cv2.cvtColor(after[int(h * 0.55) :, :], cv2.COLOR_BGR2GRAY)
+    wall_band = np.zeros((h, w), bool)
+    for x in range(w):
+        wall_band[: max(0, int(horizon[x]) - 4), x] = True
+    diff = np.abs(after.astype(np.float32) - before.astype(np.float32)).mean(axis=2)
     print(
-        "open",
-        path,
-        "floor_y",
-        int(ys.min()) if len(ys) else None,
-        "-",
-        int(ys.max()) if len(ys) else None,
-        "cov",
-        float(applied.mean()),
-        "lap",
-        round(float(cv2.Laplacian(gray, cv2.CV_64F).var()), 1),
+        "open", path, "floor_y",
+        int(ys.min()) if len(ys) else None, "-", int(ys.max()) if len(ys) else None,
+        "cov", float(applied.mean()),
+        "lap", round(float(cv2.Laplacian(gray, cv2.CV_64F).var()), 1),
+        "wallΔ", round(float(diff[wall_band].mean()), 3),
     )
     return after
-
 
 
 def main():
     make_living()
     make_open()
-    # Bath uses dedicated sharper mask script
     from make_bath_after import make_bath
-
     make_bath()
     print("done")
 
