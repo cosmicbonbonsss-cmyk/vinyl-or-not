@@ -940,7 +940,42 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 @media (max-width: 520px) {
-  .hero-copy h1 { max-width: 14ch; }
+  /* Stack hero so headline/pitch aren't clipped by overflow:hidden */
+  .hero-banner {
+    overflow: visible;
+  }
+  .hero-media {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .hero-image {
+    height: 200px;
+    flex-shrink: 0;
+  }
+  .hero-scrim {
+    inset: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background:
+      linear-gradient(180deg, rgba(28, 26, 23, 0.15) 0%, rgba(28, 26, 23, 0.45) 100%);
+  }
+  .hero-copy {
+    position: relative;
+    inset: auto;
+    max-width: none;
+    justify-content: flex-start;
+    padding: 1.15rem 1.15rem 1.35rem;
+    background: #2f2a24;
+  }
+  .hero-copy h1 {
+    max-width: none;
+  }
+  .hero-copy .pitch {
+    max-width: none;
+  }
 }
 
 /* —— Beginner-to-expert guide —— */
