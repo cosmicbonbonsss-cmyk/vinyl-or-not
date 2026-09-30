@@ -34,8 +34,8 @@ function seedProjects() {
       role: "customer",
       notes:
         "Example composite: warm oak plank look on the empty-room before photo (not a finished install photo).",
-      before: [{ src: "gallery/before-living-empty.jpg?v=20260930", label: "Before" }],
-      after: [{ src: "gallery/after-living-warm-oak.jpg?v=20260930", label: "After" }],
+      before: [{ src: "gallery/before-living-empty.jpg?v=20260930b", label: "Before" }],
+      after: [{ src: "gallery/after-living-warm-oak.jpg?v=20260930b", label: "After" }],
       createdAt: "2026-01-12T12:00:00.000Z"
     },
     {
@@ -47,8 +47,8 @@ function seedProjects() {
       role: "customer",
       notes:
         "Example composite: checkered bath floor visible in before; medium oak plank look in after (not a finished install photo).",
-      before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930", label: "Before" }],
-      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930", label: "After" }],
+      before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930b", label: "Before" }],
+      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930b", label: "After" }],
       createdAt: "2026-02-03T15:00:00.000Z"
     },
     {
@@ -60,8 +60,8 @@ function seedProjects() {
       role: "customer",
       notes:
         "Example composite: warm oak plank look on the open-plan before photo (not a finished install photo).",
-      before: [{ src: "gallery/before-open-carpet.jpg?v=20260930", label: "Before" }],
-      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930", label: "After" }],
+      before: [{ src: "gallery/before-open-carpet.jpg?v=20260930b", label: "Before" }],
+      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930b", label: "After" }],
       createdAt: "2026-03-20T18:00:00.000Z"
     }
   ];
