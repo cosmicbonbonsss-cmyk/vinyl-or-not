@@ -188,7 +188,7 @@ async function addToFirebase(project) {
 }
 
 /**
- * List user/shared projects (not seeded demos — those live in projects.js).
+ * List user/shared projects.
  */
 export async function listProjects() {
   if (isSharedConfigured()) {
