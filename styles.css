@@ -1284,3 +1284,28 @@ h3 {
 @media (min-width: 560px) {
   .tools-card-grid { grid-template-columns: 1fr 1fr; }
 }
+
+
+/* Prominent Tools entry on Guide hub */
+.guide-tools-spotlight {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 2px solid var(--accent);
+  background: rgba(255, 250, 242, 0.97);
+  margin: 1.25rem 0 1.5rem;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.guide-tools-spotlight:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(40, 32, 22, 0.14);
+}
+.guide-tools-spotlight p { margin: 0 0 0.55rem; color: var(--muted); }
+.guide-tools-spotlight .tool-kicker {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
