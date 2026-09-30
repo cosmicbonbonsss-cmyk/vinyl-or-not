@@ -1,0 +1,126 @@
+.viz-wrap { max-width: 920px; }
+
+.viz-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.viz-stage {
+  position: relative;
+  width: 100%;
+  background: #1c1a17;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  touch-action: none;
+  min-height: 220px;
+  aspect-ratio: 4 / 3;
+}
+
+.viz-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.corner-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  pointer-events: none;
+  max-width: calc(100% - 1.5rem);
+}
+
+.texture-panel { margin-top: 1.25rem; }
+.texture-panel h2 { margin: 0 0 0.35rem; font-size: 1.1rem; }
+
+.texture-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.6rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.tex-opt {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+}
+
+.tex-opt img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.tex-opt span {
+  display: block;
+  padding: 0.35rem 0.45rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.tex-opt.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(47, 93, 80, 0.25);
+}
+
+.tex-opt:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.scale-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.scale-row input[type="range"] { flex: 1; }
+
+.limits-box {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: #f3e6c8;
+  border-radius: 10px;
+  border: 1px solid #e2d0a8;
+}
+
+.limits-box h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  color: var(--warn);
+}
+
+.limits-box ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.limits-box li { margin-bottom: 0.35rem; }
+
+@media (max-width: 480px) {
+  .viz-stage { aspect-ratio: 3 / 4; }
+  .texture-picker { grid-template-columns: repeat(3, 1fr); }
+}

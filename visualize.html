@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>LVP floor overlay — Vinyl or Not</title>
+  <meta name="description" content="Photo-only vinyl plank overlay prototype. Upload a room photo, tap four floor corners, preview seamless LVP textures." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="visualize.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="./">Vinyl or Not</a>
+      <p class="tagline">Photo-only LVP overlay (prototype)</p>
+    </div>
+  </header>
+
+  <main class="wrap viz-wrap">
+    <section class="card">
+      <h1>Visualize vinyl planks</h1>
+      <p class="pitch">
+        Upload one living-room photo, tap the <strong>four corners</strong> of the floor area
+        (front-left → front-right → back-right → back-left), then pick a seamless LVP texture.
+        Perspective warp via <strong>Three.js</strong>. No live camera, WebXR, or auto floor detection.
+      </p>
+
+      <div class="viz-toolbar">
+        <label class="file-label">
+          <span class="btn secondary" id="upload-label">Upload room photo</span>
+          <input type="file" id="photo-input" accept="image/*" />
+        </label>
+        <button type="button" class="btn ghost" id="reset-corners" disabled>Reset corners</button>
+        <button type="button" class="btn ghost" id="clear-photo" disabled>Clear photo</button>
+      </div>
+      <p class="hint" id="status">Step 1: upload a photo of a room with a visible floor.</p>
+
+      <div id="stage" class="viz-stage" aria-label="Floor overlay canvas">
+        <canvas id="c"></canvas>
+        <div id="corner-hint" class="corner-hint hidden"></div>
+      </div>
+
+      <div class="texture-panel">
+        <h2>Plank textures</h2>
+        <p class="hint">CC0 seamless floors from ambientCG — tap to apply after four corners are set.</p>
+        <div id="texture-picker" class="texture-picker" role="listbox" aria-label="LVP texture options"></div>
+        <label class="scale-row">
+          Tile scale
+          <input type="range" id="tile-scale" min="2" max="14" step="0.5" value="6" />
+          <span id="tile-scale-val">6</span>
+        </label>
+      </div>
+
+      <div class="limits-box">
+        <h2>Known limits</h2>
+        <ul>
+          <li>Manual four-corner tap only — no AI / auto floor detection.</li>
+          <li>Photo-only still image — no live camera or WebXR.</li>
+          <li>Warp approximates perspective on a flat quad; furniture, rugs, and uneven floors won’t mask correctly.</li>
+          <li>Lighting and reflections aren’t matched to the room; seams may look soft on extreme angles.</li>
+          <li>Best with a clear view of an empty(ish) rectangular floor region.</li>
+        </ul>
+      </div>
+
+      <div class="nav-row">
+        <a class="btn ghost" href="./">← Back to Vinyl or Not</a>
+        <a class="btn secondary" href="measure.html">Measurement tips</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Vinyl or Not · overlay prototype · textures: ambientCG CC0 · <a href="textures/CREDITS.md">credits</a></p>
+    </div>
+  </footer>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module" src="visualize.js"></script>
+</body>
+</html>

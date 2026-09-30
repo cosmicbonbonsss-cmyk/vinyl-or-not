@@ -23,6 +23,7 @@ No middle tier. Single Stripe product / Payment Link for the paid price.
 - Where to buy: Home Depot, Floor & Decor, Lowe’s + ZIP/city Google Maps search + optional geolocation
 - Plain HTML/CSS/JS — mobile-friendly, no frameworks
 - `measure.html` — room measurement tips (length × width, 10–15% waste, doorways/closets, example)
+- `visualize.html` — photo-only LVP overlay (4-corner quad + Three.js warp, 12 ambientCG textures)
 
 ## Stripe setup
 
@@ -60,6 +61,8 @@ gh api -X POST repos/cosmicbonbonsss-cmyk/vinyl-or-not/pages \
 
 - `index.html` — single-page flow (landing → photos → checklist → teaser → report)
 - `measure.html` — how to measure rooms for flooring square footage
+- `visualize.html` / `visualize.js` / `visualize.css` — floor overlay prototype
+- `textures/` — CC0 seamless plank JPGs (see `textures/CREDITS.md`)
 - `styles.css` — mobile-friendly layout
 - `app.js` — previews, checklist rules, unlock, where-to-buy Maps/geo
 - `stripe-config.js` — public placeholders (`checkoutUrl`, `$12` / `$10–$15`)
