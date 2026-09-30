@@ -333,9 +333,10 @@ fieldset input { margin-right: 0.45rem; }
 
 .site-footer {
   padding: 1.5rem 0 2rem;
-  color: var(--muted);
+  /* Light text on dark walnut plank background for readable contrast */
+  color: #f0e2cf;
   font-size: 0.85rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(240, 226, 207, 0.28);
 }
 
 @media (min-width: 520px) {
@@ -393,8 +394,13 @@ fieldset input { margin-right: 0.45rem; }
 .measure-link:hover { text-decoration: underline; }
 
 .site-footer a {
-  color: var(--accent);
+  color: #b7e0cf;
   font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.site-footer a:hover {
+  color: #dff3ea;
 }
 
 /* Wider wrap for pros hub */
