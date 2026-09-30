@@ -642,6 +642,17 @@ window.addEventListener("resize", () => {
   if (el) el.addEventListener("input", updateMeasureUI);
 });
 
+function withHiddenMarkers(fn) {
+  const prevVisible = markers.visible;
+  markers.visible = false;
+  try {
+    return fn();
+  } finally {
+    markers.visible = prevVisible;
+    render();
+  }
+}
+
 if (downloadPngBtn) {
   downloadPngBtn.addEventListener("click", () => {
     if (!photoMesh || corners.length !== 4) {
@@ -649,7 +660,7 @@ if (downloadPngBtn) {
       return;
     }
     const a = document.createElement("a");
-    a.href = canvasSnapshotDataUrl();
+    a.href = withHiddenMarkers(() => canvasSnapshotDataUrl());
     a.download = "vinyl-or-not-visualize.png";
     a.click();
     if (shareStatus) shareStatus.textContent = "PNG downloaded.";
@@ -667,7 +678,7 @@ if (saveGalleryBtn) {
     }
     saveGalleryBtn.disabled = true;
     try {
-      const afterPng = canvasSnapshotDataUrl();
+      const afterPng = withHiddenMarkers(() => canvasSnapshotDataUrl());
       const afterJpeg = await compressDataUrl(afterPng, 1400, 0.78);
       let beforeSrc = photoOriginalDataUrl;
       if (!beforeSrc && photoUrl) {

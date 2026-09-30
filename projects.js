@@ -46,9 +46,9 @@ function seedProjects() {
       flooring: "LVP",
       role: "customer",
       notes:
-        "Example composite: checkered bath floor visible in before; medium oak plank look in after (not a finished install photo).",
+        "Visualize-tool overlay: medium oak LVP texture warped onto the bath photo via the site's four-corner floor preview (not a finished install photo; furniture/fixtures stay under the overlay).",
       before: [{ src: "gallery/before-bath-checkered.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930h", label: "After" }],
+      after: [{ src: "gallery/after-bath-medium-oak.jpg?v=20260930i", label: "After" }],
       createdAt: "2026-02-03T15:00:00.000Z"
     },
     {
@@ -59,9 +59,9 @@ function seedProjects() {
       flooring: "LVP",
       role: "customer",
       notes:
-        "Example composite: warm oak plank look on the open-plan before photo (not a finished install photo).",
+        "Visualize-tool overlay: warm oak LVP texture warped onto the open-plan photo via the site's four-corner floor preview (not a finished install photo; furniture stays under the overlay).",
       before: [{ src: "gallery/before-open-carpet.jpg?v=20260930b", label: "Before" }],
-      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930h", label: "After" }],
+      after: [{ src: "gallery/after-open-warm-oak.jpg?v=20260930i", label: "After" }],
       createdAt: "2026-03-20T18:00:00.000Z"
     }
   ];
