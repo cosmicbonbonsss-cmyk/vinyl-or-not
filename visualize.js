@@ -2,9 +2,22 @@ import * as THREE from "three";
 import { addProject, isSharedConfigured } from "./gallery-store.js";
 
 const TEXTURES = [
+  { id: "white-oak", label: "White oak", file: "textures/white-oak.jpg", repeat: [6, 6] },
+  { id: "natural-oak", label: "Natural oak", file: "textures/natural-oak.jpg", repeat: [7, 7] },
   { id: "medium-oak", label: "Medium oak", file: "textures/medium-oak.jpg", repeat: [6, 6] },
   { id: "warm-oak", label: "Warm oak", file: "textures/warm-oak.jpg", repeat: [6, 6] },
-  { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] }
+  { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] },
+  { id: "golden-oak", label: "Golden oak", file: "textures/golden-oak.jpg", repeat: [6, 6] },
+  { id: "gray-oak", label: "Gray oak", file: "textures/gray-oak.jpg", repeat: [6, 6] },
+  { id: "weathered-gray", label: "Weathered gray", file: "textures/weathered-gray.jpg", repeat: [7, 7] },
+  { id: "maple", label: "Maple", file: "textures/maple.jpg", repeat: [7, 7] },
+  { id: "hickory", label: "Hickory", file: "textures/hickory.jpg", repeat: [5, 5] },
+  { id: "cherry", label: "Cherry", file: "textures/cherry.jpg", repeat: [6, 6] },
+  { id: "walnut-plank", label: "Walnut plank", file: "textures/walnut-plank.jpg", repeat: [5, 5] },
+  { id: "espresso", label: "Espresso", file: "textures/espresso.jpg", repeat: [5, 5] },
+  { id: "pine-natural", label: "Natural pine", file: "textures/pine-natural.jpg", repeat: [5, 5] },
+  { id: "narrow-plank", label: "Narrow plank", file: "textures/narrow-plank.jpg", repeat: [8, 8] },
+  { id: "wide-plank", label: "Wide plank", file: "textures/wide-plank.jpg", repeat: [4, 4] }
 ];
 
 const CORNER_LABELS = [
