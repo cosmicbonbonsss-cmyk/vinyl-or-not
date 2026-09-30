@@ -1183,3 +1183,91 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 .next-steps-cta .cta-links a:hover { background: #e2ebe6; }
+
+/* Shared flooring-style title treatment */
+h1,
+h2,
+h3 {
+  font-family: Rockwell, "Roboto Slab", "Courier New", Georgia, serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.page-title {
+  display: inline-block;
+  margin-top: 0;
+  padding-bottom: 0.2rem;
+  color: #2a2924;
+  text-shadow: 1px 2px 0 rgba(111, 79, 42, 0.16);
+  border-bottom: 0.22rem solid #b7834f;
+}
+
+.logo {
+  font-family: Rockwell, "Roboto Slab", "Courier New", Georgia, serif;
+  font-weight: 900;
+  text-shadow: 1px 2px 0 rgba(111, 79, 42, 0.14);
+}
+
+/* Tools tab: warm, practical cards with descriptions only */
+.tools-intro {
+  border-top: 0.35rem solid #b7834f;
+}
+
+.tools-intro .hint a {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.tools-section {
+  margin: 1.35rem 0;
+}
+
+.tools-section h2 {
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+}
+
+.tools-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+.tools-card {
+  padding: 1rem 1.05rem;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(241, 226, 202, 0.9)),
+    url("textures/warm-oak.jpg") center / cover;
+  border: 1px solid #cdb99d;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.tools-card h3 {
+  margin: 0 0 0.35rem;
+  color: #704d2d;
+  font-size: 1.06rem;
+}
+
+.tools-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.tools-next {
+  margin-top: 1.5rem;
+  border-left: 0.35rem solid var(--accent);
+}
+
+.tools-next h2 {
+  margin-top: 0;
+}
+
+.tools-next p {
+  color: var(--muted);
+}
+
+@media (min-width: 560px) {
+  .tools-card-grid { grid-template-columns: 1fr 1fr; }
+}
