@@ -10,6 +10,7 @@ Seamless wood-floor color maps from [ambientCG](https://ambientcg.com/) (CC0), p
 | warm-oak.jpg | WoodFloor041 | Plank (also site UI) |
 | honey-oak.jpg | WoodFloor003 | Plank |
 | golden-oak.jpg | WoodFloor063 | Plank |
+| acacia.jpg | warm-oak recolor (WoodFloor041) | Warm variegated plank |
 | gray-oak.jpg | WoodFloor039 (recolored) | Cool gray plank |
 | weathered-gray.jpg | WoodFloor001 (recolored) | Weathered gray plank |
 | maple.jpg | WoodFloor029 | Light plank |

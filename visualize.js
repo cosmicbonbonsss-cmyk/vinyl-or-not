@@ -7,6 +7,7 @@ const TEXTURES = [
   { id: "medium-oak", label: "Medium oak", file: "textures/medium-oak.jpg", repeat: [6, 6] },
   { id: "warm-oak", label: "Warm oak", file: "textures/warm-oak.jpg", repeat: [6, 6] },
   { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] },
+  { id: "acacia", label: "Acacia", file: "textures/acacia.jpg", repeat: [5, 5] },
   { id: "golden-oak", label: "Golden oak", file: "textures/golden-oak.jpg", repeat: [6, 6] },
   { id: "gray-oak", label: "Gray oak", file: "textures/gray-oak.jpg", repeat: [6, 6] },
   { id: "weathered-gray", label: "Weathered gray", file: "textures/weathered-gray.jpg", repeat: [7, 7] },
