@@ -22,6 +22,7 @@ No middle tier. Single Stripe product / Payment Link for the paid price. Pro too
 - Free teaser + disclaimer (not a licensed inspection)
 - Paid unlock via Stripe Test Payment Link placeholder (`stripe-config.js`) or demo `?report=1`
 - Where to buy: Home Depot, Floor & Decor, Lowe’s + ZIP/city Google Maps search + optional geolocation
+- Affiliate-ready LVP shop links near the homepage tools, measurement, visualization, gallery, teaser, and report decision points
 - Plain HTML/CSS/JS — mobile-friendly, no frameworks
 - `measure.html` — room measurement tips (length × width, 10–15% waste, doorways/closets, example)
 - `visualize.html` — photo-only LVP overlay (4-corner quad + Three.js warp, ambientCG textures)
@@ -47,6 +48,16 @@ Audience jump links: **Installers** | **Property managers** | **Designers**
 - **Free to upload** (customers & contractors) — entries stay on that browser; clearly labeled demo storage
 - **Featured** section / badge / accent border for paid contractors (`?pro=1` or session unlock) when role = contractor
 - Seeded demos include one featured pro job; JSON import/export for packs
+
+## Affiliate link setup
+
+1. Join **Amazon Associates** and use the approved store ID/tag Amazon gives you.
+2. Check the current **Home Depot affiliate** application and terms; affiliate network availability can change.
+3. Apply to Lowe’s through **Impact.com** (or the current network Lowe’s lists) and use any approved tracking URL in the config.
+4. If desired, join the current Floor & Decor affiliate program/network as well.
+5. Copy `affiliate-config.example.js` to `affiliate-config.js` if needed, then fill `amazonTag` and/or replace the `links` values with approved tracking URLs. Leave `amazonTag` empty until approval; the included category URLs stay clean and usable.
+
+`affiliate.js` adds Amazon’s `tag` query parameter only when `enabled` is true and `amazonTag` is non-empty. It does not invent IDs. Every shop block includes the disclosure: “We may earn a commission from purchases via these links.”
 
 ## Stripe setup
 
@@ -87,5 +98,7 @@ Repo publishes from `main` branch, root `/`.
 - `specs/` — planning-aid downloads
 - `styles.css` — mobile-friendly layout
 - `app.js` — previews, checklist rules, unlock, where-to-buy Maps/geo
+- `affiliate-config.js` / `affiliate-config.example.js` — public retailer URLs and optional tracking placeholders
+- `affiliate.js` — builds clean or tagged retailer links
 - `stripe-config.js` — public placeholders (`checkoutUrl`, `$12` / `$10–$15`)
 - `stripe-config.example.js` — documented example Payment Link
