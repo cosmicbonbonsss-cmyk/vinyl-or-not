@@ -330,3 +330,53 @@ fieldset input { margin-right: 0.45rem; }
   .retailer-links li { flex: 1 1 auto; }
   .retailer-links a { text-align: center; }
 }
+
+/* Room measurement tips */
+.measure-steps {
+  margin: 1rem 0 1.25rem;
+  padding-left: 1.25rem;
+  color: var(--ink);
+}
+
+.measure-steps li {
+  margin-bottom: 0.85rem;
+}
+
+.example-box {
+  background: #eef3f0;
+  border: 1px solid #c9d9d2;
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin: 1.25rem 0;
+}
+
+.example-box h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.example-box p { margin: 0.35rem 0; }
+
+.example-result {
+  margin-top: 0.75rem !important;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #c9d9d2;
+}
+
+.measure-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.measure-link:hover { text-decoration: underline; }
+
+.site-footer a {
+  color: var(--accent);
+  font-weight: 600;
+}
