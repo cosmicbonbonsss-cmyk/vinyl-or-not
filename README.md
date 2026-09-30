@@ -45,8 +45,7 @@ Chapters live under `guide/*.html`. Hub at `/guide.html` (`guide/index.html` red
 
 ## Project gallery (`projects.html`)
 
-- **Free to browse** for everyone
-- **Free to upload** DIY before/after — entries stay on that browser; clearly labeled demo storage
+- **Upload** DIY before/after to the shared gallery feed
 - Seeded demos + JSON import/export for packs
 
 ## Stripe setup

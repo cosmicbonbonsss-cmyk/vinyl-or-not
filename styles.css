@@ -1356,3 +1356,23 @@ h3 {
   color: var(--accent);
   margin-bottom: 0.25rem;
 }
+
+
+/* Shared-mode / status notices */
+.notice-banner {
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem 1rem;
+  background: #f3e6c8;
+  border: 1px solid #e2d0a8;
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.notice-banner[hidden] { display: none !important; }
+.notice-banner code {
+  font-size: 0.88em;
+  background: rgba(0,0,0,0.06);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
