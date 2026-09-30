@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vinyl or Not — Hard-Surface Flooring Photo Reports</title>
+  <meta name="description" content="Quick photo-based flooring type reports. Free one-line guess; unlock the full report for $10–$15 (default $12). Guided checklist, not AI vision." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="./">Vinyl or Not</a>
+      <p class="tagline">Hard-surface flooring photo reports</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Landing -->
+    <section id="landing" class="card hero">
+      <h1>Is it vinyl — or something else?</h1>
+      <p class="pitch">
+        Snap a few photos of your hard-surface floor. Answer a short guided checklist.
+        Get a free one-line type guess, then unlock a plain-English photo report for
+        <strong>$10–$15</strong> (default <strong>$12</strong>) — seams, wear, and replace-vs-refinish notes.
+      </p>
+      <ul class="bullets">
+        <li>No app install — works in your phone browser</li>
+        <li>Photos stay on your device until you choose to share them</li>
+        <li>Guided checklist — <em>not</em> computer vision or AI inspection</li>
+      </ul>
+      <button type="button" class="btn primary" id="start-btn">Start photo report</button>
+    </section>
+
+    <!-- Photos -->
+    <section id="photos" class="card hidden">
+      <h2>1. Add 1–3 photos</h2>
+      <p class="hint">Close-ups of seams, edges, and texture help most. Preview only — nothing uploads to a server in this prototype.</p>
+      <label class="file-label">
+        <span class="btn secondary">Choose photos</span>
+        <input type="file" id="photo-input" accept="image/*" multiple />
+      </label>
+      <div id="thumbnails" class="thumbnails" aria-live="polite"></div>
+      <p id="photo-count" class="hint"></p>
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-goto="landing">Back</button>
+        <button type="button" class="btn primary" id="to-checklist" disabled>Continue to checklist</button>
+      </div>
+    </section>
+
+    <!-- Checklist -->
+    <section id="checklist" class="card hidden">
+      <h2>2. Guided checklist</h2>
+      <p class="badge">Not AI vision — you answer; we match simple rules.</p>
+      <form id="checklist-form">
+        <fieldset>
+          <legend>Plank / tile seams</legend>
+          <label><input type="radio" name="seams" value="tight-click" required /> Tight click-lock lines, little or no grout</label>
+          <label><input type="radio" name="seams" value="grout" /> Visible grout joints (tile look)</label>
+          <label><input type="radio" name="seams" value="wide-wood" /> Wider wood-plank gaps or nail/staple clues</label>
+        </fieldset>
+        <fieldset>
+          <legend>Surface texture</legend>
+          <label><input type="radio" name="texture" value="embossed" required /> Embossed wood grain (feels plastic/vinyl)</label>
+          <label><input type="radio" name="texture" value="smooth-hard" /> Smooth hard glaze (ceramic/porcelain feel)</label>
+          <label><input type="radio" name="texture" value="real-wood" /> Soft natural grain, can dent with a fingernail in soft spots</label>
+        </fieldset>
+        <fieldset>
+          <legend>Underlayment / back color (if edge or scrap visible)</legend>
+          <label><input type="radio" name="underlay" value="foam-gray" required /> Foam pad / gray or black vinyl core</label>
+          <label><input type="radio" name="underlay" value="concrete" /> Concrete or thinset under tiles</label>
+          <label><input type="radio" name="underlay" value="wood-sub" /> Plywood / OSB wood subfloor</label>
+          <label><input type="radio" name="underlay" value="unknown" /> Can't tell from photos</label>
+        </fieldset>
+        <fieldset>
+          <legend>Click edges / profile</legend>
+          <label><input type="radio" name="edges" value="click" required /> Tongue-and-groove click edges visible</label>
+          <label><input type="radio" name="edges" value="glued" /> Glued-down or no click profile</label>
+          <label><input type="radio" name="edges" value="nailed" /> Nailed / stapled solid or engineered wood</label>
+        </fieldset>
+        <fieldset>
+          <legend>Wear &amp; condition clues</legend>
+          <label><input type="radio" name="wear" value="light" required /> Light scuffs; surface mostly intact</label>
+          <label><input type="radio" name="wear" value="peaking" /> Edge peaking, cupping, or lifted seams</label>
+          <label><input type="radio" name="wear" value="heavy" /> Deep wear-through, cracks, or missing pieces</label>
+        </fieldset>
+        <div class="nav-row">
+          <button type="button" class="btn ghost" data-goto="photos">Back</button>
+          <button type="submit" class="btn primary">Get free teaser</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Teaser -->
+    <section id="teaser" class="card hidden">
+      <h2>3. Free teaser</h2>
+      <p class="teaser-line" id="teaser-guess"></p>
+      <p class="disclaimer">
+        <strong>Disclaimer:</strong> This is a guided checklist guess for entertainment and planning only.
+        It is <em>not</em> a licensed home inspection, flooring appraisal, or professional moisture test.
+      </p>
+      <div class="unlock-box">
+        <h3>Unlock the full report — $12</h3>
+        <p>One-time payment ($10–$15; default $12). Full report: type confirmation, condition, refinish-vs-replace, cost bands, subfloor red flags, pro checklist, and where-to-buy.</p>
+        <a id="checkout-btn" class="btn primary" href="#" rel="noopener">Pay with Stripe (test)</a>
+        <p class="hint" id="checkout-hint"></p>
+        <p class="hint demo-hint">Demo: after “payment,” return with <code>?report=1</code> to unlock — or <a href="?report=1" id="demo-unlock">simulate unlock now</a>.</p>
+      </div>
+
+      <div class="where-to-buy" id="teaser-where">
+        <h3>Where to buy</h3>
+        <p>Shopping next steps after your teaser — browse national retailers or find local shops.</p>
+        <ul class="retailer-links">
+          <li><a href="https://www.homedepot.com/b/Flooring/N-5yc1vZaq7w" target="_blank" rel="noopener">Home Depot — Flooring</a></li>
+          <li><a href="https://www.flooranddecor.com/" target="_blank" rel="noopener">Floor &amp; Decor</a></li>
+          <li><a href="https://www.lowes.com/c/Flooring" target="_blank" rel="noopener">Lowe&apos;s — Flooring</a></li>
+        </ul>
+        <div class="local-search">
+          <label for="teaser-zip">Find local flooring stores</label>
+          <input type="text" class="local-zip" id="teaser-zip" placeholder="ZIP or city" autocomplete="postal-code" />
+          <button type="button" class="btn secondary local-search-btn">Search Maps</button>
+          <button type="button" class="btn ghost geo-btn">Use my location</button>
+          <p class="geo-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-goto="checklist">Edit answers</button>
+      </div>
+    </section>
+
+    <!-- Full report -->
+    <section id="report" class="card hidden">
+      <h2>Full photo report</h2>
+      <p class="badge success">Unlocked</p>
+      <article class="report-body" id="report-body">
+        <p>This looks like click-lock LVP over a concrete slab. Surface wear is light, but the photo shows edge peaking in one area. Refinishing isn't realistic for LVP — plan on replace. Ballpark for a typical bedroom: about three to six dollars per square foot installed, more if the subfloor needs leveling. Have a pro confirm moisture under the slab before you buy new flooring.</p>
+        <ul>
+          <li><strong>Type confirmation:</strong> click-lock LVP (luxury vinyl plank)</li>
+          <li><strong>Condition:</strong> light surface wear; edge peaking in one area</li>
+          <li><strong>Refinish vs replace:</strong> replace — LVP cannot be refinished like hardwood</li>
+          <li><strong>Cost band:</strong> roughly $3–$6 / sq ft installed for a typical bedroom; more if leveling is needed</li>
+          <li><strong>Subfloor red flags:</strong> concrete slab — check moisture before new install</li>
+          <li><strong>Pro checklist:</strong> moisture test under slab, flatness/leveling, product waterproof rating, transition pieces, underlayment compatibility</li>
+        </ul>
+      </article>
+
+      <div class="where-to-buy" id="report-where">
+        <h3>Where to buy</h3>
+        <p>Shopping next steps after your report — national retailers and shops near you.</p>
+        <ul class="retailer-links">
+          <li><a href="https://www.homedepot.com/b/Flooring/N-5yc1vZaq7w" target="_blank" rel="noopener">Home Depot — Flooring</a></li>
+          <li><a href="https://www.flooranddecor.com/" target="_blank" rel="noopener">Floor &amp; Decor</a></li>
+          <li><a href="https://www.lowes.com/c/Flooring" target="_blank" rel="noopener">Lowe&apos;s — Flooring</a></li>
+        </ul>
+        <div class="local-search">
+          <label for="report-zip">Find local flooring stores</label>
+          <input type="text" class="local-zip" id="report-zip" placeholder="ZIP or city" autocomplete="postal-code" />
+          <button type="button" class="btn secondary local-search-btn">Search Maps</button>
+          <button type="button" class="btn ghost geo-btn">Use my location</button>
+          <p class="geo-status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <p class="disclaimer">
+        Not a licensed inspection. Confirm moisture, subfloor, and product warranty with a qualified flooring pro before purchase or install.
+      </p>
+      <div class="nav-row">
+        <button type="button" class="btn ghost" id="start-over">Start over</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Vinyl or Not · prototype · guided checklist, not AI vision</p>
+    </div>
+  </footer>
+
+  <script src="stripe-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
