@@ -200,7 +200,7 @@
   }
 
   // Events
-s
+
   $("start-btn").addEventListener("click", function () { show("photos"); });
 
   document.querySelectorAll("[data-goto]").forEach(function (btn) {
