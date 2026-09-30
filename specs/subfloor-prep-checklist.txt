@@ -27,4 +27,4 @@ Red flags (pause and get a pro opinion)
 - Existing floor that is not well bonded
 - Below-grade or slab-on-grade with no moisture history
 
-Related: measure.html · pros.html · moisture-testing-notes.txt
+Related: measure.html · guide.html · moisture-testing-notes.txt

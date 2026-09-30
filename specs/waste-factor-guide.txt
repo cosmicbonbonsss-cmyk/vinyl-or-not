@@ -34,4 +34,4 @@ Designers
 - Pattern direction and feature walls change waste — note layout intent
   on the quote so the takeoff matches the presentation boards.
 
-Related: measure.html · pros.html
+Related: measure.html · guide.html

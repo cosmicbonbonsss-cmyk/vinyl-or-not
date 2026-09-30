@@ -2,32 +2,13 @@
   "use strict";
 
   var LOCAL_KEY = "von_gallery_local";
-  var ACCOUNT_KEY = "von_trade_account";
-  var PROFILE_KEY = "von_contractor_profile";
-  var MAX_DATA_URL_CHARS = 450000; // soft limit per image for localStorage safety
+  var MAX_DATA_URL_CHARS = 450000;
 
   var grid = document.getElementById("gallery-grid");
   var countEl = document.getElementById("gallery-count");
   var form = document.getElementById("project-form");
   var formStatus = document.getElementById("project-form-status");
   var ieStatus = document.getElementById("ie-status");
-
-  function hasProUnlock() {
-    try {
-      if (sessionStorage.getItem("vinylProPaid") === "1") return true;
-      if (sessionStorage.getItem("von_pro_unlocked") === "1") return true;
-      if (sessionStorage.getItem("von_report_unlocked") === "1") return true;
-    } catch (e) {}
-    var params = new URLSearchParams(window.location.search);
-    if (params.get("pro") === "1" || params.get("report") === "1") {
-      try {
-        sessionStorage.setItem("vinylProPaid", "1");
-        sessionStorage.setItem("von_pro_unlocked", "1");
-      } catch (e2) {}
-      return true;
-    }
-    return false;
-  }
 
   function readJson(key) {
     try {
@@ -50,28 +31,23 @@
       .replace(/"/g, "&quot;");
   }
 
-  /** Seeded demos — public for everyone; use texture JPGs as after shots */
   function seedProjects() {
     return [
       {
         id: "seed-1",
         seed: true,
-        featured: true,
-        title: "Living room — warm oak LVP (featured pro)",
+        title: "Living room — warm oak LVP",
         location: "Austin, TX",
         flooring: "LVP",
-        role: "contractor",
-        notes: "Click-lock warm oak over leveled slab. Seeded featured demo from a paid-contractor style profile.",
+        role: "customer",
+        notes: "Click-lock warm oak over a leveled slab. Seeded DIY demo.",
         before: [{ label: "Before", css: "demo-before-a" }],
         after: [{ src: "textures/warm-oak.jpg", label: "After" }],
-        company: "Demo Ridge Flooring",
-        profileId: "seed-ridge",
         createdAt: "2026-01-12T12:00:00.000Z"
       },
       {
         id: "seed-2",
         seed: true,
-        featured: false,
         title: "Guest bath — gray oak refresh",
         location: "Denver, CO",
         flooring: "LVP",
@@ -84,12 +60,11 @@
       {
         id: "seed-3",
         seed: true,
-        featured: false,
         title: "Open plan — wide plank walnut look",
         location: "Seattle, WA",
         flooring: "LVP",
-        role: "designer",
-        notes: "Designer mood-board style demo using a wide-plank texture preview.",
+        role: "customer",
+        notes: "DIY mood-board style demo using a wide-plank texture preview.",
         before: [{ label: "Before", css: "demo-before-c" }],
         after: [{ src: "textures/wide-plank-oak.jpg", label: "After" }],
         createdAt: "2026-03-20T18:00:00.000Z"
@@ -112,16 +87,14 @@
 
   function sortProjects(list) {
     return list.slice().sort(function (a, b) {
-      if (!!a.featured !== !!b.featured) return a.featured ? -1 : 1;
       return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
     });
   }
 
   function roleLabel(role) {
-    if (role === "contractor") return "Contractor";
-    if (role === "pm") return "Property manager";
-    if (role === "designer") return "Designer";
-    return "Customer";
+    if (role === "friend") return "Helping a friend";
+    if (role === "other") return "Other";
+    return "Homeowner / DIY";
   }
 
   function renderMedia(items, kind) {
@@ -154,35 +127,14 @@
       .join("");
   }
 
-  function profileSnippet(p) {
-    if (!p.featured) return "";
-    var profile = readJson(PROFILE_KEY);
-    var name = (p.company || (profile && profile.businessName) || "").trim();
-    if (!name && !p.profileId) return "";
-    var bits = [];
-    if (name) bits.push("<strong>" + escapeHtml(name) + "</strong>");
-    if (profile && profile.serviceArea && p.featured && !p.seed) {
-      bits.push("Service area: " + escapeHtml(profile.serviceArea));
-    }
-    if (p.seed && p.company) {
-      bits.push('Featured pro · <a href="pros.html#pro-tools">Pro profile tools</a>');
-    } else if (p.featured) {
-      bits.push('<a href="pros.html#pro-profile">View pro profile tools</a>');
-    }
-    return '<p class="featured-profile">' + bits.join(" · ") + "</p>";
-  }
-
   function cardHtml(p) {
     var badges = [];
-    if (p.featured) badges.push('<span class="badge success">Featured</span>');
     if (p.seed) badges.push('<span class="badge">Seeded demo</span>');
     else badges.push('<span class="badge">On this device</span>');
     badges.push('<span class="badge">' + escapeHtml(roleLabel(p.role)) + "</span>");
 
     return (
-      '<article class="gallery-card' +
-      (p.featured ? " featured" : "") +
-      '" data-id="' +
+      '<article class="gallery-card" data-id="' +
       escapeHtml(p.id) +
       '">' +
       '<div class="gallery-badges">' +
@@ -204,7 +156,6 @@
       "</div>" +
       "</div>" +
       (p.notes ? "<p>" + escapeHtml(p.notes) + "</p>" : "") +
-      profileSnippet(p) +
       "</article>"
     );
   }
@@ -212,38 +163,15 @@
   function render() {
     if (!grid) return;
     var list = sortProjects(allProjects());
-    var featuredCount = list.filter(function (p) {
-      return p.featured;
-    }).length;
     var localCount = localProjects().length;
     if (countEl) {
       countEl.textContent =
-        list.length +
-        " project(s) · " +
-        featuredCount +
-        " featured · " +
-        localCount +
-        " saved on this device. Featured pro jobs sort to the top.";
+        list.length + " project(s) · " + localCount + " saved on this device.";
     }
-
-    var featured = list.filter(function (p) {
-      return p.featured;
-    });
-    var rest = list.filter(function (p) {
-      return !p.featured;
-    });
-
-    var html = "";
-    if (featured.length) {
-      html += '<h3 class="gallery-section-title">Featured pro jobs</h3>';
-      html += '<div class="gallery-section">' + featured.map(cardHtml).join("") + "</div>";
-    }
-    html += '<h3 class="gallery-section-title">All projects</h3>';
-    html +=
+    grid.innerHTML =
       '<div class="gallery-section">' +
-      (rest.length ? rest.map(cardHtml).join("") : '<p class="hint">No non-featured projects yet.</p>') +
+      (list.length ? list.map(cardHtml).join("") : '<p class="hint">No projects yet.</p>') +
       "</div>";
-    grid.innerHTML = html;
   }
 
   function readFilesAsDataUrls(fileList, maxFiles) {
@@ -275,10 +203,6 @@
       formStatus.textContent = "Reading photos…";
       var beforeInput = document.getElementById("proj-before");
       var afterInput = document.getElementById("proj-after");
-      var role = form.role.value;
-      var paidContractor = hasProUnlock() && role === "contractor";
-      var account = readJson(ACCOUNT_KEY);
-      var profile = readJson(PROFILE_KEY);
 
       Promise.all([
         readFilesAsDataUrls(beforeInput.files, 3),
@@ -299,18 +223,13 @@
           var entry = {
             id: "local-" + Date.now(),
             seed: false,
-            featured: !!paidContractor,
             title: form.title.value.trim(),
             location: form.location.value.trim(),
             flooring: form.flooring.value,
-            role: role,
+            role: form.role.value,
             notes: form.notes.value.trim(),
             before: before,
             after: after,
-            company:
-              (profile && profile.businessName) ||
-              (account && account.company) ||
-              "",
             createdAt: new Date().toISOString()
           };
           var list = localProjects();
@@ -323,12 +242,7 @@
             );
           }
           form.reset();
-          formStatus.textContent = paidContractor
-            ? "Added as a Featured pro job (paid contractor unlock detected)."
-            : "Added to gallery on this device" +
-              (role === "contractor"
-                ? " (contractor uploads are featured when Pro tools are unlocked — try ?pro=1)."
-                : ".");
+          formStatus.textContent = "Added to gallery on this device.";
           render();
           document.getElementById("gallery").scrollIntoView({ behavior: "smooth" });
         })
@@ -399,7 +313,5 @@
     });
   }
 
-  // Honor ?pro=1 on this page for featured uploads
-  hasProUnlock();
   render();
 })();

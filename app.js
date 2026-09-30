@@ -138,66 +138,6 @@
     }
   }
 
-  function openMapsSearch(query) {
-    var q = encodeURIComponent("flooring stores near " + query);
-    window.open("https://www.google.com/maps/search/?api=1&query=" + q, "_blank", "noopener");
-  }
-
-  function wireWhereToBuy(root) {
-    if (!root || root.dataset.wired === "1") return;
-    root.dataset.wired = "1";
-
-    var input = root.querySelector(".local-zip");
-    var searchBtn = root.querySelector(".local-search-btn");
-    var geoBtn = root.querySelector(".geo-btn");
-    var status = root.querySelector(".geo-status");
-
-    function runSearch() {
-      var v = (input && input.value || "").trim();
-      if (!v) {
-        if (status) status.textContent = "Enter a ZIP or city first.";
-        return;
-      }
-      if (status) status.textContent = "";
-      openMapsSearch(v);
-    }
-
-    if (searchBtn) searchBtn.addEventListener("click", runSearch);
-    if (input) {
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          runSearch();
-        }
-      });
-    }
-
-    if (geoBtn) {
-      geoBtn.addEventListener("click", function () {
-        if (!navigator.geolocation) {
-          if (status) status.textContent = "Geolocation not supported — enter a ZIP or city.";
-          return;
-        }
-        if (status) status.textContent = "Getting location…";
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            var lat = pos.coords.latitude.toFixed(5);
-            var lng = pos.coords.longitude.toFixed(5);
-            if (status) status.textContent = "Opening maps near you…";
-            openMapsSearch(lat + "," + lng);
-          },
-          function () {
-            if (status) status.textContent = "Location denied or unavailable — enter a ZIP or city.";
-          },
-          { enableHighAccuracy: false, timeout: 10000 }
-        );
-      });
-    }
-  }
-
-  function wireAllWhereToBuy() {
-    document.querySelectorAll(".where-to-buy").forEach(wireWhereToBuy);
-  }
 
   // Events
 
@@ -230,7 +170,6 @@
     };
     $("teaser-guess").textContent = guessFromAnswers(answers);
     wireCheckout();
-    wireAllWhereToBuy();
     if (hasReportUnlock()) {
       markUnlocked();
       show("report");
@@ -254,7 +193,6 @@
   });
 
   // Init
-  wireAllWhereToBuy();
   wireCheckout();
   updatePhotoUi();
 

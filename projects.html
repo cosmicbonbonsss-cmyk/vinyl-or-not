@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Project gallery — Vinyl or Not</title>
-  <meta name="description" content="Before & after flooring project gallery. Browse seeded demos; add your own jobs on this device. Free to browse." />
-  <link rel="stylesheet" href="styles.css?v=plank1" />
+  <meta name="description" content="Before & after DIY flooring gallery. Browse seeded demos; add your own project photos on this device." />
+  <link rel="stylesheet" href="styles.css?v=guide1" />
 </head>
 <body>
   <header class="site-header">
@@ -17,9 +17,9 @@
         </div>
         <nav class="site-nav" aria-label="Site">
           <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
           <a href="measure.html">Measure</a>
           <a href="visualize.html">Visualize</a>
-          <a href="pros.html">For pros</a>
           <a href="projects.html" aria-current="page">Projects</a>
         </nav>
       </div>
@@ -31,16 +31,17 @@
       <p class="badge">Free to browse</p>
       <h1>Project gallery — before &amp; after</h1>
       <p class="pitch">
-        Real-looking job examples for homeowners and crews. Seeded demos ship with the site;
-        anything you add here stays in <strong>this browser</strong> until a real backend exists.
+        DIY inspiration: seeded demos ship with the site. Anything you add stays in
+        <strong>this browser</strong> until a real backend exists.
       </p>
       <p class="hint">
-        Demo gallery — projects you add stay on this device. Seeded examples are public for everyone.
+        Demo gallery for homeowners — projects you add stay on this device. Seeded examples are public for everyone.
       </p>
       <div class="jump-nav">
         <a class="btn primary" href="#gallery">Browse gallery</a>
         <a class="btn secondary" href="#add-project">Add a project</a>
         <a class="btn ghost" href="#import-export">Import / export JSON</a>
+        <a class="btn ghost" href="guide.html">LVP guide</a>
       </div>
     </section>
 
@@ -53,8 +54,8 @@
     <section class="card" id="add-project">
       <h2>Add a project</h2>
       <p class="hint">
-        Homeowners and contractors can both submit. Photos are read with FileReader and stored in localStorage
-        (keep images small — browsers have storage limits). Free for public gallery posts.
+        Share your DIY before &amp; after. Photos are read with FileReader and stored in localStorage
+        (keep images small — browsers have storage limits).
       </p>
       <form id="project-form" class="form-grid">
         <label>
@@ -76,12 +77,11 @@
           </select>
         </label>
         <label>
-          Submitter role
+          Who posted
           <select name="role" id="proj-role">
-            <option value="customer">Customer / homeowner</option>
-            <option value="contractor">Contractor / installer</option>
-            <option value="pm">Property manager</option>
-            <option value="designer">Designer</option>
+            <option value="customer">Homeowner / DIY</option>
+            <option value="friend">Helping a friend</option>
+            <option value="other">Other</option>
           </select>
         </label>
         <label class="full">
@@ -121,9 +121,9 @@
   <footer class="site-footer">
     <div class="wrap wide">
       <p>
-        Vinyl or Not · project gallery ·
+        Vinyl or Not · DIY project gallery ·
         <a href="./">Home</a> ·
-        <a href="pros.html">For pros</a> ·
+        <a href="guide.html">Guide</a> ·
         <a href="measure.html">Measure</a> ·
         <a href="visualize.html">Visualize</a>
       </p>

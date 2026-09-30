@@ -38,4 +38,4 @@ Install notes (generic)
 - Use approved underlayment / vapor barriers only.
 
 Related tools on Vinyl or Not: measure.html (sq ft + waste), visualize.html
-(plank look preview), pros.html (pro hub).
+(plank look preview), guide.html (LVP guide).

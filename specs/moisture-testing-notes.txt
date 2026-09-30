@@ -33,4 +33,4 @@ Rental / turnover red flags
 - Musty closets on slabs
 - Recent flooding without documented dry-out
 
-Related: subfloor-prep-checklist.txt · pros.html
+Related: subfloor-prep-checklist.txt · guide.html
