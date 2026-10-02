@@ -64,10 +64,10 @@ const SAMPLE_ROOMS = [
     label: "Bathroom",
     file: "gallery/before-bath-checkered.jpg",
     corners: [
-      [0.013, 0.989],
-      [0.987, 0.989],
-      [0.987, 0.843],
-      [0.013, 0.843]
+      [0.02, 0.992],
+      [0.62, 0.992],
+      [0.55, 0.808],
+      [0.06, 0.835]
     ]
   }
 ];
