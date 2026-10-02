@@ -97,7 +97,7 @@
     var plankLen = num(lenEl);
     var plankWid = num(widEl);
     var plankSq = plankLen > 0 && plankWid > 0 ? (plankLen * plankWid) / 144 : 0;
-    var order = net * (1 + waste / 100);
+    var order = Math.round(net * (1 + waste / 100) * 10) / 10;
     var boxes = coverage > 0 ? Math.ceil(order / coverage - 1e-9) : 0;
     var planks = plankSq > 0 ? Math.ceil(order / plankSq - 1e-9) : 0;
 
@@ -110,11 +110,14 @@
       return "<dt>" + escapeHtml(p.name) + "</dt><dd>" + p.sq.toFixed(1) + " sq ft</dd>";
     }).join("");
 
+    var wasteSq = Math.round((order - net) * 10) / 10;
     out.innerHTML =
+      '<p class="measure-lead"><strong>Order ' + order.toFixed(1) + " sq ft</strong> — " +
+      boxes + " box" + (boxes === 1 ? "" : "es") + ", about " + planks + " planks.</p>" +
       "<dl>" +
       rows +
       "<dt>Net area</dt><dd>" + net.toFixed(1) + " sq ft</dd>" +
-      "<dt>Waste (" + waste + "%)</dt><dd>" + (order - net).toFixed(1) + " sq ft</dd>" +
+      "<dt>Waste (" + waste + "%)</dt><dd>" + wasteSq.toFixed(1) + " sq ft</dd>" +
       "<dt>Order quantity</dt><dd>" + order.toFixed(1) + " sq ft</dd>" +
       "<dt>Boxes to buy</dt><dd>" + boxes + "</dd>" +
       "<dt>Planks (estimate)</dt><dd>" + planks + "</dd>" +

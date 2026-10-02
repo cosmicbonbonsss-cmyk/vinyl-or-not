@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LVP flooring visualizer — preview vinyl planks in your room photo</title>
   <meta name="description" content="Upload a room photo, tap four floor corners, and overlay seamless LVP textures. Free vinyl plank flooring visualizer in the browser — no account." />
   <link rel="canonical" href="https://vinylornot.com/visualize.html" />
@@ -18,8 +18,8 @@
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=20261002a" />
-  <link rel="stylesheet" href="visualize.css?v=20261002a" />
+  <link rel="stylesheet" href="styles.css?v=20261002b" />
+  <link rel="stylesheet" href="visualize.css?v=20261002b" />
 </head>
 <body>
   <header class="site-header">
@@ -151,13 +151,13 @@
           </label>
         </div>
         <div id="measure-results" class="measure-results">
-          <p>Enter a reference length after four corners and a texture are set.</p>
+          <p>Mark the floor first. For boxes and planks to order, use the <a href="measure.html">Measure</a> calculator — this panel is only a rough area from the photo.</p>
         </div>
       </div>
 
       <div id="share-panel" class="share-panel hidden">
         <h2>Save &amp; share</h2>
-        <p class="hint">Download a PNG of the overlay, or save before/after to the project gallery.</p>
+        <p class="hint">Download a PNG if you want to text the preview to someone. Saving keeps the before and after in this browser only — it is not a public post.</p>
         <label class="share-title-label">
           Gallery title
           <input type="text" id="share-title" placeholder="e.g. Living room — warm oak preview" />
@@ -165,7 +165,7 @@
         <div class="viz-toolbar">
           <button type="button" class="btn secondary" id="download-png">Download PNG</button>
           <button type="button" class="btn primary" id="save-gallery">Save to gallery</button>
-          <button type="button" class="btn ghost" id="copy-share" disabled>Copy share link</button>
+          <button type="button" class="btn ghost hidden" id="copy-share" disabled>Copy link</button>
           <button type="button" class="btn ghost hidden" id="web-share">Share…</button>
         </div>
         <p class="hint" id="share-status" aria-live="polite"></p>
@@ -207,8 +207,8 @@
   }
   </script>
   <script src="gallery-config.js"></script>
-  <script src="photo-check.js?v=20261002a"></script>
-  <script type="module" src="visualize.js?v=20261002a"></script>
+  <script src="photo-check.js?v=20261002b"></script>
+  <script type="module" src="visualize.js?v=20261002b"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

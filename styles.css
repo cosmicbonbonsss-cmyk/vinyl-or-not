@@ -347,6 +347,20 @@ fieldset input { margin-right: 0.45rem; }
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Phone/tablet: one scrolling row instead of a tall wrapped stack under the logo. */
+@media (max-width: 760px) {
+  .header-row { align-items: stretch; }
+  .site-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    gap: 0.95rem;
+    padding-bottom: 0.15rem;
+    scrollbar-width: thin;
+  }
 }
 
 .site-nav a:hover,
@@ -1415,6 +1429,11 @@ h3 {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--muted);
+}
+
+.measure-lead {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
 }
 
 #measure-out.measure-results {

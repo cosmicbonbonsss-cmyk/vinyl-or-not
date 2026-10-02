@@ -44,28 +44,20 @@ function queryId() {
 }
 
 function renderMedia(items, kind) {
-  if (!items || !items.length) {
-    return '<div class="gallery-ph">' + escapeHtml(kind) + " (none)</div>";
+  var photos = (items || []).filter(function (m) {
+    return m && m.src;
+  });
+  if (!photos.length) {
+    return '<div class="gallery-ph">No ' + escapeHtml(String(kind).toLowerCase()) + " photo</div>";
   }
-  return items
+  return photos
     .map(function (m) {
-      if (m.src) {
-        return (
-          '<figure class="gallery-shot"><img src="' +
-          escapeHtml(m.src) +
-          '" alt="' +
-          escapeHtml(m.label || kind) +
-          '" loading="lazy" /><figcaption>' +
-          escapeHtml(m.label || kind) +
-          "</figcaption></figure>"
-        );
-      }
       return (
-        '<figure class="gallery-shot gallery-demo ' +
-        escapeHtml(m.css || "") +
-        '"><span>' +
+        '<figure class="gallery-shot"><img src="' +
+        escapeHtml(m.src) +
+        '" alt="' +
         escapeHtml(m.label || kind) +
-        "</span><figcaption>" +
+        '" loading="lazy" /><figcaption>' +
         escapeHtml(m.label || kind) +
         "</figcaption></figure>"
       );
@@ -164,14 +156,15 @@ async function render() {
     return !isSeedProject(p);
   }));
   if (countEl) {
-    countEl.textContent =
-      list.length === 1 ? "1 project" : list.length + " projects";
+    countEl.textContent = list.length
+      ? (list.length === 1 ? "1 project on this device" : list.length + " projects on this device")
+      : "No projects yet. Add one below, or save a preview from Visualize.";
   }
   grid.innerHTML =
     '<div class="gallery-section">' +
     (list.length ? list.map(function (p) {
       return cardHtml(p, highlightId);
-    }).join("") : '<p class="hint">No projects yet.</p>') +
+    }).join("") : '<p class="hint">Nothing here yet. Use the form under this list, or open <a href="visualize.html">Visualize</a>, mark a floor, and choose Save to gallery.</p>') +
     "</div>";
 
   if (highlightId) {
@@ -179,7 +172,7 @@ async function render() {
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (countEl) {
-      countEl.textContent += " · Shared link id not found in current feed.";
+      countEl.textContent += " That link doesn’t match a project saved in this browser.";
     }
   }
 }
@@ -224,15 +217,15 @@ if (form) {
         if (!before.length && !after.length) {
           throw new Error("Add at least one before or after photo.");
         }
-        formStatus.textContent = "Saving to gallery…";
+        formStatus.textContent = "Saving on this device…";
         return addProject({
           title: form.title.value.trim(),
           location: form.location.value.trim(),
           flooring: form.flooring.value,
           role: form.role.value,
           notes: form.notes.value.trim(),
-          before: before.length ? before : [{ label: "Before", css: "demo-before-a" }],
-          after: after.length ? after : [{ label: "After", css: "demo-before-c" }],
+          before: before,
+          after: after,
           source: "form"
         });
       })
@@ -242,7 +235,7 @@ if (form) {
         formStatus.innerHTML =
           'Saved on this device. <a href="' +
           escapeHtml(share) +
-          '">Open local link</a>';
+          '">Show it in the list</a>. It stays in this browser only.';
         return render();
       })
       .catch(function (err) {
@@ -271,7 +264,7 @@ if (exportBtn) {
     URL.revokeObjectURL(a.href);
     if (ieStatus)
       ieStatus.textContent =
-        "Exported " + payload.projects.length + " local backup project(s).";
+        "Downloaded a copy of " + payload.projects.length + " project(s) from this browser.";
   });
 }
 
@@ -293,7 +286,7 @@ if (importInput) {
           })
         );
         replaceLocalBackup(merged);
-        if (ieStatus) ieStatus.textContent = "Imported " + incoming.length + " into local backup.";
+        if (ieStatus) ieStatus.textContent = "Restored " + incoming.length + " project(s) on this device.";
         render();
       } catch (err) {
         if (ieStatus) ieStatus.textContent = "Import failed: " + (err.message || err);
@@ -306,9 +299,15 @@ if (importInput) {
 
 if (clearBtn) {
   clearBtn.addEventListener("click", function () {
+    var existing = listLocalBackup();
+    if (!existing.length) {
+      if (ieStatus) ieStatus.textContent = "There are no saved projects on this device.";
+      return;
+    }
+    var ok = window.confirm("Delete every project saved in this browser? This cannot be undone.");
+    if (!ok) return;
     clearLocalBackup();
-    if (ieStatus)
-      ieStatus.textContent = "Cleared local backup.";
+    if (ieStatus) ieStatus.textContent = "Deleted the projects saved on this device.";
     render();
   });
 }

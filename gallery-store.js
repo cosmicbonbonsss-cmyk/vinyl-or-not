@@ -130,13 +130,11 @@ async function hydrateMedia(storage, mods, projectId, items, kind) {
           m.src = await maybeUploadDataUrl(storage, mods, projectId, kind, i, m.src);
         } catch (e) {
           if (String(m.src).length > MAX_DATA_URL_CHARS) {
-            throw new Error(
-              "Photo too large for Firestore fallback — enable Storage or use a smaller image."
-            );
+            throw new Error("That photo is too large. Try a smaller one.");
           }
         }
       } else if (String(m.src).length > MAX_DATA_URL_CHARS) {
-        throw new Error("Image too large for demo storage — try a smaller photo.");
+        throw new Error("That photo is too large. Try a smaller one.");
       }
     }
     out.push(m);
@@ -224,7 +222,7 @@ export async function addProject(project) {
   const after = entry.after || [];
   for (const m of before.concat(after)) {
     if (m && m.src && String(m.src).length > MAX_DATA_URL_CHARS) {
-      throw new Error("Image too large for demo storage — try a smaller photo.");
+      throw new Error("That photo is too large. Try a smaller one.");
     }
   }
   const list = readLocal();
@@ -233,7 +231,7 @@ export async function addProject(project) {
     writeLocal(list);
   } catch (err) {
     throw new Error(
-      "Could not save (storage full?). Try fewer/smaller photos or clear local backup."
+      "Could not save. This browser is full. Try smaller photos, or delete projects saved on this device."
     );
   }
   return entry;

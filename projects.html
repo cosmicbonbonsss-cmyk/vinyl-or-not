@@ -18,7 +18,7 @@
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=wood11" />
+  <link rel="stylesheet" href="styles.css?v=20261002b" />
 </head>
 <body>
   <header class="site-header">
@@ -45,10 +45,10 @@
     <section class="card hero">
       <h1 class="page-title">Project gallery — before &amp; after</h1>
       <p class="pitch">
-        Add your own before-and-after room photos on this device.
+        Keep before-and-after photos for a room you’re planning or just finished.
       </p>
       <p class="hint">
-        Projects you add stay in this browser until a shared gallery is connected.
+        Saved projects stay in this browser only. They are not posted on the public site.
       </p>
       <div class="jump-nav">
         <a class="btn primary" href="#gallery">Browse gallery</a>
@@ -118,17 +118,18 @@
     </section>
 
     <section class="card" id="import-export">
-      <h2>Optional local backup</h2>
+      <h2>Copy of your projects</h2>
       <p class="hint">
-        Optional JSON backup for projects saved in this browser. Large photo files make exports big — use sparingly.
+        Download a file if you want a backup, or restore one onto this browser. Large photos make a big file.
+        Deleting projects removes them from this browser only.
       </p>
       <div class="nav-row" style="justify-content: flex-start;">
-        <button type="button" class="btn secondary" id="export-json">Export local backup</button>
+        <button type="button" class="btn secondary" id="export-json">Download a copy</button>
         <label class="file-label">
-          <span class="btn ghost">Import backup JSON</span>
+          <span class="btn ghost">Restore from a file</span>
           <input type="file" id="import-json" accept="application/json,.json" />
         </label>
-        <button type="button" class="btn ghost" id="clear-local">Clear local backup</button>
+        <button type="button" class="btn ghost" id="clear-local">Delete projects on this device</button>
       </div>
       <p class="hint" id="ie-status" aria-live="polite"></p>
     </section>
@@ -148,8 +149,8 @@
     </div>
   </footer>
 
-  <script src="gallery-config.js?v=20260930j"></script>
-  <script type="module" src="projects.js?v=20260930j"></script>
+  <script src="gallery-config.js?v=20261002b"></script>
+  <script type="module" src="projects.js?v=20261002b"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

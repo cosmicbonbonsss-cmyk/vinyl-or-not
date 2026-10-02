@@ -577,14 +577,12 @@ function shareUrlFor(id) {
 
 function setShareButtons(id) {
   lastShareId = id || null;
-  if (copyShareBtn) copyShareBtn.disabled = !id;
-  if (webShareBtn) {
-    if (id && typeof navigator.share === "function") {
-      webShareBtn.classList.remove("hidden");
-    } else {
-      webShareBtn.classList.add("hidden");
-    }
+  // Projects live in this browser only, so a copied link would not open for anyone else.
+  if (copyShareBtn) {
+    copyShareBtn.classList.add("hidden");
+    copyShareBtn.disabled = true;
   }
+  if (webShareBtn) webShareBtn.classList.add("hidden");
 }
 
 function setPickerEnabled(on) {
@@ -762,7 +760,7 @@ if (saveGalleryBtn) {
       return;
     }
     if (shareStatus) {
-      shareStatus.textContent = "Saving to gallery…";
+      shareStatus.textContent = "Saving on this device…";
     }
     saveGalleryBtn.disabled = true;
     try {
@@ -783,7 +781,7 @@ if (saveGalleryBtn) {
         location: "",
         flooring: "LVP",
         role: "customer",
-        notes: "Saved from Visualize overlay (photo + plank preview).",
+        notes: "Preview saved from Visualize.",
         before: [{ src: beforeComp, label: "Before" }],
         after: [{ src: afterJpeg, label: "After (visualize)" }],
         source: "visualize"
@@ -791,9 +789,8 @@ if (saveGalleryBtn) {
       const url = shareUrlFor(saved.id);
       setShareButtons(saved.id);
       if (shareStatus) {
-        const label = "projects.html?id=" + encodeURIComponent(saved.id);
         shareStatus.innerHTML =
-          "Saved. Open <a href=\"" + url + "\">" + label + "</a>";
+          'Saved on this device. <a href="' + url + '">Open it in Projects</a>. It will not show on someone else’s phone.';
       }
     } catch (err) {
       if (shareStatus) shareStatus.textContent = err.message || String(err);
