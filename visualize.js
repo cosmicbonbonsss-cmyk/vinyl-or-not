@@ -294,7 +294,10 @@ function rebuildFloor() {
       const b = a + 1;
       const c = a + (seg + 1);
       const d = c + 1;
-      indices.push(a, c, b, b, c, d);
+      // CCW as seen from the camera (+Z). The previous order was clockwise,
+      // so the default front-face cull dropped the whole quad and the photo
+      // showed through even after the texture loaded.
+      indices.push(a, b, c, b, d, c);
     }
   }
 
@@ -313,7 +316,9 @@ function rebuildFloor() {
     map: activeFloorTex,
     transparent: true,
     opacity: 0.92,
-    depthWrite: false
+    depthWrite: false,
+    depthTest: false,
+    side: THREE.DoubleSide
   });
 
   floorMesh = new THREE.Mesh(geo, mat);
