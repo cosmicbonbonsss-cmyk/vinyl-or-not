@@ -930,15 +930,20 @@ function fileToDataUrl(file) {
 }
 
 function downloadResult() {
-  if (!photoMesh || corners.length !== 4 || !activeFloorTex) return;
+  if (!photoMesh || corners.length !== 4 || !activeFloorTex) {
+    setStatus("Show a floor first, then download.");
+    return;
+  }
   const slug = selectedTexId || "floor";
+  const name = "vinyl-or-not-" + slug + ".png";
   const url = withHiddenMarkers(() => canvasSnapshotDataUrl());
   const a = document.createElement("a");
   a.href = url;
-  a.download = "vinyl-or-not-" + slug + ".png";
+  a.download = name;
   document.body.appendChild(a);
   a.click();
   a.remove();
+  setStatus("Downloaded " + name + ".");
 }
 
 function canvasSnapshotDataUrl() {
