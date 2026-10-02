@@ -33,6 +33,8 @@ Progressive DIY path:
 
 Chapters live under `guide/*.html`. Hub at `/guide.html` (`guide/index.html` redirects there).
 
+Also: `guide/is-it-okay.html` — whether vinyl is a reasonable choice for water, pets, kids, renters, and resale.
+
 ## Project gallery (`projects.html`)
 
 - **Upload** DIY before/after to the shared gallery feed
@@ -56,7 +58,7 @@ Repo publishes from `main` branch, root `/`.
 
 - `index.html` — landing → photos → checklist → free report
 - `guide.html` — guide hub
-- `guide/` — chapter pages (start, what-is-lvp, tools, measure-plan, prep, install, finish-care, troubleshoot)
+- `guide/` — chapter pages (start, what-is-lvp, is-it-okay, tools, measure-plan, prep, install, finish-care, troubleshoot)
 - `measure.html` — how to measure rooms for flooring square footage
 - `textures/` — CC0 seamless plank JPGs (see `textures/CREDITS.md`)
 - `projects.html` / `projects.js` — DIY before/after gallery
