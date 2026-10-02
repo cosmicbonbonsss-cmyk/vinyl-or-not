@@ -44,16 +44,14 @@ const measurePanel = document.getElementById("measure-panel");
 const measureResults = document.getElementById("measure-results");
 const sharePanel = document.getElementById("share-panel");
 const shareStatus = document.getElementById("share-status");
-const shareTitle = document.getElementById("share-title");
+const saveGalleryBtn = document.getElementById("save-gallery");
+const comparePanel = document.getElementById("compare-panel");
+const compareWipe = document.getElementById("compare-wipe");
 const refLengthFt = document.getElementById("ref-length-ft");
 const plankLenIn = document.getElementById("plank-len-in");
 const plankWidIn = document.getElementById("plank-wid-in");
 const priceSqft = document.getElementById("price-sqft");
 const wastePct = document.getElementById("waste-pct");
-const downloadPngBtn = document.getElementById("download-png");
-const saveGalleryBtn = document.getElementById("save-gallery");
-const copyShareBtn = document.getElementById("copy-share");
-const webShareBtn = document.getElementById("web-share");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -246,6 +244,224 @@ function rebuildMarkers() {
   }
 }
 
+
+function lineIntersect(a, b, c, d) {
+  const rx = b.x - a.x;
+  const ry = b.y - a.y;
+  const sx = d.x - c.x;
+  const sy = d.y - c.y;
+  const den = rx * sy - ry * sx;
+  if (Math.abs(den) < 1e-6) return null;
+  const t = ((c.x - a.x) * sy - (c.y - a.y) * sx) / den;
+  return { x: a.x + t * rx, y: a.y + t * ry };
+}
+
+function mul3(A, B) {
+  const C = new Array(9);
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      C[r * 3 + c] = A[r * 3] * B[c] + A[r * 3 + 1] * B[3 + c] + A[r * 3 + 2] * B[6 + c];
+    }
+  }
+  return C;
+}
+
+function inv3(M) {
+  const a = M[0], b = M[1], c = M[2];
+  const d = M[3], e = M[4], f = M[5];
+  const g = M[6], h = M[7], i = M[8];
+  const A = e * i - f * h;
+  const B = c * h - b * i;
+  const C = b * f - c * e;
+  const D = f * g - d * i;
+  const E = a * i - c * g;
+  const F = c * d - a * f;
+  const G = d * h - e * g;
+  const H = b * g - a * h;
+  const I = a * e - b * d;
+  const det = a * A + b * D + c * G;
+  if (Math.abs(det) < 1e-10) return null;
+  const s = 1 / det;
+  return [A * s, B * s, C * s, D * s, E * s, F * s, G * s, H * s, I * s];
+}
+
+function smallestEigenvector(S) {
+  const n = 9;
+  const A = S.map((row) => row.slice());
+  const V = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)));
+  for (let iter = 0; iter < 48; iter++) {
+    let p = 0;
+    let q = 1;
+    let max = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const v = Math.abs(A[i][j]);
+        if (v > max) {
+          max = v;
+          p = i;
+          q = j;
+        }
+      }
+    }
+    if (max < 1e-12) break;
+    const app = A[p][p];
+    const aqq = A[q][q];
+    const apq = A[p][q];
+    const tau = (aqq - app) / (2 * apq);
+    const t = Math.sign(tau || 1) / (Math.abs(tau) + Math.sqrt(1 + tau * tau));
+    const c = 1 / Math.sqrt(1 + t * t);
+    const s = t * c;
+    A[p][p] = app - t * apq;
+    A[q][q] = aqq + t * apq;
+    A[p][q] = 0;
+    A[q][p] = 0;
+    for (let k = 0; k < n; k++) {
+      if (k === p || k === q) continue;
+      const aik = A[k][p];
+      const aiq = A[k][q];
+      const np = c * aik - s * aiq;
+      const nq = s * aik + c * aiq;
+      A[k][p] = np;
+      A[p][k] = np;
+      A[k][q] = nq;
+      A[q][k] = nq;
+    }
+    for (let k = 0; k < n; k++) {
+      const vip = V[k][p];
+      const viq = V[k][q];
+      V[k][p] = c * vip - s * viq;
+      V[k][q] = s * vip + c * viq;
+    }
+  }
+  let minI = 0;
+  let minV = Infinity;
+  for (let i = 0; i < n; i++) {
+    if (A[i][i] < minV) {
+      minV = A[i][i];
+      minI = i;
+    }
+  }
+  const h = [];
+  for (let k = 0; k < n; k++) h.push(V[k][minI]);
+  return h;
+}
+
+function normPoints(pts) {
+  let cx = 0;
+  let cy = 0;
+  pts.forEach((p) => {
+    cx += p.x;
+    cy += p.y;
+  });
+  cx /= pts.length;
+  cy /= pts.length;
+  let acc = 0;
+  pts.forEach((p) => {
+    acc += Math.hypot(p.x - cx, p.y - cy);
+  });
+  const s = (Math.SQRT2 * pts.length) / Math.max(acc, 1e-8);
+  return {
+    pts: pts.map((p) => ({ x: s * (p.x - cx), y: s * (p.y - cy) })),
+    T: [s, 0, -s * cx, 0, s, -s * cy, 0, 0, 1]
+  };
+}
+
+function homography(src, dst) {
+  const S = normPoints(src);
+  const D = normPoints(dst);
+  const rows = [];
+  for (let i = 0; i < 4; i++) {
+    const x = S.pts[i].x;
+    const y = S.pts[i].y;
+    const u = D.pts[i].x;
+    const v = D.pts[i].y;
+    rows.push([-x, -y, -1, 0, 0, 0, u * x, u * y, u]);
+    rows.push([0, 0, 0, -x, -y, -1, v * x, v * y, v]);
+  }
+  const M = Array.from({ length: 9 }, () => Array(9).fill(0));
+  rows.forEach((row) => {
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) M[i][j] += row[i] * row[j];
+    }
+  });
+  const h = smallestEigenvector(M);
+  const TdInv = inv3(D.T);
+  if (!TdInv) return null;
+  return mul3(mul3(TdInv, h), S.T);
+}
+
+function applyH(H, x, y) {
+  const u = H[0] * x + H[1] * y + H[2];
+  const v = H[3] * x + H[4] * y + H[5];
+  const w = H[6] * x + H[7] * y + H[8];
+  if (Math.abs(w) < 1e-8) return null;
+  return { x: u / w, y: v / w };
+}
+
+function focalPx(fl, fr, br, bl) {
+  const vpD = lineIntersect(fl, bl, fr, br);
+  const vpW = lineIntersect(fl, fr, bl, br);
+  if (vpD && vpW) {
+    const f2 = -(vpD.x * vpW.x + vpD.y * vpW.y);
+    if (f2 > 80 * 80) return Math.sqrt(f2);
+  }
+  return Math.max(viewW, viewH) * 1.15;
+}
+
+function estimateDepthInches(fl, fr, br, bl, widthIn) {
+  const front = Math.max(1, dist2(fl, fr));
+  const back = Math.max(1, dist2(bl, br));
+  const side = (dist2(fl, bl) + dist2(fr, br)) / 2;
+  const topDown = widthIn * (side / front);
+  const f = focalPx(fl, fr, br, bl);
+  let depth = f * widthIn * Math.abs(1 / Math.min(front, back) - 1 / Math.max(front, back));
+  if (!Number.isFinite(depth) || depth < widthIn * 0.35 || depth > widthIn * 4) {
+    depth = Math.min(widthIn * 3.5, Math.max(widthIn * 0.45, topDown));
+  }
+  return depth;
+}
+
+const FLOOR_VERT = [
+  "attribute vec2 photoUv;",
+  "attribute float edgeAmt;",
+  "varying vec2 vUv;",
+  "varying vec2 vPhotoUv;",
+  "varying float vEdge;",
+  "void main() {",
+  "  vUv = uv;",
+  "  vPhotoUv = photoUv;",
+  "  vEdge = edgeAmt;",
+  "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+  "}"
+].join("\n");
+
+const FLOOR_FRAG = [
+  "precision highp float;",
+  "uniform sampler2D woodMap;",
+  "uniform sampler2D photoMap;",
+  "uniform float wipe;",
+  "uniform vec2 resolution;",
+  "varying vec2 vUv;",
+  "varying vec2 vPhotoUv;",
+  "varying float vEdge;",
+  "void main() {",
+  "  if (gl_FragCoord.x < wipe * resolution.x) discard;",
+  "  vec3 wood = texture2D(woodMap, vUv).rgb;",
+  "  float luma = dot(wood, vec3(0.2126, 0.7152, 0.0722));",
+  "  vec3 detail = wood - vec3(luma);",
+  "  float base = clamp((luma - 0.5) * 1.35 + 0.5, 0.0, 1.0);",
+  "  wood = clamp(vec3(base) + detail * 1.7, 0.0, 1.0);",
+  "  vec3 photo = texture2D(photoMap, clamp(vPhotoUv, 0.0, 1.0)).rgb;",
+  "  float room = dot(photo, vec3(0.2126, 0.7152, 0.0722));",
+  "  float shade = clamp(0.36 + room * 1.2, 0.2, 1.5);",
+  "  vec3 color = wood * shade;",
+  "  color = mix(color, wood * (photo + vec3(0.06)), 0.3);",
+  "  float edge = smoothstep(0.0, 0.02, vEdge);",
+  "  gl_FragColor = vec4(color, edge);",
+  "  #include <colorspace_fragment>",
+  "}"
+].join("\n");
+
 /**
  * Build a subdivided quad with bilinear corner warp + tiled UVs.
  * Subdivision improves texture sampling across a trapezoid (prototype perspective approx).
@@ -254,37 +470,55 @@ function rebuildFloor() {
   if (floorMesh) {
     scene.remove(floorMesh);
     floorMesh.geometry.dispose();
-    if (floorMesh.material.map && floorMesh.material.map !== activeFloorTex) {
-      /* keep cached */
-    }
     floorMesh.material.dispose();
     floorMesh = null;
   }
-  if (corners.length !== 4 || !activeFloorTex) return;
+  if (corners.length !== 4 || !activeFloorTex || !photoMesh) return;
 
-  const seg = 48;
   const [fl, fr, br, bl] = corners;
+  const widthIn = Math.max(24, (parseFloat(refLengthFt && refLengthFt.value) || 12) * 12);
+  const depthIn = estimateDepthInches(fl, fr, br, bl, widthIn);
+  const plankW = Math.max(3, parseFloat(plankWidIn && plankWidIn.value) || 7);
+  const scale = parseFloat(tileScale && tileScale.value) || 6;
+  // The source image is a square scan of many planks, about 16 boards across.
+  // Scale 6 keeps those boards near the plank-width control (7 in by default)
+  // without stretching one photo into a single postage-stamp tile.
+  const tileIn = 16 * plankW;
+  const repeatsU = (widthIn / tileIn) * (scale / 6);
+  const repeatsV = (depthIn / tileIn) * (scale / 6);
+
+  const src = [
+    { x: 0, y: 0 },
+    { x: widthIn, y: 0 },
+    { x: widthIn, y: depthIn },
+    { x: 0, y: depthIn }
+  ];
+  const dst = [fl, fr, br, bl].map((p) => ({ x: p.x, y: p.y }));
+  const H = homography(src, dst);
+
+  const seg = 32;
   const positions = [];
   const uvs = [];
+  const photoUvs = [];
+  const edges = [];
   const indices = [];
 
-  const scale = parseFloat(tileScale.value) || 6;
-  // width variant: narrow/wide adjust V vs U slightly via selectedTex
-  const texMeta = TEXTURES.find((t) => t.id === selectedTexId) || TEXTURES[0];
-  const baseU = (texMeta.repeat[0] / 6) * scale;
-  const baseV = (texMeta.repeat[1] / 6) * scale;
-
   for (let j = 0; j <= seg; j++) {
-    const ty = j / seg;
+    const qy = j / seg;
     for (let i = 0; i <= seg; i++) {
-      const tx = i / seg;
-      // bilinear: bottom edge FL->FR (ty=0), top BL->BR (ty=1) in image "depth"
-      // corners order: 0 FL, 1 FR, 2 BR, 3 BL
-      const bottom = new THREE.Vector2().lerpVectors(fl, fr, tx);
-      const top = new THREE.Vector2().lerpVectors(bl, br, tx);
-      const p = new THREE.Vector2().lerpVectors(bottom, top, ty);
+      const qx = i / seg;
+      const fx = qx * widthIn;
+      const fy = qy * depthIn;
+      let p = H ? applyH(H, fx, fy) : null;
+      if (!p) {
+        const bottom = { x: fl.x + (fr.x - fl.x) * qx, y: fl.y + (fr.y - fl.y) * qx };
+        const top = { x: bl.x + (br.x - bl.x) * qx, y: bl.y + (br.y - bl.y) * qx };
+        p = { x: bottom.x + (top.x - bottom.x) * qy, y: bottom.y + (top.y - bottom.y) * qy };
+      }
       positions.push(p.x, p.y, 0.5);
-      uvs.push(tx * baseU, ty * baseV);
+      uvs.push(qx * repeatsU, qy * repeatsV);
+      photoUvs.push(p.x / viewW + 0.5, p.y / viewH + 0.5);
+      edges.push(Math.min(qx, 1 - qx, qy, 1 - qy));
     }
   }
 
@@ -294,9 +528,6 @@ function rebuildFloor() {
       const b = a + 1;
       const c = a + (seg + 1);
       const d = c + 1;
-      // CCW as seen from the camera (+Z). The previous order was clockwise,
-      // so the default front-face cull dropped the whole quad and the photo
-      // showed through even after the texture loaded.
       indices.push(a, b, c, b, d, c);
     }
   }
@@ -304,6 +535,8 @@ function rebuildFloor() {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geo.setAttribute("photoUv", new THREE.Float32BufferAttribute(photoUvs, 2));
+  geo.setAttribute("edgeAmt", new THREE.Float32BufferAttribute(edges, 1));
   geo.setIndex(indices);
 
   activeFloorTex.wrapS = THREE.RepeatWrapping;
@@ -312,16 +545,24 @@ function rebuildFloor() {
   activeFloorTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   activeFloorTex.needsUpdate = true;
 
-  const mat = new THREE.MeshBasicMaterial({
-    map: activeFloorTex,
+  const photoMap = photoMesh.material.map;
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      woodMap: { value: activeFloorTex },
+      photoMap: { value: photoMap },
+      wipe: { value: currentWipe() },
+      resolution: { value: renderer.getDrawingBufferSize(new THREE.Vector2()) }
+    },
+    vertexShader: FLOOR_VERT,
+    fragmentShader: FLOOR_FRAG,
     transparent: true,
-    opacity: 0.92,
     depthWrite: false,
     depthTest: false,
     side: THREE.DoubleSide
   });
 
   floorMesh = new THREE.Mesh(geo, mat);
+  floorMesh.frustumCulled = false;
   floorMesh.renderOrder = 2;
   scene.add(floorMesh);
 }
@@ -362,9 +603,8 @@ function setPhotoFromFile(file) {
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   clearScenePhoto();
   photoOriginalDataUrl = null;
-  lastShareId = null;
-  setShareButtons(null);
-  if (shareStatus) shareStatus.textContent = "";
+  resetSavePrompt();
+  if (compareWipe) compareWipe.value = "100";
 
   photoUrl = URL.createObjectURL(file);
   fileToDataUrl(file)
@@ -433,9 +673,8 @@ function clearPhoto() {
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   photoUrl = null;
   photoOriginalDataUrl = null;
-  lastShareId = null;
-  setShareButtons(null);
-  if (shareStatus) shareStatus.textContent = "";
+  resetSavePrompt();
+  if (compareWipe) compareWipe.value = "100";
   photoInput.value = "";
   clearScenePhoto();
   resetBtn.disabled = true;
@@ -464,6 +703,8 @@ function resetCorners() {
     floorMesh = null;
   }
   rebuildMarkers();
+  resetSavePrompt();
+  if (compareWipe) compareWipe.value = "100";
   setStatus("Corners cleared — tap four floor corners again.");
   updateHint();
   updateSteps();
@@ -519,6 +760,7 @@ function updateMeasureUI() {
   const ready = corners.length === 4 && !!activeFloorTex && !!photoMesh;
   if (measurePanel) measurePanel.classList.toggle("hidden", !ready);
   if (sharePanel) sharePanel.classList.toggle("hidden", !ready);
+  if (comparePanel) comparePanel.classList.toggle("hidden", !ready);
   if (!ready || !measureResults) return;
 
   const est = computeEstimate();
@@ -571,8 +813,16 @@ function fileToDataUrl(file) {
 }
 
 function canvasSnapshotDataUrl() {
-  render();
-  return canvas.toDataURL("image/png");
+  let prev = null;
+  const uniforms = floorMesh && floorMesh.material && floorMesh.material.uniforms;
+  if (uniforms && uniforms.wipe) {
+    prev = uniforms.wipe.value;
+    uniforms.wipe.value = 0;
+  }
+  renderer.render(scene, camera);
+  const url = canvas.toDataURL("image/png");
+  if (uniforms && uniforms.wipe && prev != null) uniforms.wipe.value = prev;
+  return url;
 }
 
 function shareUrlFor(id) {
@@ -580,14 +830,21 @@ function shareUrlFor(id) {
   return base + "projects.html?id=" + encodeURIComponent(id);
 }
 
-function setShareButtons(id) {
-  lastShareId = id || null;
-  // Projects live in this browser only, so a copied link would not open for anyone else.
-  if (copyShareBtn) {
-    copyShareBtn.classList.add("hidden");
-    copyShareBtn.disabled = true;
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function resetSavePrompt() {
+  lastShareId = null;
+  if (saveGalleryBtn) {
+    saveGalleryBtn.hidden = false;
+    saveGalleryBtn.disabled = false;
   }
-  if (webShareBtn) webShareBtn.classList.add("hidden");
+  if (shareStatus) shareStatus.textContent = "";
 }
 
 function setPickerEnabled(on) {
@@ -609,6 +866,7 @@ function buildPicker() {
     btn.innerHTML = `<img src="${t.file}" alt="" loading="lazy" /><span>${t.label}</span>`;
     btn.addEventListener("click", () => {
       lookTouched = true;
+      resetSavePrompt();
       const apply = () => {
         if (corners.length !== 4) {
           setStatus("“" + t.label + "” selected. Now tap the four floor corners.");
@@ -669,7 +927,18 @@ function onPointer(e) {
   }
 }
 
+function currentWipe() {
+  const v = compareWipe ? parseFloat(compareWipe.value) : 100;
+  const shown = Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : 100;
+  return 1 - shown / 100;
+}
+
 function render() {
+  if (floorMesh && floorMesh.material && floorMesh.material.uniforms && floorMesh.material.uniforms.wipe) {
+    floorMesh.material.uniforms.wipe.value = currentWipe();
+    const buf = renderer.getDrawingBufferSize(new THREE.Vector2());
+    floorMesh.material.uniforms.resolution.value.copy(buf);
+  }
   renderer.render(scene, camera);
 }
 
@@ -729,9 +998,22 @@ window.addEventListener("resize", () => {
 });
 
 
-[refLengthFt, plankLenIn, plankWidIn, priceSqft, wastePct].forEach((el) => {
+[refLengthFt, plankLenIn, plankWidIn].forEach((el) => {
+  if (!el) return;
+  el.addEventListener("input", () => {
+    if (corners.length === 4 && activeFloorTex) {
+      rebuildFloor();
+      render();
+    }
+    updateMeasureUI();
+  });
+});
+[priceSqft, wastePct].forEach((el) => {
   if (el) el.addEventListener("input", updateMeasureUI);
 });
+if (compareWipe) {
+  compareWipe.addEventListener("input", () => render());
+}
 
 function withHiddenMarkers(fn) {
   const prevVisible = markers.visible;
@@ -744,45 +1026,20 @@ function withHiddenMarkers(fn) {
   }
 }
 
-if (downloadPngBtn) {
-  downloadPngBtn.addEventListener("click", () => {
-    if (!photoMesh || corners.length !== 4) {
-      if (shareStatus) shareStatus.textContent = "Set photo, corners, and texture first.";
-      return;
-    }
-    const a = document.createElement("a");
-    a.href = withHiddenMarkers(() => canvasSnapshotDataUrl());
-    a.download = "vinyl-or-not-visualize.png";
-    a.click();
-    if (shareStatus) shareStatus.textContent = "PNG downloaded.";
-  });
-}
-
 if (saveGalleryBtn) {
   saveGalleryBtn.addEventListener("click", async () => {
-    if (!photoMesh || corners.length !== 4 || !activeFloorTex) {
-      if (shareStatus) shareStatus.textContent = "Set photo, four corners, and a texture first.";
-      return;
-    }
-    if (shareStatus) {
-      shareStatus.textContent = "Saving on this device…";
-    }
+    if (!photoMesh || corners.length !== 4 || !activeFloorTex) return;
+    if (shareStatus) shareStatus.textContent = "Saving on this device…";
     saveGalleryBtn.disabled = true;
     try {
       const afterPng = withHiddenMarkers(() => canvasSnapshotDataUrl());
       const afterJpeg = await compressDataUrl(afterPng, 1400, 0.78);
-      let beforeSrc = photoOriginalDataUrl;
-      if (!beforeSrc && photoUrl) {
-        // fallback: snapshot without floor is hard; use current canvas photo mesh only
-        beforeSrc = afterJpeg;
-      }
-      const beforeComp = beforeSrc ? await compressDataUrl(beforeSrc, 1400, 0.72) : afterJpeg;
+      const beforeSrc = photoOriginalDataUrl || afterJpeg;
+      const beforeComp = await compressDataUrl(beforeSrc, 1400, 0.72);
       const texMeta = TEXTURES.find((t) => t.id === selectedTexId);
-      const title =
-        (shareTitle && shareTitle.value.trim()) ||
-        ("Visualize preview — " + ((texMeta && texMeta.label) || "LVP"));
+      const label = (texMeta && texMeta.label) || "Floor";
       const saved = await addProject({
-        title,
+        title: label + " preview",
         location: "",
         flooring: "LVP",
         role: "customer",
@@ -791,45 +1048,16 @@ if (saveGalleryBtn) {
         after: [{ src: afterJpeg, label: "After (visualize)" }],
         source: "visualize"
       });
+      lastShareId = saved.id;
       const url = shareUrlFor(saved.id);
-      setShareButtons(saved.id);
+      saveGalleryBtn.hidden = true;
       if (shareStatus) {
         shareStatus.innerHTML =
-          'Saved on this device. <a href="' + url + '">Open it in Projects</a>. It will not show on someone else’s phone.';
+          'Saved on this device. <a href="' + escHtml(url) + '">Open in Projects</a>.';
       }
     } catch (err) {
-      if (shareStatus) shareStatus.textContent = err.message || String(err);
-    } finally {
       saveGalleryBtn.disabled = false;
-    }
-  });
-}
-
-if (copyShareBtn) {
-  copyShareBtn.addEventListener("click", async () => {
-    if (!lastShareId) return;
-    const url = shareUrlFor(lastShareId);
-    try {
-      await navigator.clipboard.writeText(url);
-      if (shareStatus) shareStatus.textContent = "Share link copied.";
-    } catch (e) {
-      if (shareStatus) shareStatus.textContent = "Copy failed — select the link manually.";
-    }
-  });
-}
-
-if (webShareBtn) {
-  webShareBtn.addEventListener("click", async () => {
-    if (!lastShareId || typeof navigator.share !== "function") return;
-    const url = shareUrlFor(lastShareId);
-    try {
-      await navigator.share({
-        title: (shareTitle && shareTitle.value) || "Vinyl or Not project",
-        text: "Before & after flooring preview",
-        url
-      });
-    } catch (e) {
-      /* user cancelled */
+      if (shareStatus) shareStatus.textContent = err.message || String(err);
     }
   });
 }

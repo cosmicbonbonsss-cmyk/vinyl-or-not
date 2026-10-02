@@ -110,6 +110,20 @@
         <div id="corner-hint" class="corner-hint hidden"></div>
       </div>
 
+      <div id="compare-panel" class="hidden">
+        <label class="scale-row">
+          Before and after
+          <input type="range" id="compare-wipe" min="0" max="100" value="100" aria-valuemin="0" aria-valuemax="100" aria-label="Original photo on the left, new floor on the right" />
+        </label>
+      </div>
+
+      <div id="share-panel" class="share-panel hidden">
+        <div id="save-actions">
+          <button type="button" class="btn primary" id="save-gallery">Save to Projects</button>
+        </div>
+        <p class="hint" id="share-status" aria-live="polite"></p>
+      </div>
+
       <div class="texture-panel" id="step-look">
         <h2>Which flooring look?</h2>
         <p class="hint">Pick a look, then tap the four floor corners on the photo. Every option uses a real floor image on this site.</p>
@@ -155,21 +169,6 @@
         </div>
       </div>
 
-      <div id="share-panel" class="share-panel hidden">
-        <h2>Save &amp; share</h2>
-        <p class="hint">Download a PNG if you want to text the preview to someone. Saving keeps the before and after in this browser only — it is not a public post.</p>
-        <label class="share-title-label">
-          Gallery title
-          <input type="text" id="share-title" placeholder="e.g. Living room — warm oak preview" />
-        </label>
-        <div class="viz-toolbar">
-          <button type="button" class="btn secondary" id="download-png">Download PNG</button>
-          <button type="button" class="btn primary" id="save-gallery">Save to gallery</button>
-          <button type="button" class="btn ghost hidden" id="copy-share" disabled>Copy link</button>
-          <button type="button" class="btn ghost hidden" id="web-share">Share…</button>
-        </div>
-        <p class="hint" id="share-status" aria-live="polite"></p>
-      </div>
 
       </div>
       <details class="limits-box">
@@ -208,7 +207,7 @@
   </script>
   <script src="gallery-config.js"></script>
   <script src="photo-check.js?v=20261002b"></script>
-  <script type="module" src="visualize.js?v=20261002c"></script>
+  <script type="module" src="visualize.js?v=20261002d"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>
