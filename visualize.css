@@ -314,3 +314,20 @@
 }
 
 .limits-box summary + ul { margin-top: 0.55rem; }
+
+.room-switch-label {
+  align-self: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.btn.is-selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(47, 93, 80, 0.25);
+}
+
+#save-actions.viz-toolbar {
+  margin-top: 0;
+}

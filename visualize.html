@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LVP flooring visualizer — preview vinyl planks in your room photo</title>
-  <meta name="description" content="Upload a room photo, tap four floor corners, and overlay seamless LVP textures. Free vinyl plank flooring visualizer in the browser — no account." />
+  <meta name="description" content="Try a sample room or upload your photo, pick a wood look, and compare before and after. Free vinyl plank flooring visualizer in the browser — no account." />
   <link rel="canonical" href="https://vinylornot.com/visualize.html" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vinylornot.com/visualize.html" />
   <meta property="og:title" content="LVP flooring visualizer — preview vinyl planks in your room photo" />
-  <meta property="og:description" content="Upload a room photo, tap four floor corners, and overlay seamless LVP textures. Free vinyl plank flooring visualizer in the browser — no account." />
+  <meta property="og:description" content="Try a sample room or upload your photo, pick a wood look, and compare before and after. Free vinyl plank flooring visualizer in the browser — no account." />
   <meta property="og:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
   <meta property="og:image:alt" content="Sunlit living room with warm oak-look plank flooring" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="LVP flooring visualizer — preview vinyl planks in your room photo" />
-  <meta name="twitter:description" content="Upload a room photo, tap four floor corners, and overlay seamless LVP textures. Free vinyl plank flooring visualizer in the browser — no account." />
+  <meta name="twitter:description" content="Try a sample room or upload your photo, pick a wood look, and compare before and after. Free vinyl plank flooring visualizer in the browser — no account." />
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css?v=20261002b" />
-  <link rel="stylesheet" href="visualize.css?v=20261002b" />
+  <link rel="stylesheet" href="visualize.css?v=20261002e" />
 </head>
 <body>
   <header class="site-header">
@@ -46,8 +46,10 @@
     <section class="card">
       <h1 class="page-title">Visualize vinyl planks</h1>
       <p class="pitch">
-        Take or upload one room photo, pick a flooring look, then tap the four corners of the floor
-        (front-left, front-right, back-right, back-left). Camera help checks blur and brightness on this device before you keep the shot.
+        Try a sample room or upload your photo, then pick a wood look.
+        Sample rooms show the planks right away. Your own photo needs four floor taps:
+        front-left, front-right, back-right, back-left.
+        Camera help checks blur and brightness on this device before you keep the shot.
       </p>
       <ol class="viz-steps" id="viz-steps">
         <li data-step="photo" class="is-current">1 · Photo</li>
@@ -57,6 +59,12 @@
       </ol>
 
       <div id="capture-block">
+        <p class="hint">Start with a sample room, or use your camera or a photo from your library.</p>
+        <div class="viz-toolbar" id="sample-pick">
+          <button type="button" class="btn secondary" data-sample="living">Living room</button>
+          <button type="button" class="btn secondary" data-sample="open">Open plan</button>
+          <button type="button" class="btn secondary" data-sample="bath">Bathroom</button>
+        </div>
         <div class="viz-toolbar">
           <button type="button" class="btn primary" id="open-camera">Use camera</button>
           <label class="file-label">
@@ -87,23 +95,29 @@
         </div>
       </div>
 
-      <p class="hint" id="status">Step 1: take or upload a photo with a clear view of the floor.</p>
+      <p class="hint" id="status">Try a sample room, or take or upload a photo with a clear view of the floor.</p>
       <p id="photo-check-live" class="photo-check hidden" aria-live="polite"></p>
-      <div id="work-block" class="hidden">
-      <div class="viz-toolbar">
+      <div id="work-block">
+      <div class="viz-toolbar hidden" id="photo-tools">
         <button type="button" class="btn ghost" id="reset-corners" disabled>Reset corners</button>
         <button type="button" class="btn ghost" id="clear-photo" disabled>Clear photo</button>
+      </div>
+      <div class="viz-toolbar hidden" id="change-room">
+        <span class="room-switch-label">Change room</span>
+        <button type="button" class="btn ghost" data-sample="living">Living room</button>
+        <button type="button" class="btn ghost" data-sample="open">Open plan</button>
+        <button type="button" class="btn ghost" data-sample="bath">Bathroom</button>
       </div>
       <div id="stage" class="viz-stage" aria-label="Floor overlay canvas">
         <canvas id="c"></canvas>
         <div id="viz-empty" class="viz-empty" aria-hidden="false">
           <div class="viz-empty-inner">
             <p class="viz-empty-kicker">Visualize</p>
-            <p class="viz-empty-title">Upload a room photo to begin</p>
+            <p class="viz-empty-title">Try a sample room or upload your photo</p>
             <ol class="viz-empty-steps">
-              <li>Take or upload a photo with a clear view of the floor</li>
-              <li>Pick a flooring look</li>
-              <li>Tap the four corners of the floor area</li>
+              <li>Pick a sample room, or take or upload your own photo</li>
+              <li>Pick a wood look — it swaps onto the floor</li>
+              <li>On your photo, tap the four floor corners. Sample rooms are already marked</li>
             </ol>
           </div>
         </div>
@@ -118,21 +132,25 @@
       </div>
 
       <div id="share-panel" class="share-panel hidden">
-        <div id="save-actions">
+        <div id="save-actions" class="viz-toolbar">
           <button type="button" class="btn primary" id="save-gallery">Save to Projects</button>
+          <button type="button" class="btn secondary" id="download-result">Download</button>
         </div>
         <p class="hint" id="share-status" aria-live="polite"></p>
       </div>
 
       <div class="texture-panel" id="step-look">
         <h2>Which flooring look?</h2>
-        <p class="hint">Pick a look, then tap the four floor corners on the photo. Every option uses a real floor image on this site.</p>
+        <p class="hint">Tap a look to swap the floor. On a sample room it updates right away. On your photo, mark the four corners first. Every option uses a floor image on this site.</p>
         <div id="texture-picker" class="texture-picker" role="listbox" aria-label="LVP texture options"></div>
         <label class="scale-row">
           Plank scale
           <input type="range" id="tile-scale" min="2" max="14" step="0.5" value="6" />
           <span id="tile-scale-val">6</span>
         </label>
+        <div class="viz-toolbar">
+          <button type="button" class="btn ghost" id="rotate-planks">Rotate planks</button>
+        </div>
       </div>
 
       <div id="measure-panel" class="measure-panel hidden" aria-live="polite">
@@ -174,7 +192,7 @@
       <details class="limits-box">
         <summary>Known limits</summary>
         <ul>
-          <li>You mark the floor yourself — four taps, not automatic detection.</li>
+          <li>Sample rooms are pre-marked. Your own photo still needs four taps — the floor is not detected for you.</li>
           <li>Camera help only checks blur and brightness. It does not identify the floor.</li>
           <li>Furniture, rugs, and uneven floors won’t be masked. The overlay is a flat four-corner stretch.</li>
           <li>Lighting in the room is not matched. Extreme angles can soften the plank lines.</li>
@@ -207,7 +225,7 @@
   </script>
   <script src="gallery-config.js"></script>
   <script src="photo-check.js?v=20261002b"></script>
-  <script type="module" src="visualize.js?v=20261002d"></script>
+  <script type="module" src="visualize.js?v=20261002e"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

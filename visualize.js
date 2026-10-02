@@ -30,6 +30,48 @@ const CORNER_LABELS = [
   "4 · back-left"
 ];
 
+/**
+ * Sample rooms. corners are normalized image coords, origin top-left,
+ * y down, each in 0..1. Order matches manual taps: front-left, front-right,
+ * back-right, back-left. Converted to world units (origin center, y up)
+ * once the photo is fitted to the stage.
+ */
+const SAMPLE_ROOMS = [
+  {
+    id: "living",
+    label: "Living room",
+    file: "gallery/before-living-empty.jpg",
+    corners: [
+      [0.013, 0.988],
+      [0.987, 0.988],
+      [0.987, 0.785],
+      [0.013, 0.679]
+    ]
+  },
+  {
+    id: "open",
+    label: "Open plan",
+    file: "gallery/before-open-carpet.jpg",
+    corners: [
+      [0.01, 0.985],
+      [0.99, 0.985],
+      [0.683, 0.588],
+      [0.012, 0.688]
+    ]
+  },
+  {
+    id: "bath",
+    label: "Bathroom",
+    file: "gallery/before-bath-checkered.jpg",
+    corners: [
+      [0.013, 0.989],
+      [0.987, 0.989],
+      [0.987, 0.843],
+      [0.013, 0.843]
+    ]
+  }
+];
+
 const stage = document.getElementById("stage");
 const canvas = document.getElementById("c");
 const statusEl = document.getElementById("status");
@@ -45,6 +87,8 @@ const measureResults = document.getElementById("measure-results");
 const sharePanel = document.getElementById("share-panel");
 const shareStatus = document.getElementById("share-status");
 const saveGalleryBtn = document.getElementById("save-gallery");
+const downloadBtn = document.getElementById("download-result");
+const rotateBtn = document.getElementById("rotate-planks");
 const comparePanel = document.getElementById("compare-panel");
 const compareWipe = document.getElementById("compare-wipe");
 const refLengthFt = document.getElementById("ref-length-ft");
@@ -95,6 +139,13 @@ let corners = [];
 /** @type {string} */
 let selectedTexId = TEXTURES[0].id;
 let lookTouched = false;
+/** 0..3, quarter turns of the plank texture. */
+let plankRotation = 0;
+/** @type {string|null} */
+let activeSampleId = null;
+/** Normalized corners for the active sample, or null once the user re-taps. */
+let sampleNormCorners = null;
+let sampleLoadToken = 0;
 const captureBlock = document.getElementById("capture-block");
 const workBlock = document.getElementById("work-block");
 const stepList = document.getElementById("viz-steps");
@@ -116,24 +167,54 @@ function setStatus(msg) {
 
 function showWork(on) {
   if (captureBlock) captureBlock.classList.toggle("hidden", on);
-  if (workBlock) workBlock.classList.toggle("hidden", !on);
+  const photoTools = document.getElementById("photo-tools");
+  const changeRoom = document.getElementById("change-room");
+  if (photoTools) photoTools.classList.toggle("hidden", !on);
+  if (changeRoom) changeRoom.classList.toggle("hidden", !on);
 }
 
 function updateSteps() {
   if (!stepList) return;
   const photo = !!photoMesh;
   const cornersDone = corners.length === 4;
+  const premarked = !!(sampleNormCorners && cornersDone);
   let current = "photo";
-  if (photo && !lookTouched && corners.length === 0) current = "look";
+  if (photo && premarked && !lookTouched) current = "look";
+  else if (photo && premarked && lookTouched) current = "save";
+  else if (photo && !lookTouched && corners.length === 0) current = "look";
   else if (photo && !cornersDone) current = "corners";
   else if (photo && cornersDone) current = "save";
   const order = ["photo", "look", "corners", "save"];
   const currentIdx = order.indexOf(current);
   stepList.querySelectorAll("li").forEach((li) => {
     const idx = order.indexOf(li.dataset.step);
+    const earlier = idx > -1 && idx < currentIdx;
+    const preDone = premarked && (li.dataset.step === "photo" || li.dataset.step === "corners");
     li.classList.toggle("is-current", idx === currentIdx);
-    li.classList.toggle("is-done", idx > -1 && idx < currentIdx);
+    li.classList.toggle("is-done", (earlier || preDone) && idx !== currentIdx);
   });
+}
+
+function highlightSample() {
+  document.querySelectorAll("[data-sample]").forEach((btn) => {
+    const on = btn.dataset.sample === activeSampleId;
+    btn.classList.toggle("is-selected", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
+function normToWorld(u, v) {
+  return new THREE.Vector2((u - 0.5) * viewW, (0.5 - v) * viewH);
+}
+
+function applySampleCorners() {
+  if (!sampleNormCorners || !viewW || !viewH) return;
+  corners = sampleNormCorners.map(([u, v]) => normToWorld(u, v));
+}
+
+function currentLookLabel() {
+  const meta = TEXTURES.find((tex) => tex.id === selectedTexId);
+  return (meta && meta.label) || "White oak";
 }
 
 function showPhotoCheck(result) {
@@ -156,10 +237,12 @@ function updateHint() {
     return;
   }
   hintEl.classList.remove("hidden");
-  if (corners.length < 4) {
+  if (sampleNormCorners && corners.length === 4) {
+    hintEl.textContent = "Sample room — the floor is already marked. Pick a look to swap the planks.";
+  } else if (corners.length < 4) {
     hintEl.textContent = "Tap corner " + CORNER_LABELS[corners.length];
   } else {
-    hintEl.textContent = "Floor quad set — pick a texture or drag corners (reset to re-tap)";
+    hintEl.textContent = "Floor quad set — pick a look, or reset corners to tap again";
   }
 }
 
@@ -193,6 +276,7 @@ function fitCamera() {
   if (photoMesh) {
     photoMesh.scale.set(viewW, viewH, 1);
   }
+  if (sampleNormCorners) applySampleCorners();
   rebuildFloor();
   rebuildMarkers();
 }
@@ -207,6 +291,7 @@ function clearMarkers() {
 
 function rebuildMarkers() {
   clearMarkers();
+  if (sampleNormCorners) return;
   corners.forEach((c, i) => {
     const g = new THREE.CircleGeometry(Math.max(6, Math.min(viewW, viewH) * 0.012), 24);
     const mat = new THREE.MeshBasicMaterial({
@@ -516,7 +601,8 @@ function rebuildFloor() {
         p = { x: bottom.x + (top.x - bottom.x) * qy, y: bottom.y + (top.y - bottom.y) * qy };
       }
       positions.push(p.x, p.y, 0.5);
-      uvs.push(qx * repeatsU, qy * repeatsV);
+      const uv = rotatedPlankUv(qx, qy, repeatsU, repeatsV, plankRotation);
+      uvs.push(uv[0], uv[1]);
       photoUvs.push(p.x / viewW + 0.5, p.y / viewH + 0.5);
       edges.push(Math.min(qx, 1 - qx, qy, 1 - qy));
     }
@@ -567,6 +653,15 @@ function rebuildFloor() {
   scene.add(floorMesh);
 }
 
+function rotatedPlankUv(qx, qy, repeatsU, repeatsV, rot) {
+  const u = qx * repeatsU;
+  const v = qy * repeatsV;
+  if (rot === 1) return [qy * repeatsV, (1 - qx) * repeatsU];
+  if (rot === 2) return [(1 - qx) * repeatsU, (1 - qy) * repeatsV];
+  if (rot === 3) return [(1 - qy) * repeatsV, qx * repeatsU];
+  return [u, v];
+}
+
 function loadFloorTexture(id) {
   const meta = TEXTURES.find((t) => t.id === id);
   if (!meta) return Promise.reject(new Error("unknown texture"));
@@ -599,12 +694,14 @@ function loadFloorTexture(id) {
   });
 }
 
-function setPhotoFromFile(file) {
+function setPhotoFromFile(file, sampleRoom) {
   if (photoUrl) URL.revokeObjectURL(photoUrl);
   clearScenePhoto();
   photoOriginalDataUrl = null;
   resetSavePrompt();
   if (compareWipe) compareWipe.value = "100";
+  activeSampleId = sampleRoom ? sampleRoom.id : null;
+  sampleNormCorners = sampleRoom ? sampleRoom.corners.map((pair) => pair.slice()) : null;
 
   photoUrl = URL.createObjectURL(file);
   fileToDataUrl(file)
@@ -637,13 +734,28 @@ function setPhotoFromFile(file) {
     setEmptyState(false);
     showWork(true);
     fitCamera();
-    setStatus(lookTouched
-      ? "Step 3: tap four floor corners — front-left, front-right, back-right, back-left."
-      : "Step 2: pick a flooring look, then tap the four floor corners.");
-    updateHint();
-    updateSteps();
-    updateMeasureUI();
-    render();
+    const finish = () => {
+      updateHint();
+      updateSteps();
+      updateMeasureUI();
+      highlightSample();
+      render();
+    };
+    if (sampleRoom) {
+      const roomName = sampleRoom.label.toLowerCase();
+      loadFloorTexture(selectedTexId).then(() => {
+        setStatus(currentLookLabel() + " is on the " + roomName + ". Pick a look to swap it, then compare or download.");
+        finish();
+      }).catch(() => {
+        setStatus("The " + roomName + " loaded, but that look didn’t. Try another look.");
+        finish();
+      });
+    } else {
+      setStatus(lookTouched
+        ? "Step 3: tap four floor corners — front-left, front-right, back-right, back-left."
+        : "Step 2: pick a wood look, then tap the four floor corners.");
+      finish();
+    }
   };
   img.onerror = () => setStatus("Could not load that image. Try another photo.");
   img.src = photoUrl;
@@ -687,14 +799,19 @@ function clearPhoto() {
     liveCheck.textContent = "";
     liveCheck.classList.add("hidden");
   }
+  activeSampleId = null;
+  sampleNormCorners = null;
+  highlightSample();
   fitCamera();
-  setStatus("Step 1: take or upload a photo with a clear view of the floor.");
+  setStatus("Try a sample room, or take or upload a photo with a clear view of the floor.");
   updateSteps();
   updateMeasureUI();
   render();
 }
 
 function resetCorners() {
+  if (sampleNormCorners) lookTouched = true;
+  sampleNormCorners = null;
   corners = [];
   if (floorMesh) {
     scene.remove(floorMesh);
@@ -810,6 +927,18 @@ function fileToDataUrl(file) {
     reader.onerror = () => reject(new Error("Could not read photo"));
     reader.readAsDataURL(file);
   });
+}
+
+function downloadResult() {
+  if (!photoMesh || corners.length !== 4 || !activeFloorTex) return;
+  const slug = selectedTexId || "floor";
+  const url = withHiddenMarkers(() => canvasSnapshotDataUrl());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "vinyl-or-not-" + slug + ".png";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
 function canvasSnapshotDataUrl() {
@@ -947,6 +1076,27 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
+function loadSampleRoom(id) {
+  const room = SAMPLE_ROOMS.find((item) => item.id === id);
+  if (!room) return;
+  const token = ++sampleLoadToken;
+  setStatus("Loading the " + room.label.toLowerCase() + "…");
+  fetch(room.file)
+    .then((res) => {
+      if (!res.ok) throw new Error("missing photo");
+      return res.blob();
+    })
+    .then((blob) => {
+      if (token !== sampleLoadToken) return;
+      const file = new File([blob], room.id + ".jpg", { type: blob.type || "image/jpeg" });
+      setPhotoFromFile(file, room);
+    })
+    .catch(() => {
+      if (token !== sampleLoadToken) return;
+      setStatus("Couldn’t load that sample room. Try another, or upload a photo.");
+    });
+}
+
 // Events
 photoInput.addEventListener("change", (e) => {
   const f = e.target.files && e.target.files[0];
@@ -982,6 +1132,22 @@ if (window.VonPhotoCheck && document.getElementById("open-camera")) {
 }
 resetBtn.addEventListener("click", resetCorners);
 clearBtn.addEventListener("click", clearPhoto);
+document.querySelectorAll("[data-sample]").forEach((btn) => {
+  btn.addEventListener("click", () => loadSampleRoom(btn.dataset.sample));
+});
+if (downloadBtn) downloadBtn.addEventListener("click", downloadResult);
+if (rotateBtn) {
+  rotateBtn.addEventListener("click", () => {
+    plankRotation = (plankRotation + 1) % 4;
+    resetSavePrompt();
+    if (corners.length === 4 && activeFloorTex) {
+      rebuildFloor();
+      render();
+    }
+    const turns = plankRotation === 0 ? "back to the start" : plankRotation * 90 + "°";
+    setStatus("Planks rotated " + turns + ".");
+  });
+}
 tileScale.addEventListener("input", () => {
   tileScaleVal.textContent = tileScale.value;
   if (corners.length === 4) {
@@ -1066,11 +1232,12 @@ buildPicker();
 fitCamera();
 setEmptyState(true);
 showWork(false);
-setStatus("Step 1: take or upload a photo with a clear view of the floor.");
+setStatus("Try a sample room, or take or upload a photo with a clear view of the floor.");
+highlightSample();
 updateHint();
 updateSteps();
 updateMeasureUI();
 loop();
 
 // Prefetch default texture into cache (optional)
-loadFloorTexture(TEXTURES[0].id).catch(() => {});
+loadFloorTexture(selectedTexId).catch(() => {});
