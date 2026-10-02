@@ -18,8 +18,8 @@
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=wood11" />
-  <link rel="stylesheet" href="visualize.css?v=wood11" />
+  <link rel="stylesheet" href="styles.css?v=20261002a" />
+  <link rel="stylesheet" href="visualize.css?v=20261002a" />
 </head>
 <body>
   <header class="site-header">
@@ -46,21 +46,54 @@
     <section class="card">
       <h1 class="page-title">Visualize vinyl planks</h1>
       <p class="pitch">
-        A vinyl plank vs tile choice is easier when you can see planks in your own room. Upload one living-room photo, tap the <strong>four corners</strong> of the floor area
-        (front-left → front-right → back-right → back-left), then pick a seamless LVP texture.
-        Perspective warp via <strong>Three.js</strong>. No live camera, WebXR, or auto floor detection.
+        Take or upload one room photo, pick a flooring look, then tap the four corners of the floor
+        (front-left, front-right, back-right, back-left). Camera help checks blur and brightness on this device before you keep the shot.
       </p>
+      <ol class="viz-steps" id="viz-steps">
+        <li data-step="photo" class="is-current">1 · Photo</li>
+        <li data-step="look">2 · Look</li>
+        <li data-step="corners">3 · Corners</li>
+        <li data-step="save">4 · Save</li>
+      </ol>
 
+      <div id="capture-block">
+        <div class="viz-toolbar">
+          <button type="button" class="btn primary" id="open-camera">Use camera</button>
+          <label class="file-label">
+            <span class="btn secondary" id="upload-label">Upload from library</span>
+            <input type="file" id="photo-input" accept="image/*" />
+          </label>
+        </div>
+        <div id="camera-panel" class="camera-panel hidden">
+          <div class="camera-stage">
+            <video id="camera-video" playsinline autoplay muted></video>
+            <div class="floor-guide" aria-hidden="true"></div>
+            <p class="floor-guide-label">Frame the floor inside the guide</p>
+          </div>
+          <p class="hint">Camera help — a simple on-device check, not a cloud model.</p>
+          <p class="hint" id="camera-status" aria-live="polite"></p>
+          <div class="viz-toolbar">
+            <button type="button" class="btn primary" id="camera-shutter">Take photo</button>
+            <button type="button" class="btn ghost" id="camera-cancel">Cancel</button>
+          </div>
+        </div>
+        <div id="shot-review" class="shot-review hidden">
+          <img id="shot-preview" alt="Photo to check before you keep it" />
+          <p id="shot-check" class="photo-check" aria-live="polite"></p>
+          <div class="viz-toolbar">
+            <button type="button" class="btn primary" id="shot-accept">Use this photo</button>
+            <button type="button" class="btn secondary" id="shot-retake">Retake</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint" id="status">Step 1: take or upload a photo with a clear view of the floor.</p>
+      <p id="photo-check-live" class="photo-check hidden" aria-live="polite"></p>
+      <div id="work-block" class="hidden">
       <div class="viz-toolbar">
-        <label class="file-label">
-          <span class="btn secondary" id="upload-label">Upload room photo</span>
-          <input type="file" id="photo-input" accept="image/*" />
-        </label>
         <button type="button" class="btn ghost" id="reset-corners" disabled>Reset corners</button>
         <button type="button" class="btn ghost" id="clear-photo" disabled>Clear photo</button>
       </div>
-      <p class="hint" id="status">Step 1: upload a photo of a room with a visible floor.</p>
-
       <div id="stage" class="viz-stage" aria-label="Floor overlay canvas">
         <canvas id="c"></canvas>
         <div id="viz-empty" class="viz-empty" aria-hidden="false">
@@ -68,18 +101,18 @@
             <p class="viz-empty-kicker">Visualize</p>
             <p class="viz-empty-title">Upload a room photo to begin</p>
             <ol class="viz-empty-steps">
-              <li>Upload a photo with a clear view of the floor</li>
+              <li>Take or upload a photo with a clear view of the floor</li>
+              <li>Pick a flooring look</li>
               <li>Tap the four corners of the floor area</li>
-              <li>Pick a plank texture and adjust plank scale</li>
             </ol>
           </div>
         </div>
         <div id="corner-hint" class="corner-hint hidden"></div>
       </div>
 
-      <div class="texture-panel">
-        <h2>Plank textures</h2>
-        <p class="hint">CC0 seamless floors from ambientCG — tap to apply after four corners are set.</p>
+      <div class="texture-panel" id="step-look">
+        <h2>Which flooring look?</h2>
+        <p class="hint">Pick a look, then tap the four floor corners on the photo. Every option uses a real floor image on this site.</p>
         <div id="texture-picker" class="texture-picker" role="listbox" aria-label="LVP texture options"></div>
         <label class="scale-row">
           Plank scale
@@ -138,20 +171,21 @@
         <p class="hint" id="share-status" aria-live="polite"></p>
       </div>
 
-      <div class="limits-box">
-        <h2>Known limits</h2>
-        <ul>
-          <li>Manual four-corner tap only — no AI / auto floor detection.</li>
-          <li>Photo-only still image — no live camera or WebXR.</li>
-          <li>Warp approximates perspective on a flat quad; furniture, rugs, and uneven floors won’t mask correctly.</li>
-          <li>Lighting and reflections aren’t matched to the room; seams may look soft on extreme angles.</li>
-          <li>Best with a clear view of an empty(ish) rectangular floor region.</li>
-        </ul>
       </div>
+      <details class="limits-box">
+        <summary>Known limits</summary>
+        <ul>
+          <li>You mark the floor yourself — four taps, not automatic detection.</li>
+          <li>Camera help only checks blur and brightness. It does not identify the floor.</li>
+          <li>Furniture, rugs, and uneven floors won’t be masked. The overlay is a flat four-corner stretch.</li>
+          <li>Lighting in the room is not matched. Extreme angles can soften the plank lines.</li>
+          <li>Best with a clear view of a mostly open rectangular floor.</li>
+        </ul>
+      </details>
 
       <div class="nav-row cta-row">
         <a class="btn ghost" href="./">← Back to Vinyl or Not</a>
-        <a class="btn secondary" href="measure.html">Measurement tips</a>
+        <a class="btn secondary" href="measure.html">Measure rooms</a>
         <a class="btn secondary" href="guide.html">LVP guide</a>
         <a class="btn secondary" href="projects.html">Project gallery</a>
       </div>
@@ -173,7 +207,8 @@
   }
   </script>
   <script src="gallery-config.js"></script>
-  <script type="module" src="visualize.js"></script>
+  <script src="photo-check.js?v=20261002a"></script>
+  <script type="module" src="visualize.js?v=20261002a"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

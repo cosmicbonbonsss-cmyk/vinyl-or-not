@@ -18,7 +18,7 @@
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=wood11" />
+  <link rel="stylesheet" href="styles.css?v=20261002a" />
 </head>
 <body>
   <header class="site-header">
@@ -76,8 +76,8 @@
         </article>
         <a class="homeowner-tool card" href="measure.html">
           <p class="tool-kicker">Before you buy</p>
-          <h2>Measure tips <span aria-hidden="true">→</span></h2>
-          <p>Estimate square footage, waste, doorways, and closets before ordering materials.</p>
+          <h2>Measure <span aria-hidden="true">→</span></h2>
+          <p>Enter length and width. Get square footage, waste, and how many boxes and planks to order.</p>
         </a>
         <a class="homeowner-tool card" href="visualize.html">
           <p class="tool-kicker">See the possibility</p>
@@ -107,11 +107,35 @@
     <!-- Photos -->
     <section id="photos" class="card hidden">
       <h2>1. Add 1–3 photos</h2>
-      <p class="hint">Close-ups of seams, edges, and texture help most. Preview only — photos stay on this device.</p>
-      <label class="file-label">
-        <span class="btn secondary">Choose photos</span>
-        <input type="file" id="photo-input" accept="image/*" multiple />
-      </label>
+      <p class="hint">A clear shot of the floor helps most. Camera help checks brightness and blur on this device — it does not identify the floor for you. Photos stay here.</p>
+      <div class="viz-toolbar">
+        <button type="button" class="btn secondary" id="open-camera">Use camera</button>
+        <label class="file-label">
+          <span class="btn ghost">Upload from library</span>
+          <input type="file" id="photo-input" accept="image/*" multiple />
+        </label>
+      </div>
+      <div id="camera-panel" class="camera-panel hidden">
+        <div class="camera-stage">
+          <video id="camera-video" playsinline autoplay muted></video>
+          <div class="floor-guide" aria-hidden="true"></div>
+          <p class="floor-guide-label">Frame the floor inside the guide</p>
+        </div>
+        <p class="hint" id="camera-status" aria-live="polite"></p>
+        <div class="viz-toolbar">
+          <button type="button" class="btn primary" id="camera-shutter">Take photo</button>
+          <button type="button" class="btn ghost" id="camera-cancel">Cancel</button>
+        </div>
+      </div>
+      <div id="shot-review" class="shot-review hidden">
+        <img id="shot-preview" alt="Photo to check before you keep it" />
+        <p id="shot-check" class="photo-check" aria-live="polite"></p>
+        <div class="viz-toolbar">
+          <button type="button" class="btn primary" id="shot-accept">Use this photo</button>
+          <button type="button" class="btn secondary" id="shot-retake">Retake</button>
+        </div>
+      </div>
+      <p id="library-check" class="photo-check hidden" aria-live="polite"></p>
       <div id="thumbnails" class="thumbnails" aria-live="polite"></div>
       <p id="photo-count" class="hint"></p>
       <div class="nav-row cta-row">
@@ -156,60 +180,45 @@
           <label><input type="radio" name="wear" value="peaking" /> Edge peaking, cupping, or lifted seams</label>
           <label><input type="radio" name="wear" value="heavy" /> Deep wear-through, cracks, or missing pieces</label>
         </fieldset>
+
+        <fieldset>
+          <legend>Flooring look to compare</legend>
+          <p class="hint">These are looks you can preview in Visualize. Pick the one you want to compare — or say you’re not sure.</p>
+          <div class="look-grid">
+            <label><input type="radio" name="look" value="white-oak" required /> White oak</label>
+            <label><input type="radio" name="look" value="natural-oak" /> Natural oak</label>
+            <label><input type="radio" name="look" value="medium-oak" /> Medium oak</label>
+            <label><input type="radio" name="look" value="warm-oak" /> Warm oak</label>
+            <label><input type="radio" name="look" value="honey-oak" /> Honey oak</label>
+            <label><input type="radio" name="look" value="golden-oak" /> Golden oak</label>
+            <label><input type="radio" name="look" value="maple" /> Maple</label>
+            <label><input type="radio" name="look" value="hickory" /> Hickory</label>
+            <label><input type="radio" name="look" value="acacia" /> Acacia</label>
+            <label><input type="radio" name="look" value="cherry" /> Cherry</label>
+            <label><input type="radio" name="look" value="walnut" /> Walnut</label>
+            <label><input type="radio" name="look" value="walnut-plank" /> Walnut plank</label>
+            <label><input type="radio" name="look" value="dark-walnut" /> Dark walnut</label>
+            <label><input type="radio" name="look" value="espresso" /> Espresso</label>
+            <label><input type="radio" name="look" value="pine-natural" /> Natural pine</label>
+            <label><input type="radio" name="look" value="gray-oak" /> Gray oak</label>
+            <label><input type="radio" name="look" value="gray-wash" /> Gray wash</label>
+            <label><input type="radio" name="look" value="narrow-plank" /> Narrow plank</label>
+            <label><input type="radio" name="look" value="wide-plank" /> Wide plank</label>
+            <label><input type="radio" name="look" value="unsure" /> Not sure yet</label>
+          </div>
+        </fieldset>
         <div class="nav-row cta-row">
           <button type="button" class="btn ghost" data-goto="photos">Back</button>
-          <button type="submit" class="btn primary">Get free teaser</button>
+          <button type="submit" class="btn primary">See your report</button>
         </div>
       </form>
     </section>
 
-    <!-- Teaser -->
-    <section id="teaser" class="card hidden">
-      <h2>3. Free teaser</h2>
-      <p class="teaser-line" id="teaser-guess"></p>
-      <p class="disclaimer">
-        <strong>Disclaimer:</strong> This is a guided checklist guess for entertainment and planning only.
-        It is <em>not</em> a licensed home inspection, flooring appraisal, or professional moisture test.
-      </p>
-      <div class="unlock-box">
-        <h3>Unlock the full report — $12</h3>
-        <p>One-time payment ($10–$15; default $12). Full report: type confirmation, condition, refinish-vs-replace, cost bands, subfloor red flags, and next-step checklist.</p>
-        <a id="checkout-btn" class="btn primary" href="#" rel="noopener">Unlock full report — $12</a>
-        <p class="hint" id="checkout-hint"></p>
-      </div>
-
-            <div class="next-steps-cta" id="teaser-next">
-        <h3>Next DIY steps</h3>
-        <p>Skip the shopping lists — learn the product and plan with the free tools on this site.</p>
-        <ul class="cta-links">
-          <li><a href="guide/tools.html">Guide: Tools &amp; materials →</a></li>
-          <li><a href="guide/install.html">Guide: Click-lock install →</a></li>
-          <li><a href="measure.html">Measure your rooms →</a></li>
-          <li><a href="visualize.html">Visualize planks on a photo →</a></li>
-          <li><a href="projects.html">Before &amp; after gallery →</a></li>
-        </ul>
-      </div>
-
-      <div class="nav-row cta-row">
-        <button type="button" class="btn ghost" data-goto="checklist">Edit answers</button>
-      </div>
-    </section>
-
     <!-- Full report -->
     <section id="report" class="card hidden">
-      <h2>Full photo report</h2>
-      <p class="badge success">Unlocked</p>
-      <article class="report-body" id="report-body">
-        <p>This looks like click-lock LVP over a concrete slab. Surface wear is light, but the photo shows edge peaking in one area. Refinishing isn't realistic for LVP — plan on replace. Ballpark for a typical bedroom: about three to six dollars per square foot installed, more if the subfloor needs leveling. Have a pro confirm moisture under the slab before you buy new flooring.</p>
-        <ul>
-          <li><strong>Type confirmation:</strong> click-lock LVP (luxury vinyl plank)</li>
-          <li><strong>Condition:</strong> light surface wear; edge peaking in one area</li>
-          <li><strong>Refinish vs replace:</strong> replace — LVP cannot be refinished like hardwood</li>
-          <li><strong>Cost band:</strong> roughly $3–$6 / sq ft installed for a typical bedroom; more if leveling is needed</li>
-          <li><strong>Subfloor red flags:</strong> concrete slab — check moisture before new install</li>
-          <li><strong>DIY checklist:</strong> moisture test under slab, flatness/leveling, product waterproof rating, transition pieces, underlayment compatibility</li>
-        </ul>
-      </article>
+      <h2>Your photo report</h2>
+      <p class="badge success">Free</p>
+      <article class="report-body" id="report-body"></article>
 
             <div class="next-steps-cta" id="report-next">
         <h3>What to do next</h3>
@@ -218,7 +227,7 @@
           <li><a href="guide.html">LVP guide hub →</a></li>
           <li><a href="guide/what-is-lvp.html">Understand LVP (thickness &amp; wear layers) →</a></li>
           <li><a href="guide/tools.html">Tools &amp; materials →</a></li>
-          <li><a href="measure.html">Room measurement tips →</a></li>
+          <li><a href="measure.html">Measure your rooms →</a></li>
           <li><a href="visualize.html">Floor overlay preview →</a></li>
           <li><a href="projects.html">Project gallery →</a></li>
         </ul>
@@ -240,8 +249,8 @@
     </div>
   </footer>
 
-  <script src="stripe-config.js"></script>
-  <script src="app.js"></script>
+  <script src="photo-check.js?v=20261002a"></script>
+  <script src="app.js?v=20261002a"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

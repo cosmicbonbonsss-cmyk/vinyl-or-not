@@ -1,9 +1,6 @@
-# Keep local secrets out of git if you later put a live key here
-# (checkoutUrl Payment Links are public by design; this is for future Expansion)
+# Local secrets
 .DS_Store
 *.log
 node_modules/
 .env
 .env.*
-# Optional: ignore a private override; committed stripe-config.js uses placeholders
-stripe-config.local.js

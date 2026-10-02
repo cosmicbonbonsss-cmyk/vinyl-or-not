@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>How to measure for vinyl plank flooring — sq ft, waste &amp; closets</title>
-  <meta name="description" content="Simple steps to measure rooms for LVP: square footage, 10–15% waste, doorways, and closets before you order materials." />
+  <title>Measure rooms for vinyl plank flooring — sq ft, waste &amp; boxes</title>
+  <meta name="description" content="Free room measure tool for LVP: enter feet and inches, add closets, and see square footage, waste, boxes, and planks to order." />
   <link rel="canonical" href="https://vinylornot.com/measure.html" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vinylornot.com/measure.html" />
-  <meta property="og:title" content="How to measure for vinyl plank flooring — sq ft, waste &amp; closets" />
-  <meta property="og:description" content="Simple steps to measure rooms for LVP: square footage, 10–15% waste, doorways, and closets before you order materials." />
+  <meta property="og:title" content="Measure rooms for vinyl plank flooring — sq ft, waste &amp; boxes" />
+  <meta property="og:description" content="Free room measure tool for LVP: enter feet and inches, add closets, and see square footage, waste, boxes, and planks to order." />
   <meta property="og:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
   <meta property="og:image:alt" content="Sunlit living room with warm oak-look plank flooring" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="How to measure for vinyl plank flooring — sq ft, waste &amp; closets" />
-  <meta name="twitter:description" content="Simple steps to measure rooms for LVP: square footage, 10–15% waste, doorways, and closets before you order materials." />
+  <meta name="twitter:title" content="Measure rooms for vinyl plank flooring — sq ft, waste &amp; boxes" />
+  <meta name="twitter:description" content="Free room measure tool for LVP: enter feet and inches, add closets, and see square footage, waste, boxes, and planks to order." />
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=wood11" />
+  <link rel="stylesheet" href="styles.css?v=20261002a" />
 </head>
 <body>
   <header class="site-header">
@@ -26,7 +26,7 @@
       <div class="header-row">
         <div>
           <a class="logo" href="./">Vinyl or Not</a>
-          <p class="tagline">Room measurement tips</p>
+          <p class="tagline">Square footage, waste, boxes &amp; planks</p>
         </div>
                 <nav class="site-nav" aria-label="Site">
           <a href="./">Home</a>
@@ -42,12 +42,59 @@
   </header>
 
   <main class="wrap">
-    <section class="card">
-      <p class="badge">Shopping prep</p>
-      <h1 class="page-title">Room measurement tips</h1>
+    <section class="card" id="calculator">
+      <p class="badge">Free tool</p>
+      <h1 class="page-title">Measure your rooms</h1>
       <p class="pitch">
-        Get a solid square-footage estimate before you order — whether you’re planning LVP or comparing vinyl plank vs tile.
-        These steps work with a tape measure and a notepad — no special tools required.
+        Enter length and width in feet and inches. Add closets or extra rooms, set a waste percent, and see how much flooring to order.
+        No account. This is a planning aid — confirm the box coverage printed on the carton.
+      </p>
+      <div class="area-block" data-area="main">
+        <h2>Main area</h2>
+        <div class="dim-grid">
+          <fieldset class="dim-set">
+            <legend>Length</legend>
+            <div class="dim-inputs">
+              <label>Feet<input type="number" class="len-ft" min="0" max="200" step="1" inputmode="numeric" value="12" /></label>
+              <label>Inches<input type="number" class="len-in" min="0" max="11.99" step="0.25" inputmode="decimal" value="0" /></label>
+            </div>
+          </fieldset>
+          <fieldset class="dim-set">
+            <legend>Width</legend>
+            <div class="dim-inputs">
+              <label>Feet<input type="number" class="wid-ft" min="0" max="200" step="1" inputmode="numeric" value="11" /></label>
+              <label>Inches<input type="number" class="wid-in" min="0" max="11.99" step="0.25" inputmode="decimal" value="0" /></label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div id="extra-areas"></div>
+      <div class="nav-row">
+        <button type="button" class="btn secondary" id="add-area">Add another area</button>
+      </div>
+      <div class="form-grid measure-options">
+        <label>Waste (%)
+          <input type="number" id="waste-pct" min="0" max="40" step="1" value="10" />
+          <span class="field-hint">10% for a simple rectangle. Use 15% for angles, diagonals, or a busy pattern.</span>
+        </label>
+        <label>Box coverage (sq ft)
+          <input type="number" id="box-coverage" min="1" max="80" step="0.1" value="20" />
+          <span class="field-hint">Many LVP cartons cover about 20 sq ft. Use the number on your box.</span>
+        </label>
+        <label>Plank length (in)
+          <input type="number" id="plank-len" min="12" max="96" step="0.5" value="48" />
+        </label>
+        <label>Plank width (in)
+          <input type="number" id="plank-wid" min="3" max="12" step="0.25" value="7" />
+        </label>
+      </div>
+      <div id="measure-out" class="measure-results" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="page-title">How to measure</h2>
+      <p class="pitch">
+        A tape and these steps are enough before you order — whether you’re planning LVP or comparing vinyl plank vs tile.
       </p>
 
       <ol class="measure-steps">
@@ -101,9 +148,8 @@
       </p>
 
       <div class="nav-row cta-row">
-        <a class="btn primary" href="./?report=1">View sample report</a>
+        <a class="btn primary" href="visualize.html">Visualize a room</a>
         <a class="btn secondary" href="guide.html">LVP guide</a>
-        <a class="btn secondary" href="projects.html">Project gallery</a>
         <a class="btn ghost" href="./">← Back to Vinyl or Not</a>
       </div>
     </section>
@@ -115,6 +161,7 @@
       <p>If you have any questions, reach out — <a href="mailto:cosmicbonbonsss@gmail.com">cosmicbonbonsss@gmail.com</a></p>
     </div>
   </footer>
+  <script src="measure.js?v=20261002a"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>

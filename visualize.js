@@ -7,16 +7,18 @@ const TEXTURES = [
   { id: "medium-oak", label: "Medium oak", file: "textures/medium-oak.jpg", repeat: [6, 6] },
   { id: "warm-oak", label: "Warm oak", file: "textures/warm-oak.jpg", repeat: [6, 6] },
   { id: "honey-oak", label: "Honey oak", file: "textures/honey-oak.jpg", repeat: [5, 5] },
-  { id: "acacia", label: "Acacia", file: "textures/acacia.jpg", repeat: [5, 5] },
   { id: "golden-oak", label: "Golden oak", file: "textures/golden-oak.jpg", repeat: [6, 6] },
-  { id: "gray-oak", label: "Gray oak", file: "textures/gray-oak.jpg", repeat: [6, 6] },
-  { id: "weathered-gray", label: "Weathered gray", file: "textures/weathered-gray.jpg", repeat: [7, 7] },
   { id: "maple", label: "Maple", file: "textures/maple.jpg", repeat: [7, 7] },
   { id: "hickory", label: "Hickory", file: "textures/hickory.jpg", repeat: [5, 5] },
+  { id: "acacia", label: "Acacia", file: "textures/acacia.jpg", repeat: [5, 5] },
   { id: "cherry", label: "Cherry", file: "textures/cherry.jpg", repeat: [6, 6] },
+  { id: "walnut", label: "Walnut", file: "textures/walnut.jpg", repeat: [5, 5] },
   { id: "walnut-plank", label: "Walnut plank", file: "textures/walnut-plank.jpg", repeat: [5, 5] },
+  { id: "dark-walnut", label: "Dark walnut", file: "textures/dark-walnut.jpg", repeat: [5, 5] },
   { id: "espresso", label: "Espresso", file: "textures/espresso.jpg", repeat: [5, 5] },
   { id: "pine-natural", label: "Natural pine", file: "textures/pine-natural.jpg", repeat: [5, 5] },
+  { id: "gray-oak", label: "Gray oak", file: "textures/gray-oak.jpg", repeat: [6, 6] },
+  { id: "gray-wash", label: "Gray wash", file: "textures/weathered-gray.jpg", repeat: [7, 7] },
   { id: "narrow-plank", label: "Narrow plank", file: "textures/narrow-plank.jpg", repeat: [8, 8] },
   { id: "wide-plank", label: "Wide plank", file: "textures/wide-plank.jpg", repeat: [4, 4] }
 ];
@@ -94,12 +96,51 @@ let lastShareId = null;
 let corners = [];
 /** @type {string} */
 let selectedTexId = TEXTURES[0].id;
+let lookTouched = false;
+const captureBlock = document.getElementById("capture-block");
+const workBlock = document.getElementById("work-block");
+const stepList = document.getElementById("viz-steps");
+
+(function applyLookFromQuery() {
+  const id = new URLSearchParams(window.location.search).get("look");
+  if (id && TEXTURES.some((tex) => tex.id === id)) {
+    selectedTexId = id;
+    lookTouched = true;
+  }
+})();
 /** @type {THREE.Texture|null} */
 let activeFloorTex = null;
 const texCache = new Map();
 
 function setStatus(msg) {
   statusEl.textContent = msg;
+}
+
+function showWork(on) {
+  if (captureBlock) captureBlock.classList.toggle("hidden", on);
+  if (workBlock) workBlock.classList.toggle("hidden", !on);
+}
+
+function updateSteps() {
+  if (!stepList) return;
+  const photo = !!photoMesh;
+  const cornersDone = corners.length === 4;
+  let current = "photo";
+  if (photo && !lookTouched && corners.length === 0) current = "look";
+  else if (photo && !cornersDone) current = "corners";
+  else if (photo && cornersDone) current = "save";
+  const order = ["photo", "look", "corners", "save"];
+  const currentIdx = order.indexOf(current);
+  stepList.querySelectorAll("li").forEach((li) => {
+    const idx = order.indexOf(li.dataset.step);
+    li.classList.toggle("is-current", idx === currentIdx);
+    li.classList.toggle("is-done", idx > -1 && idx < currentIdx);
+  });
+}
+
+function showPhotoCheck(result) {
+  const el = document.getElementById("photo-check-live");
+  if (el && window.VonPhotoCheck && result) window.VonPhotoCheck.paintCheck(el, result);
 }
 
 const vizEmpty = document.getElementById("viz-empty");
@@ -349,9 +390,13 @@ function setPhotoFromFile(file) {
     clearBtn.disabled = false;
     setPickerEnabled(true);
     setEmptyState(false);
+    showWork(true);
     fitCamera();
-    setStatus("Step 2: tap four floor corners — front-left, front-right, back-right, back-left.");
+    setStatus(lookTouched
+      ? "Step 3: tap four floor corners — front-left, front-right, back-right, back-left."
+      : "Step 2: pick a flooring look, then tap the four floor corners.");
     updateHint();
+    updateSteps();
     updateMeasureUI();
     render();
   };
@@ -392,8 +437,15 @@ function clearPhoto() {
   clearBtn.disabled = true;
   setPickerEnabled(false);
   setEmptyState(true);
+  showWork(false);
+  const liveCheck = document.getElementById("photo-check-live");
+  if (liveCheck) {
+    liveCheck.textContent = "";
+    liveCheck.classList.add("hidden");
+  }
   fitCamera();
-  setStatus("Step 1: upload a photo of a room with a visible floor.");
+  setStatus("Step 1: take or upload a photo with a clear view of the floor.");
+  updateSteps();
   updateMeasureUI();
   render();
 }
@@ -409,6 +461,7 @@ function resetCorners() {
   rebuildMarkers();
   setStatus("Corners cleared — tap four floor corners again.");
   updateHint();
+  updateSteps();
   updateMeasureUI();
   render();
 }
@@ -545,23 +598,26 @@ function buildPicker() {
   TEXTURES.forEach((t, idx) => {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "tex-opt" + (idx === 0 ? " selected" : "");
+    btn.className = "tex-opt" + (t.id === selectedTexId ? " selected" : "");
     btn.dataset.id = t.id;
     btn.setAttribute("role", "option");
-    btn.disabled = true;
+    btn.setAttribute("aria-selected", t.id === selectedTexId ? "true" : "false");
+    btn.disabled = !photoMesh;
     btn.innerHTML = `<img src="${t.file}" alt="" loading="lazy" /><span>${t.label}</span>`;
     btn.addEventListener("click", () => {
-      if (corners.length !== 4) {
-        setStatus("Set all four corners before applying a texture.");
-        return;
-      }
-      loadFloorTexture(t.id)
-        .then(() => {
-          setStatus("Applied “" + t.label + "”. Adjust plank scale if planks look too large/small.");
-          updateMeasureUI();
-          render();
-        })
-        .catch(() => setStatus("Texture failed to load."));
+      lookTouched = true;
+      const apply = () => {
+        if (corners.length !== 4) {
+          setStatus("“" + t.label + "” selected. Now tap the four floor corners.");
+          updateSteps();
+          return;
+        }
+        setStatus("Applied “" + t.label + "”. Adjust plank scale if the planks look too large or small.");
+        updateMeasureUI();
+        updateSteps();
+        render();
+      };
+      loadFloorTexture(t.id).then(apply).catch(() => setStatus("That look didn’t load. Try another."));
     });
     picker.appendChild(btn);
   });
@@ -594,13 +650,17 @@ function onPointer(e) {
     rebuildMarkers();
     updateHint();
     if (corners.length === 4) {
-      setStatus("Quad complete — choose a plank texture below.");
+      lookTouched = true;
+      setStatus("Floor marked — “" + ((TEXTURES.find((tex) => tex.id === selectedTexId) || {}).label || "look") + "” is on the photo.");
       loadFloorTexture(selectedTexId).then(() => {
         updateMeasureUI();
+        updateSteps();
         render();
       });
     } else {
+      lookTouched = true;
       setStatus("Corner " + corners.length + "/4 set — next: " + CORNER_LABELS[corners.length]);
+      updateSteps();
     }
     render();
   }
@@ -618,8 +678,36 @@ function loop() {
 // Events
 photoInput.addEventListener("change", (e) => {
   const f = e.target.files && e.target.files[0];
-  if (f) setPhotoFromFile(f);
+  e.target.value = "";
+  if (!f) return;
+  if (window.VonPhotoCheck) {
+    window.VonPhotoCheck.analyzeFile(f).then(showPhotoCheck);
+  }
+  setPhotoFromFile(f);
 });
+
+if (window.VonPhotoCheck && document.getElementById("open-camera")) {
+  window.VonPhotoCheck.attachCamera({
+    openBtn: document.getElementById("open-camera"),
+    panel: document.getElementById("camera-panel"),
+    video: document.getElementById("camera-video"),
+    shutter: document.getElementById("camera-shutter"),
+    cancel: document.getElementById("camera-cancel"),
+    review: document.getElementById("shot-review"),
+    preview: document.getElementById("shot-preview"),
+    checkEl: document.getElementById("shot-check"),
+    accept: document.getElementById("shot-accept"),
+    retake: document.getElementById("shot-retake"),
+    onStatus: (msg) => {
+      const el = document.getElementById("camera-status");
+      if (el) el.textContent = msg || "";
+    },
+    onAccept: (file, result) => {
+      showPhotoCheck(result);
+      setPhotoFromFile(file);
+    }
+  });
+}
 resetBtn.addEventListener("click", resetCorners);
 clearBtn.addEventListener("click", clearPhoto);
 tileScale.addEventListener("input", () => {
@@ -747,8 +835,10 @@ if (webShareBtn) {
 buildPicker();
 fitCamera();
 setEmptyState(true);
-setStatus("Step 1: upload a photo of a room with a visible floor.");
+showWork(false);
+setStatus("Step 1: take or upload a photo with a clear view of the floor.");
 updateHint();
+updateSteps();
 updateMeasureUI();
 loop();
 

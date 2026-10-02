@@ -1,31 +1,22 @@
 # Vinyl or Not
 
-Static **DIY** site for hard-surface flooring: photo reports, an LVP beginner-to-expert guide, measure tips, floor visualize, and a before/after gallery. Guided checklist (not computer vision / AI inspection). Free one-line type guess; paid full report unlock.
+Static **DIY** site for hard-surface flooring: a free photo report, an LVP beginner-to-expert guide, a room measure tool, floor visualize, and a before/after gallery. The photo report is a guided checklist (not computer vision). Everything on the site is free — no checkout.
 
-**Live:** https://cosmicbonbonsss-cmyk.github.io/vinyl-or-not/
-
-## Tiers
-
-| Tier | Price | What you get |
-|------|-------|----------------|
-| **Free** | $0 | 1–3 local photo previews + guided checklist → one-line flooring type guess + disclaimer |
-| **Paid** | **$10–$15** (default **$12**) | Full report: type confirmation, condition, refinish-vs-replace, cost bands, subfloor red flags, DIY next-step checklist |
-
-Single Stripe product / Payment Link for the paid price. Demo unlock with `?report=1` / sessionStorage.
+**Live:** https://vinylornot.com/
 
 ## Features
 
 - Landing pitch + DIY tool cards (photo report, measure, visualize, gallery, **guide**)
-- Client-side photo upload (1–3) with FileReader thumbnails — no server upload in this prototype
-- Guided checklist (seams, texture, underlayment, click edges, wear) — clearly labeled **not AI vision**
-- Free teaser + disclaimer (not a licensed inspection)
-- Paid unlock via Stripe Test Payment Link placeholder (`stripe-config.js`) or demo `?report=1`
-- After teaser/report: education CTAs into the guide + measure / visualize / gallery (no retailer affiliate links)
+- Client-side photo upload (1–3). Photos stay on the device.
+- Optional camera with an on-device blur and brightness check
+- Guided checklist (seams, texture, underlayment, click edges, wear, flooring look) — clearly labeled **not AI vision**
+- Free report: type, condition, refinish-vs-replace, cost band, subfloor notes, next steps
+- After the report: guide + measure / visualize / gallery (no retailer affiliate links)
 - Plain HTML/CSS/JS — mobile-friendly, no frameworks
 - **`guide.html` + `guide/`** — vinyl plank from zero to expert (understand LVP, tools, measure, prep, click-lock install, care, troubleshoot)
-- `measure.html` — room measurement tips (length × width, 10–15% waste, doorways/closets, example)
-- `visualize.html` — photo-only LVP overlay (4-corner quad + Three.js warp, ambientCG textures)
-- **`projects.html`** — public DIY before/after gallery (seeded demos + localStorage uploads)
+- `measure.html` — room measure tool (feet and inches, extra areas, waste, boxes, and planks) plus measuring tips
+- `visualize.html` — room photo LVP overlay (camera or upload, flooring looks, 4-corner quad)
+- **`projects.html`** — DIY before/after gallery (local photos until a shared gallery is connected)
 - **`specs/`** — downloadable planning aids (LVP overview, subfloor prep, moisture notes, waste factor, printable HTML)
 
 ## LVP guide (`guide.html`)
@@ -46,19 +37,7 @@ Chapters live under `guide/*.html`. Hub at `/guide.html` (`guide/index.html` red
 ## Project gallery (`projects.html`)
 
 - **Upload** DIY before/after to the shared gallery feed
-- Seeded demos + JSON import/export for packs
-
-## Stripe setup
-
-1. In Stripe (Test mode), create a **one-time** product at **$12** (or any price in **$10–$15**).
-2. Create a **Payment Link** for that product.
-3. Set the Payment Link **success URL** to:
-   `https://cosmicbonbonsss-cmyk.github.io/vinyl-or-not/?report=1`
-4. Put the link in `stripe-config.js` as `checkoutUrl` (see `stripe-config.example.js`).
-
-If `checkoutUrl` is empty, Pay buttons use demo unlock so the prototype works without Stripe.
-
-Unlock is client-side only (query param + `sessionStorage`) — fine for a static demo, not production payment enforcement.
+- Upload before/after photos in this browser, with JSON import/export for backups
 
 ## Local preview
 
@@ -76,15 +55,15 @@ Repo publishes from `main` branch, root `/`.
 
 ## Files
 
-- `index.html` — single-page flow (landing → photos → checklist → teaser → report)
+- `index.html` — landing → photos → checklist → free report
 - `guide.html` — guide hub
 - `guide/` — chapter pages (start, what-is-lvp, tools, measure-plan, prep, install, finish-care, troubleshoot)
 - `measure.html` — how to measure rooms for flooring square footage
-- `visualize.html` / `visualize.js` / `visualize.css` — floor overlay prototype
+- `visualize.html` / `visualize.js` / `visualize.css` — floor overlay
 - `textures/` — CC0 seamless plank JPGs (see `textures/CREDITS.md`)
 - `projects.html` / `projects.js` — DIY before/after gallery
 - `specs/` — planning-aid downloads
 - `styles.css` — mobile-friendly layout (+ `.guide-*` helpers)
-- `app.js` — previews, checklist rules, unlock
-- `stripe-config.js` — public placeholders (`checkoutUrl`, `$12` / `$10–$15`)
-- `stripe-config.example.js` — documented example Payment Link
+- `app.js` — previews, checklist rules, free report
+- `photo-check.js` — on-device blur and brightness check
+- `measure.js` — square footage, waste, boxes, and planks
