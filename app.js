@@ -138,8 +138,8 @@
     var lookId = a.look || "unsure";
     var lookName = LOOKS[lookId] || "Not sure yet";
     var lookLine = lookId === "unsure"
-      ? "You weren’t sure which look to compare. Visualize has oak, walnut, maple, hickory, acacia, gray wash, and wide plank you can preview on a room photo."
-      : "Look to compare: " + lookName + ". Open Visualize and choose that same name to preview it on a room photo.";
+      ? "You weren’t sure which look to compare."
+      : "Look to compare: " + lookName + ".";
 
     return {
       summary: guessFromAnswers(a),
@@ -197,14 +197,6 @@
     list.appendChild(stepsLi);
     body.appendChild(list);
 
-    if (r.lookId && r.lookId !== "unsure") {
-      var link = document.createElement("p");
-      var aEl = document.createElement("a");
-      aEl.href = "visualize.html?look=" + encodeURIComponent(r.lookId);
-      aEl.textContent = "Preview " + (LOOKS[r.lookId] || "this look") + " in Visualize";
-      link.appendChild(aEl);
-      body.appendChild(link);
-    }
   }
 
   function renderThumbs() {

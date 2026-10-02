@@ -37,5 +37,4 @@ Install notes (generic)
 - Stagger end joints; avoid short pieces at doorways when possible.
 - Use approved underlayment / vapor barriers only.
 
-Related tools on Vinyl or Not: measure.html (sq ft + waste), visualize.html
-(plank look preview), guide.html (LVP guide).
+Related tools on Vinyl or Not: measure.html (sq ft + waste), guide.html (LVP guide).

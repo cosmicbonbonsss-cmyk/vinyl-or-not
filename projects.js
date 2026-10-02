@@ -158,13 +158,13 @@ async function render() {
   if (countEl) {
     countEl.textContent = list.length
       ? (list.length === 1 ? "1 project on this device" : list.length + " projects on this device")
-      : "No projects yet. Add one below, or save a preview from Visualize.";
+      : "No projects yet. Add one below.";
   }
   grid.innerHTML =
     '<div class="gallery-section">' +
     (list.length ? list.map(function (p) {
       return cardHtml(p, highlightId);
-    }).join("") : '<p class="hint">Nothing here yet. Use the form under this list, or open <a href="visualize.html">Visualize</a>, mark a floor, and choose Save to gallery.</p>') +
+    }).join("") : '<p class="hint">Nothing here yet. Use the form under this list to save a before and after.</p>') +
     "</div>";
 
   if (highlightId) {
