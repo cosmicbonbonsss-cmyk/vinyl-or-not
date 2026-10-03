@@ -15,7 +15,7 @@ Static **DIY** site for hard-surface flooring: a free photo report, an LVP begin
 - Plain HTML/CSS/JS — mobile-friendly, no frameworks
 - **`guide.html` + `guide/`** — vinyl plank from zero to expert (understand LVP, tools, measure, prep, click-lock install, care, troubleshoot)
 - `measure.html` — room measure tool (feet and inches, extra areas, waste, boxes, and planks) plus measuring tips
-- **`projects.html`** — DIY before/after gallery (local photos until a shared gallery is connected)
+- **`projects.html`** — DIY before/after gallery (photos stay in this browser)
 - **`specs/`** — downloadable planning aids (LVP overview, subfloor prep, moisture notes, waste factor, printable HTML)
 
 ## LVP guide (`guide.html`)
@@ -24,21 +24,21 @@ Progressive DIY path:
 
 1. Start here → photo report + tool picker  
 2. Understand LVP (cores, wear layers, waterproof claims, **thickness failure cases**)  
-3. Tools & materials (detailed)  
-4. Measure & plan  
-5. Prep  
-6. Install (click-lock focus)  
-7. Finish & care  
-8. Troubleshoot  
+3. Is vinyl okay for the room (water, wear layer, pets, renters, resale)  
+4. Tools & materials (detailed)  
+5. Measure & plan  
+6. Prep  
+7. Install (click-lock focus)  
+8. Finish & care  
+9. Troubleshoot  
 
 Chapters live under `guide/*.html`. Hub at `/guide.html` (`guide/index.html` redirects there).
 
-Also: `guide/is-it-okay.html` — whether vinyl is a reasonable choice for water, pets, kids, renters, and resale.
 
 ## Project gallery (`projects.html`)
 
-- **Upload** DIY before/after to the shared gallery feed
-- Upload before/after photos in this browser, with JSON import/export for backups
+- Save before/after photos in this browser
+- Download or restore a JSON backup on this device
 
 ## Local preview
 

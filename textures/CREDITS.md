@@ -24,6 +24,4 @@ Seamless wood-floor color maps from [ambientCG](https://ambientcg.com/) (CC0), p
 | walnut.jpg | WoodFloor037 | Site chrome only |
 | dark-walnut.jpg | WoodFloor026 | Site chrome only |
 
-Visualizer picker is plank-only (no parquet / mosaic / herringbone / basketweave).
-
 Downloaded as 1K JPG Color maps; recompressed for the site.
