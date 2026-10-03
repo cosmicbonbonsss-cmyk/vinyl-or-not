@@ -264,7 +264,7 @@ if (exportBtn) {
     URL.revokeObjectURL(a.href);
     if (ieStatus)
       ieStatus.textContent =
-        "Downloaded a copy of " + payload.projects.length + " project(s) from this browser.";
+        "Downloaded a copy of " + payload.projects.length + (payload.projects.length === 1 ? " project" : " projects") + " from this browser.";
   });
 }
 
@@ -277,7 +277,7 @@ if (importInput) {
       try {
         const data = JSON.parse(String(reader.result || ""));
         const incoming = (data && data.projects) || data;
-        if (!Array.isArray(incoming)) throw new Error("JSON must contain a projects array.");
+        if (!Array.isArray(incoming)) throw new Error("That file is not a projects backup.");
         const merged = listLocalBackup().concat(
           incoming.map(function (p, i) {
             p.id = p.id || "import-" + Date.now() + "-" + i;
@@ -286,7 +286,7 @@ if (importInput) {
           })
         );
         replaceLocalBackup(merged);
-        if (ieStatus) ieStatus.textContent = "Restored " + incoming.length + " project(s) on this device.";
+        if (ieStatus) ieStatus.textContent = "Restored " + incoming.length + (incoming.length === 1 ? " project" : " projects") + " on this device.";
         render();
       } catch (err) {
         if (ieStatus) ieStatus.textContent = "Import failed: " + (err.message || err);
