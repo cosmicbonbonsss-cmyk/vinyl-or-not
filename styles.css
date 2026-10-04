@@ -255,11 +255,14 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 .site-footer {
-  padding: 1.5rem 0 2rem;
-  /* Light text on dark walnut plank background for readable contrast */
-  color: #f0e2cf;
-  font-size: 0.85rem;
-  border-top: 1px solid rgba(240, 226, 207, 0.28);
+  padding: 1.35rem 0 1.75rem;
+  margin-top: 2rem;
+  /* Solid bar so the footer stays readable on the light parts of the wood photo */
+  color: #fff8ef;
+  background: #1c100b;
+  font-size: 1rem;
+  line-height: 1.65;
+  border-top: 1px solid rgba(255, 248, 239, 0.35);
 }
 
 /* Room measurement tips */
@@ -311,7 +314,10 @@ fieldset input { margin-right: 0.45rem; }
 .site-footer p,
 .site-footer a,
 .site-footer a:visited {
-  color: #f0e2cf;
+  color: #ffffff;
+}
+.site-footer p {
+  margin: 0.4rem 0;
 }
 .site-footer a {
   font-weight: 600;
