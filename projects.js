@@ -164,7 +164,7 @@ async function render() {
     '<div class="gallery-section">' +
     (list.length ? list.map(function (p) {
       return cardHtml(p, highlightId);
-    }).join("") : '<p class="hint">Nothing here yet. Use the form under this list to save a before and after.</p>') +
+    }).join("") : "") +
     "</div>";
 
   if (highlightId) {

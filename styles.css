@@ -885,8 +885,7 @@ fieldset input { margin-right: 0.45rem; }
 
 
 @media (min-width: 640px) {
-  .homeowner-tools { grid-template-columns: 1.25fr 1fr 1fr; }
-  .homeowner-tool-featured { grid-row: span 2; }
+  .homeowner-tools { grid-template-columns: 1fr 1fr; }
   .hero-copy { justify-content: center; padding-bottom: 2.25rem; }
 }
 
@@ -963,6 +962,7 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 .guide-path a::before {
+  grid-row: span 2;
   counter-increment: guide-step;
   content: counter(guide-step);
   display: inline-flex;
@@ -980,6 +980,7 @@ fieldset input { margin-right: 0.45rem; }
 
 .guide-path strong {
   display: block;
+  grid-column: 2;
   color: var(--accent);
   font-size: 1.02rem;
   margin-bottom: 0.15rem;
@@ -987,6 +988,7 @@ fieldset input { margin-right: 0.45rem; }
 
 .guide-path span {
   display: block;
+  grid-column: 2;
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -1581,3 +1583,21 @@ h3 {
   font-size: 0.92rem;
   color: var(--muted);
 }
+
+/* Base media + plain in-content links (zero specificity so component styles win) */
+:where(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+:where(main) :where(a:not([class])) {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+
+:where(main) :where(a:not([class])):hover,
+:where(main) :where(a:not([class])):focus {
+  color: var(--accent-hover);
+}
+
+.site-footer a { white-space: nowrap; }

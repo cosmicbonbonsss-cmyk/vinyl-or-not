@@ -12,12 +12,12 @@ Static **DIY** site for hard-surface flooring: a free photo report, an LVP begin
 - Guided checklist (seams, texture, underlayment, click edges, wear, flooring look) — clearly labeled **not AI vision**
 - Free report: type, condition, refinish-vs-replace, cost band, subfloor notes, next steps
 - After the report: guide + measure / gallery
-- Amazon Associates links on the Tools chapter (`guide/tools.html`) plus a footer disclosure. Links are built by `affiliate.js`; the Associates tracking ID goes in **`affiliate-config.js`** (`window.VINYL_AMAZON_TAG`), empty until approved — links work untagged until then
+- Amazon Associates links on the Tools chapter (`guide/tools.html`) plus a footer disclosure. Links are built by `affiliate.js`; the Associates tracking ID (`vinylornot-20`) lives in **`affiliate-config.js`** (`window.VINYL_AMAZON_TAG`)
 - Plain HTML/CSS/JS — mobile-friendly, no frameworks
 - **`guide.html` + `guide/`** — vinyl plank from zero to expert (understand LVP, tools, measure, prep, click-lock install, care, troubleshoot)
 - `measure.html` — room measure tool (feet and inches, extra areas, waste, boxes, and planks) plus measuring tips
 - **`projects.html`** — DIY before/after gallery (photos stay in this browser)
-- **`specs/`** — downloadable planning aids (LVP overview, subfloor prep, moisture notes, waste factor, printable HTML)
+- **`specs/`** — planning-aid text files and a printable page (not linked from the site nav; the printable page is `noindex`)
 
 ## LVP guide (`guide.html`)
 
