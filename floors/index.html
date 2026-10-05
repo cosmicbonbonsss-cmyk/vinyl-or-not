@@ -11,7 +11,7 @@
   <meta property="og:title" content="Floor looks by room | Vinyl or Not" />
   <meta property="og:description" content="Floor looks for a 12 by 10 living room, 11 by 12 bedroom, 10 by 12 kitchen, and 5 by 8 bathroom. Each page names one wood look and that room size." />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../styles.css?v=20261004g" />
+  <link rel="stylesheet" href="../styles.css?v=20261004h" />
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -59,6 +59,14 @@
           <a href="../measure.html">Measure</a>
           <a href="../projects.html">Projects</a>
         </nav>
+        <form class="site-search" role="search" action="#" data-site-search>
+          <label class="visually-hidden" for="site-search-input">Search Vinyl or Not</label>
+          <span class="site-search-field">
+            <input type="search" id="site-search-input" class="site-search-input" placeholder="Search guides &amp; floor looks" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="site-search-results" />
+          </span>
+          <ul id="site-search-results" class="site-search-results" role="listbox" aria-label="Search results" hidden></ul>
+          <p class="visually-hidden" aria-live="polite" data-search-status></p>
+        </form>
       </div>
     </div>
   </header>
@@ -163,5 +171,6 @@
       <p class="footer-affiliate">As an Amazon Associate I earn from qualifying purchases.</p>
     </div>
   </footer>
+  <script src="../search.js?v=20261004h" defer></script>
 </body>
 </html>

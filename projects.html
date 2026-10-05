@@ -18,7 +18,27 @@
   <meta name="twitter:image" content="https://vinylornot.com/assets/hero-lvp.jpg" />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=20261004g" />
+  <link rel="stylesheet" href="styles.css?v=20261004h" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://vinylornot.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Projects",
+      "item": "https://vinylornot.com/projects.html"
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -36,6 +56,14 @@
           <a href="measure.html">Measure</a>
           <a href="projects.html" aria-current="page">Projects</a>
         </nav>
+        <form class="site-search" role="search" action="#" data-site-search>
+          <label class="visually-hidden" for="site-search-input">Search Vinyl or Not</label>
+          <span class="site-search-field">
+            <input type="search" id="site-search-input" class="site-search-input" placeholder="Search guides &amp; floor looks" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="site-search-results" />
+          </span>
+          <ul id="site-search-results" class="site-search-results" role="listbox" aria-label="Search results" hidden></ul>
+          <p class="visually-hidden" aria-live="polite" data-search-status></p>
+        </form>
       </div>
     </div>
   </header>
@@ -142,9 +170,10 @@
     </div>
   </footer>
 
-  <script src="gallery-config.js?v=20261004g"></script>
-  <script type="module" src="projects.js?v=20261004g"></script>
+  <script src="gallery-config.js?v=20261004h"></script>
+  <script type="module" src="projects.js?v=20261004h"></script>
   <script data-goatcounter="https://vinylornot.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
+  <script src="search.js?v=20261004h" defer></script>
 </body>
 </html>

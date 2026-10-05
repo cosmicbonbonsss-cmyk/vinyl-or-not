@@ -1601,3 +1601,162 @@ h3 {
 }
 
 .site-footer a { white-space: nowrap; }
+
+/* ---- On-site search (search.js) ---- */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.site-search {
+  position: relative;
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.site-search-field {
+  position: relative;
+  display: block;
+}
+
+.site-search-field::before {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-top: -0.45rem;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.site-search-field::after {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  width: 0.4rem;
+  height: 2px;
+  margin-top: 0.22rem;
+  background: var(--muted);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.site-search-input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem 0.5rem 2.2rem;
+  min-height: 2.5rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.site-search-input::placeholder { color: #7a7266; }
+
+.site-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 93, 80, 0.22);
+  background: #fff;
+}
+
+.site-search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 30;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  max-height: min(65vh, 28rem);
+  overflow-y: auto;
+  background: #fffaf2;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.site-search-results li { margin: 0; }
+
+.site-search-results a {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 9px;
+  border-left: 3px solid transparent;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-search-results li.is-active a,
+.site-search-results a:hover {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+
+.site-search-kind {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a6236;
+}
+
+.site-search-title {
+  display: block;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.3;
+}
+
+.site-search-desc {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 0.1rem;
+}
+
+.site-search-empty {
+  padding: 0.6rem 0.7rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+@media (min-width: 761px) {
+  .site-search {
+    flex: 0 1 22rem;
+    margin-left: auto;
+  }
+  .site-search-results {
+    left: auto;
+    width: min(30rem, calc(100vw - 2rem));
+  }
+}
+
+@media (max-width: 760px) {
+  .site-search-input { font-size: 1rem; min-height: 2.6rem; }
+}
+
+/* Related links on floor look pages */
+.floor-related h3 {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.98rem;
+  color: var(--accent);
+}
