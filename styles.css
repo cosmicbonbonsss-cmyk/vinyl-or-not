@@ -255,14 +255,38 @@ fieldset input { margin-right: 0.45rem; }
 }
 
 .site-footer {
-  padding: 1.35rem 0 1.75rem;
-  margin-top: 2rem;
-  /* Solid bar so the footer stays readable on the light parts of the wood photo */
+  padding: 1.6rem 0 2rem;
+  margin-top: 2.25rem;
+  /* Solid bar so the footer stays readable on the wood photo */
   color: #fff8ef;
-  background: #1c100b;
-  font-size: 1rem;
-  line-height: 1.65;
-  border-top: 1px solid rgba(255, 248, 239, 0.35);
+  background: #140c08;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  border-top: 1px solid rgba(255, 248, 239, 0.4);
+}
+
+.footer-inner {
+  text-align: center;
+}
+
+.footer-brand {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff8ef;
+}
+
+.footer-links {
+  margin: 0 0 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.65rem;
+}
+
+.footer-contact {
+  margin: 0;
+  color: #f3e6d4;
 }
 
 /* Room measurement tips */
@@ -314,19 +338,17 @@ fieldset input { margin-right: 0.45rem; }
 .site-footer p,
 .site-footer a,
 .site-footer a:visited {
-  color: #ffffff;
-}
-.site-footer p {
-  margin: 0.4rem 0;
+  color: #fff8ef;
 }
 .site-footer a {
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: underline;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1.5px;
 }
 .site-footer a:hover,
 .site-footer a:focus {
-  color: #fff8ef;
+  color: #ffffff;
 }
 
 /* Wider wrap for pros hub */
@@ -821,6 +843,46 @@ fieldset input { margin-right: 0.45rem; }
   margin: 0 0 0.85rem;
   font-size: 0.92rem;
 }
+
+.home-guide-card {
+  margin: 0 0 1.25rem;
+  padding: 1.2rem 1.25rem 1.3rem;
+}
+
+.home-guide-card h2 {
+  margin: 0 0 0.55rem;
+  color: var(--accent);
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.home-guide-card p {
+  margin: 0 0 0.7rem;
+  color: var(--ink);
+  font-size: 1.02rem;
+}
+
+.home-guide-card p:last-child {
+  margin-bottom: 0;
+}
+
+.home-guide-card a {
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.home-guide-card a:hover,
+.home-guide-card a:focus {
+  color: var(--accent-hover);
+}
+
+.home-guide-looks {
+  color: var(--muted) !important;
+  font-size: 0.95rem !important;
+}
+
 
 @media (min-width: 640px) {
   .homeowner-tools { grid-template-columns: 1.25fr 1fr 1fr; }
