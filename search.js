@@ -36,7 +36,7 @@
   function load() {
     if (index) return Promise.resolve(index);
     if (!loading) {
-      loading = fetch(new URL("search-index.json?v=20261004h", root).href)
+      loading = fetch(new URL("search-index.json?v=20261007a", root).href)
         .then(function (r) {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();

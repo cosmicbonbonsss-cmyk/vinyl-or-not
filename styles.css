@@ -1760,3 +1760,44 @@ h3 {
   font-size: 0.98rem;
   color: var(--accent);
 }
+
+/* FAQ blocks on guide pages (visible text matches the FAQPage JSON-LD) */
+.guide-faq {
+  margin: 1.6rem 0 0.5rem;
+}
+
+.guide-faq > h2 {
+  margin: 0 0 0.6rem;
+}
+
+.guide-faq-item {
+  border-top: 1px solid var(--border);
+  padding: 0.85rem 0 0.15rem;
+}
+
+.card .guide-faq-item h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.02rem;
+  color: var(--accent);
+}
+
+.guide-faq-item p {
+  margin: 0 0 0.65rem;
+}
+
+/* Quick-answer links on the guide hub */
+.guide-quick {
+  margin: 0.5rem 0 1.25rem;
+  padding-left: 1.15rem;
+  color: var(--muted);
+}
+
+.guide-quick li { margin-bottom: 0.4rem; }
+
+.guide-quick a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guide-quick a:hover { text-decoration: underline; }
