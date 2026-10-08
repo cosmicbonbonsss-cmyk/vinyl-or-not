@@ -103,7 +103,7 @@
     }
 
     var refinish = {
-      lvp: "Replace rather than refinish. LVP has a printed wear layer — it cannot be sanded like hardwood.",
+      lvp: "Replace rather than refinish. LVP’s wood look is a thin printed film under the clear wear layer — it cannot be sanded like hardwood.",
       laminate: "Replace rather than refinish. The photo layer is thin and is not meant to be sanded.",
       tile: "Regrout or replace cracked pieces. Glaze is not refinished like wood.",
       hardwood: "Solid hardwood can sometimes be screened or refinished if the wear is only in the finish and the boards are thick enough. Engineered boards may only allow a light screen — check the wear layer."
