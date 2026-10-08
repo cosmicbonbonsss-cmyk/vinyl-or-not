@@ -780,6 +780,30 @@ fieldset input { margin-right: 0.45rem; }
   color: rgba(255, 250, 242, 0.92);
 }
 
+/* Hero links: light mint on a soft dark backdrop so they stay readable (WCAG AA) over bright parts of the photo */
+.hero-copy a:not(.btn) {
+  color: #e6efe9;
+  background-color: rgba(28, 26, 23, 0.55);
+  padding: 0 0.15em;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.hero-copy a:not(.btn):hover,
+.hero-copy a:not(.btn):focus-visible {
+  color: #fffaf2;
+  text-decoration-thickness: 2px;
+}
+
+.hero-copy a:not(.btn):focus-visible {
+  outline: 2px solid #e6efe9;
+  outline-offset: 2px;
+}
+
 .hero-cta {
   align-self: flex-start;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
