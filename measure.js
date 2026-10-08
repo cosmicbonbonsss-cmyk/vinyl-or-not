@@ -142,5 +142,18 @@
   });
   if (addBtn) addBtn.addEventListener("click", function () { addExtra(""); });
 
+  // Optional prefill from the link, e.g. measure.html?l=10&w=12 (whole feet), used by floor look pages.
+  try {
+    var params = new URLSearchParams(window.location.search);
+    [["l", "len"], ["w", "wid"]].forEach(function (pair) {
+      var n = parseInt(params.get(pair[0]), 10);
+      if (!isFinite(n) || n <= 0 || n > 200) return;
+      var ft = main.querySelector("." + pair[1] + "-ft");
+      var inch = main.querySelector("." + pair[1] + "-in");
+      if (ft) ft.value = String(n);
+      if (inch) inch.value = "0";
+    });
+  } catch (e) { /* older browsers: keep the defaults */ }
+
   render();
 })();
