@@ -376,6 +376,10 @@ fieldset input { margin-right: 0.45rem; }
   text-decoration: none;
   font-weight: 600;
   white-space: nowrap;
+  /* Comfortable tap target (≥40px tall) without changing the text layout */
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
 }
 
 /* Phone/tablet: one scrolling row instead of a tall wrapped stack under the logo. */
@@ -411,7 +415,8 @@ fieldset input { margin-right: 0.45rem; }
 
 @media (min-width: 560px) {
   .form-grid {
-    grid-template-columns: 1fr 1fr;
+    /* minmax(0, 1fr) so wide file inputs can't push the form past the screen edge */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
@@ -430,6 +435,8 @@ fieldset input { margin-right: 0.45rem; }
 .form-grid input,
 .form-grid select,
 .form-grid textarea {
+  min-width: 0;
+  max-width: 100%;
   font: inherit;
   font-weight: 400;
   padding: 0.6rem 0.75rem;
@@ -742,7 +749,7 @@ fieldset input { margin-right: 0.45rem; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(105deg, rgba(28, 26, 23, 0.78) 0%, rgba(28, 26, 23, 0.55) 42%, rgba(28, 26, 23, 0.22) 72%, rgba(28, 26, 23, 0.08) 100%),
+    linear-gradient(105deg, rgba(28, 26, 23, 0.8) 0%, rgba(28, 26, 23, 0.7) 45%, rgba(28, 26, 23, 0.36) 75%, rgba(28, 26, 23, 0.08) 100%),
     linear-gradient(0deg, rgba(28, 26, 23, 0.35) 0%, transparent 45%);
   pointer-events: none;
 }
@@ -778,6 +785,7 @@ fieldset input { margin-right: 0.45rem; }
   font-size: clamp(0.95rem, 2.2vw, 1.08rem);
   line-height: 1.5;
   color: rgba(255, 250, 242, 0.92);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 /* Hero links: light mint on a soft dark backdrop so they stay readable (WCAG AA) over bright parts of the photo */
@@ -911,9 +919,21 @@ fieldset input { margin-right: 0.45rem; }
 @media (min-width: 640px) {
   .homeowner-tools { grid-template-columns: 1fr 1fr; }
   .hero-copy { justify-content: center; padding-bottom: 2.25rem; }
+  /* Let the hero grow with its text so the label/headline never get clipped */
+  .hero-image { position: absolute; inset: 0; height: 100%; }
+  .hero-copy { position: relative; inset: auto; min-height: clamp(320px, 52vw, 440px); }
 }
 
-@media (max-width: 520px) {
+@media (min-width: 640px) and (max-width: 899px) {
+  /* Narrower hero: text spans more of the photo, so keep the scrim darker further right */
+  .hero-scrim {
+    background:
+      linear-gradient(105deg, rgba(28, 26, 23, 0.8) 0%, rgba(28, 26, 23, 0.72) 50%, rgba(28, 26, 23, 0.5) 80%, rgba(28, 26, 23, 0.2) 100%),
+      linear-gradient(0deg, rgba(28, 26, 23, 0.35) 0%, transparent 45%);
+  }
+}
+
+@media (max-width: 639px) {
   /* Stack hero so headline/pitch aren't clipped by overflow:hidden */
   .hero-banner {
     overflow: visible;
@@ -1624,7 +1644,38 @@ h3 {
   color: var(--accent-hover);
 }
 
-.site-footer a { white-space: nowrap; }
+.site-footer a {
+  white-space: nowrap;
+  /* Bigger tap area; vertical padding on inline links doesn't shift the lines */
+  padding: 0.55rem 0.1rem;
+}
+
+/* Visible keyboard focus everywhere (mouse clicks don't trigger :focus-visible) */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.site-footer a:focus-visible,
+.hero-copy .btn:focus-visible {
+  outline-color: #e6efe9;
+}
+
+/* Skip link: hidden until focused with the keyboard */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
 
 /* ---- On-site search (search.js) ---- */
 .visually-hidden {
