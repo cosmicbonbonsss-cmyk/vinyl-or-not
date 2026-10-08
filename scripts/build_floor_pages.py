@@ -102,7 +102,7 @@ ROOMS = {
         "spec": [
             ("Core", "waterproof rigid core; SPC is the usual choice for bathrooms"),
             ("Wear layer", "12 mil; 20 mil if dogs use the room"),
-            ("Thickness", "about 4–6 mm total; thinner planks keep the toilet flange and door clearance simple"),
+            ("Thickness", "about 5–6 mm total; enough for a bathroom while keeping the toilet flange and door clearance simple"),
             ("Waste", "10%; in a 5 by 8 room you'll buy whole boxes, so the spare covers it"),
         ],
         "guide": [("../guide/is-it-okay.html", "Is vinyl plank good for bathrooms?", "water, steam, and wet zones"),
@@ -136,7 +136,7 @@ LOOKS = {
         short="amber, hides paw prints", similar=["medium-oak", "honey-oak", "hickory"]),
     "honey-oak": dict(name="Honey oak", tone="lightmid", pattern="plain",
         about="Honey oak is the golden-orange oak look common in 1990s homes, with a pronounced grain. It hides yellowish dust and crumbs well. If the house already has honey oak cabinets or trim, a near-match on the floor often looks off, while a cooler or darker floor creates a cleaner contrast. It suits warm white or soft green walls.",
-        special="Hold the honey oak sample against existing {room} trim or doors; if they're honey oak too and the tones don't match exactly, a contrasting floor usually looks more deliberate.",
+        special="If the {room} connects to honey oak hardwood you're keeping elsewhere, honey oak LVP can carry the same tone across the doorway so the transition looks planned.",
         swatch="gray-brown planks with long, even vertical boards",
         short="golden and warm, hides crumbs", similar=["golden-oak", "natural-oak", "warm-oak"]),
     "golden-oak": dict(name="Golden oak", tone="lightmid", pattern="plain",
@@ -156,7 +156,7 @@ LOOKS = {
         short="rustic, hides almost everything", similar=["acacia", "pine-natural", "warm-oak"]),
     "acacia": dict(name="Acacia", tone="mid", pattern="busy",
         about="Acacia has dramatic color variation, with honey, chocolate, and near-black streaks in the same plank and a tight, wavy grain. Like hickory, that variation hides crumbs, paw prints, and scuffs. It pairs with white or warm white walls, black metal, and solid-color rugs; avoid putting it next to another busy pattern.",
-        special="Acacia's contrast is strongest in small spaces, so in the {room} keep tile, rugs, and backsplashes plain and let the floor be the pattern.",
+        special="Acacia's dark streaks can look almost black in low light, so check the sample in the {room} under the lights you actually use.",
         swatch="dark brown planks with golden and black streaks",
         short="dramatic streaks, hides scuffs", similar=["hickory", "walnut", "warm-oak"]),
     "cherry": dict(name="Cherry", tone="dark", pattern="even",
@@ -176,7 +176,7 @@ LOOKS = {
         short="dark, calm long lines", similar=["walnut", "dark-walnut", "espresso"]),
     "dark-walnut": dict(name="Dark walnut", tone="vdark", pattern="plain",
         about="Dark walnut is a deep chocolate brown with soft grain, a high-contrast backdrop for white trim and light furniture. It's the least forgiving walnut look: dust, pet hair, footprints, and pale scratch lines show quickly. It works best in bright rooms with light walls; in a dim room it can make the space feel smaller.",
-        special="In the {room}, a light rug over dark walnut breaks up the dark area and hides the walking path where dust shows first.",
+        special="Pick a dark walnut with some lighter streaks in the grain; a little variation hides dust and pale scratches in the {room} far better than a flat, solid brown.",
         swatch="deep brown planks with a mottled, darker grain",
         short="deep chocolate, high contrast", similar=["walnut", "walnut-plank", "espresso"]),
     "espresso": dict(name="Espresso", tone="vdark", pattern="even",
@@ -205,7 +205,7 @@ LOOKS = {
         swatch="orange-brown planks with a fine, even grain",
         short="thin traditional boards", similar=["golden-oak", "medium-oak", "honey-oak"]),
     "wide-plank": dict(name="Wide plank", tone="mid", pattern="wide",
-        about="Wide plank uses boards about 7 to 9 inches wide or more, so there are fewer seams and a calmer, more open look. It suits larger rooms and open plans. Because there are fewer seams to absorb them, dips and humps in the subfloor show more, so wide planks need a flatter subfloor.",
+        about="Wide plank uses boards about 8 to 9 inches wide or more, so there are fewer seams and a calmer, more open look. It suits larger rooms and open plans. Because there are fewer seams to absorb them, dips and humps in the subfloor show more, so wide planks need a flatter subfloor.",
         special="Before laying wide planks in the {room}, check flatness with a long straightedge and fill low spots; the manufacturer's flatness limit matters more with wide boards.",
         swatch="mixed light and dark brown planks in a staggered layout",
         short="fewer seams, open and calm", similar=["walnut-plank", "medium-oak", "natural-oak"]),
@@ -213,11 +213,11 @@ LOOKS = {
 
 TONE_TIPS = {
     ("light", "kitchen"): "{look} hides flour and dust but shows coffee drips and tracked-in dirt in the lane between sink and stove; a washable runner there cuts down on mopping.",
-    ("light", "bathroom"): "A light floor like {look} makes a 5 by 8 bathroom feel bigger, but dark hair and grime show around the toilet base, so plan a quick wipe there.",
+    ("light", "bathroom"): "A light floor like {look_lc} makes a 5 by 8 bathroom feel bigger, but dark hair and grime show around the toilet base, so plan a quick wipe there.",
     ("light", "bedroom"): "{look} keeps a bedroom bright and hides dust bunnies and light pet hair; dirt from shoes shows most just inside the door.",
     ("light", "living-room"): "{look} shows dark grit on the path from the front door, so a doormat and a rug on the main walkway keep the room looking clean.",
     ("lightmid", "kitchen"): "{look} is forgiving in a kitchen: crumbs, flour, and light spills blend in, and only darker sauces stand out.",
-    ("lightmid", "bathroom"): "{look} warms up a small white bathroom without showing every hair the way very dark floors do.",
+    ("lightmid", "bathroom"): "{look} keeps a small bathroom bright while hiding dust and most stray hairs; only dark hair stands out near the sink.",
     ("lightmid", "bedroom"): "{look} keeps a bedroom warm and bright, and its tone hides dust between cleanings.",
     ("lightmid", "living-room"): "{look} handles living room traffic well; dust and crumbs blend in, and only muddy footprints stand out.",
     ("mid", "kitchen"): "{look} is a practical kitchen tone: it hides crumbs, flour, and coffee drips better than very light or very dark floors.",
@@ -292,7 +292,7 @@ PAIRS = {
  "maple": {
   "kitchen": "Maple suits white, light gray, or soft blue cabinets and lets a patterned backsplash take center stage.",
   "bathroom": "Maple pairs with white or pale blue tile and a white vanity for a light, clean bathroom.",
-  "bedroom": "Maple keeps a bedroom calm with white or gray bedding, light furniture, and soft blue or gray walls.",
+  "bedroom": "Maple pairs with white or gray bedding, light furniture, and soft blue or gray walls for a calm bedroom.",
   "living-room": "Maple works with gray or blue sofas and modern or Scandinavian furniture, and lets a colorful rug stand out."},
  "hickory": {
   "kitchen": "Hickory pairs with white, cream, or black cabinets in plain shaker or flat fronts; ornate cabinet doors plus hickory grain can look busy.",
@@ -395,10 +395,12 @@ def build(look_key: str, room_key: str):
     a, b = R["dims"]
     net, order, boxes = numbers(room_key)
     h1 = f"{name} floor for {rp}"
-    title = f"{name} vinyl plank floor for {rp}"
-    desc = f"{name} vinyl plank for {rp}: {L['short']}. Plan about {order} sq ft with 10% waste (~{boxes} boxes), plus {R['label']} buying tips."
-    alt = f"{name} vinyl plank sample for {rp}: {L['swatch']}"
-    tip_tone = TONE_TIPS[(L["tone"], room_key)].format(look=name)
+    # "Narrow plank vinyl plank" reads badly, so plank-named looks just say "vinyl"
+    kind = "vinyl" if name.endswith("plank") else "vinyl plank"
+    title = f"{name} {kind} floor for {rp}"
+    desc = f"{name} {kind} for {rp}: {L['short']}. Plan about {order} sq ft with 10% waste (~{boxes} boxes), plus {R['label']} buying tips."
+    alt = f"{name} {kind} sample for {rp}: {L['swatch']}"
+    tip_tone = TONE_TIPS[(L["tone"], room_key)].format(look=name, look_lc=name.lower())
     tip_pat = PATTERN_TIPS[(L["pattern"], room_key)]
     tip_special = L["special"].format(room=R["label"])
     measure = f"../measure.html?l={a}&amp;w={b}"
