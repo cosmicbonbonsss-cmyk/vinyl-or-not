@@ -126,7 +126,7 @@ LOOKS = {
         short="easygoing beige, hides crumbs", similar=["white-oak", "medium-oak", "honey-oak"]),
     "medium-oak": dict(name="Medium oak", tone="mid", pattern="plain",
         about="Medium oak is the classic tan-brown oak stain with clear grain and a few small knots. Its middle tone hides everyday dirt, dust, and minor scratches better than very light or very dark floors. It suits traditional and transitional rooms with white or cream trim, and it looks right in both sunny and dim rooms.",
-        special="Medium oak hides the gray dust that collects along baseboards, so the {room} looks clean between deep cleanings.",
+        special="Medium oak sits between light and dark, so it goes with most existing wood furniture and trim in the {room} without a close-match problem.",
         swatch="brown oak planks with dark knots and a rustic grain",
         short="classic tan-brown, hides dirt", similar=["warm-oak", "natural-oak", "hickory"]),
     "warm-oak": dict(name="Warm oak", tone="mid", pattern="busy",
@@ -181,7 +181,7 @@ LOOKS = {
         short="deep chocolate, high contrast", similar=["walnut", "walnut-plank", "espresso"]),
     "espresso": dict(name="Espresso", tone="vdark", pattern="even",
         about="Espresso is a near-black brown with very little visible grain. It looks crisp and modern with white walls and cabinets, but it shows dust, lint, water spots, and pale scratch lines more than any other look here. It suits lower-traffic rooms or households that don't mind sweeping often.",
-        special="If you love espresso but worry about upkeep in the {room}, a 20 mil wear layer and a matte (low-gloss) finish make scratches and smudges much less obvious.",
+        special="Espresso soaks up light, so if the {room} already feels dim, plan brighter bulbs or a light rug to balance it.",
         swatch="near-black brown planks in a staggered pattern",
         short="near-black and modern", similar=["dark-walnut", "walnut-plank", "walnut"]),
     "gray-oak": dict(name="Gray oak", tone="light", pattern="plain",
@@ -235,7 +235,7 @@ TONE_TIPS = {
 }
 
 PATTERN_TIPS = {
-    ("busy", "kitchen"): "The knots and color variation hide dropped-pan dents and stool scuffs, which kitchens collect fast.",
+    ("busy", "kitchen"): "The grain and color variation hide dropped-pan dents and stool scuffs, which kitchens collect fast.",
     ("busy", "bathroom"): "In a small bathroom, a busy grain can compete with patterned tile or shower walls, so keep the other surfaces simple.",
     ("busy", "bedroom"): "The busy grain hides scratches from moving furniture and dragging laundry baskets.",
     ("busy", "living-room"): "The variation hides scuffs from furniture and toys, so a little wear won't show for years.",

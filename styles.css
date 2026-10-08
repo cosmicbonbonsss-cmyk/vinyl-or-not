@@ -281,6 +281,7 @@ fieldset input { margin-right: 0.45rem; }
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 0.35rem 0.65rem;
 }
 
