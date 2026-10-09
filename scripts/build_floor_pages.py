@@ -28,6 +28,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 FLOORS = ROOT / "floors"
+# Cache-bust version for styles.css. Keep in sync with every other page when styles.css changes.
+STYLES_VERSION = "20261009a"
 SITE = "https://vinylornot.com/"
 BOX_SQFT = 20  # matches the measure tool default
 
@@ -494,6 +496,7 @@ def main() -> None:
             p = build(look_key, room_key)
             main_html = p["main"].replace("{PITCH}", pitch)
             t2 = replace_once(t, r"  <main id=\"main\" class=\"wrap\">.*?</main>", main_html, path)
+            t2 = replace_once(t2, r'styles\.css\?v=[^"]+"', f'styles.css?v={STYLES_VERSION}"', path)
             t2 = replace_once(t2, r"<title>.*?</title>", f"<title>{esc(p['title'])}</title>", path)
             for attr in ('name="description"', 'property="og:description"', 'name="twitter:description"'):
                 t2 = replace_once(t2, rf'<meta {attr} content="[^"]*" />', f'<meta {attr} content="{esc(p["desc"])}" />', path)
