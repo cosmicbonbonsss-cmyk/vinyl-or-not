@@ -1881,3 +1881,35 @@ h3 {
 }
 
 .guide-quick a:hover { text-decoration: underline; }
+
+/* Comparison tables in guide pages (wrapped in .table-wrap for small screens) */
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.guide-table th,
+.guide-table td {
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-table thead th {
+  background: var(--accent-soft);
+  font-weight: 700;
+}
+
+.guide-table tbody th { font-weight: 700; }
+
+.guide-table tbody tr:last-child th,
+.guide-table tbody tr:last-child td { border-bottom: 0; }
+
+@media (max-width: 480px) {
+  .guide-table { font-size: 0.85rem; }
+  .guide-table th,
+  .guide-table td { padding: 0.45rem 0.4rem; }
+}

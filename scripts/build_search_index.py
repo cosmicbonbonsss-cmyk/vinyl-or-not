@@ -39,6 +39,7 @@ EXTRA_KEYWORDS = {
     "guide/lvp-over-tile.html": "lvp over tile vinyl plank over tile existing floor grout lines cover old floor carpet sheet vinyl hardwood height door underlayment",
     "guide/lvp-cost.html": "lvp cost price how much per square foot sq ft budget cheap installed labor diy vs pro installer quote 12x12 bedroom underlayment trim transitions removal 6 mil 12 mil 20 mil",
     "guide/lvp-basement.html": "lvp basement below grade concrete slab moisture test plastic sheet calcium chloride rh probe vapor barrier 6 mil poly underlayment flood flooding water leak mold dehumidifier humidity",
+    "guide/glue-down-vs-click-lock.html": "glue down vs click lock floating dry back adhesive trowel roller install method compare comparison table cost labor diy difficulty subfloor flatness removal repair which is better",
     "guide/tools.html": "tools materials checklist tapping block pull bar cutter saw spacers mallet underlayment knee pads 12 mil 20 mil",
     "guide/measure-plan.html": "measure plan layout direction which way planks run last row waste transitions square footage",
     "guide/prep.html": "prep subfloor flat level moisture concrete best underlayment for lvp pad vapor barrier flatness",
