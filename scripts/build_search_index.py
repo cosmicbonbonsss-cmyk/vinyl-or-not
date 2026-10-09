@@ -41,6 +41,7 @@ EXTRA_KEYWORDS = {
     "guide/lvp-basement.html": "lvp basement below grade concrete slab moisture test plastic sheet calcium chloride rh probe vapor barrier 6 mil poly underlayment flood flooding water leak mold dehumidifier humidity",
     "guide/glue-down-vs-click-lock.html": "glue down vs click lock floating dry back adhesive trowel roller install method compare comparison table cost labor diy difficulty subfloor flatness removal repair which is better",
     "guide/how-to-cut-lvp.html": "how to cut lvp vinyl plank flooring score and snap utility knife cutter guillotine saw jigsaw miter circular oscillating multi tool door jamb undercut vent pipe hole last row rip notch",
+    "guide/lvp-stairs.html": "lvp stairs vinyl plank on stairs staircase steps stair nose nosing overlap flush tread riser glue carpet removal cost per step slip slippery safety bullnose",
     "guide/tools.html": "tools materials checklist tapping block pull bar cutter saw spacers mallet underlayment knee pads 12 mil 20 mil",
     "guide/measure-plan.html": "measure plan layout direction which way planks run last row waste transitions square footage",
     "guide/prep.html": "prep subfloor flat level moisture concrete best underlayment for lvp pad vapor barrier flatness",
