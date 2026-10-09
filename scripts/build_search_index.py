@@ -37,6 +37,7 @@ EXTRA_KEYWORDS = {
     "guide/is-it-okay.html": "bathroom kitchen water waterproof dogs pets kids renters rental resale wear layer mil plank size good okay",
     "guide/lvp-vs-laminate.html": "lvp vs laminate vinyl plank versus laminate compare comparison difference which is better bathroom kitchen basement dogs pets waterproof",
     "guide/lvp-over-tile.html": "lvp over tile vinyl plank over tile existing floor grout lines cover old floor carpet sheet vinyl hardwood height door underlayment",
+    "guide/lvp-cost.html": "lvp cost price how much per square foot sq ft budget cheap installed labor diy vs pro installer quote 12x12 bedroom underlayment trim transitions removal 6 mil 12 mil 20 mil",
     "guide/tools.html": "tools materials checklist tapping block pull bar cutter saw spacers mallet underlayment knee pads 12 mil 20 mil",
     "guide/measure-plan.html": "measure plan layout direction which way planks run last row waste transitions square footage",
     "guide/prep.html": "prep subfloor flat level moisture concrete best underlayment for lvp pad vapor barrier flatness",
