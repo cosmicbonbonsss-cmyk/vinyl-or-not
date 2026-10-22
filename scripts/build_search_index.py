@@ -42,12 +42,13 @@ EXTRA_KEYWORDS = {
     "guide/glue-down-vs-click-lock.html": "glue down vs click lock floating dry back adhesive trowel roller install method compare comparison table cost labor diy difficulty subfloor flatness removal repair which is better",
     "guide/how-to-cut-lvp.html": "how to cut lvp vinyl plank flooring score and snap utility knife cutter guillotine saw jigsaw miter circular oscillating multi tool door jamb undercut vent pipe hole last row rip notch",
     "guide/lvp-stairs.html": "lvp stairs vinyl plank on stairs staircase steps stair nose nosing overlap flush tread riser glue carpet removal cost per step slip slippery safety bullnose",
+    "guide/lvp-underlayment.html": "underlayment pad padding attached pad vapor barrier moisture barrier 6 mil poly plastic film concrete slab plywood sound acoustic condo iic stc do i need",
     "guide/tools.html": "tools materials checklist tapping block pull bar cutter saw spacers mallet underlayment knee pads 12 mil 20 mil",
     "guide/measure-plan.html": "measure plan layout direction which way planks run last row waste transitions square footage",
     "guide/prep.html": "prep subfloor flat level moisture concrete best underlayment for lvp pad vapor barrier flatness",
     "guide/install.html": "install installation how to click lock starter row stagger door jambs last row expansion gap",
-    "guide/finish-care.html": "finish care cleaning baseboards trim quarter round transitions maintenance",
-    "guide/troubleshoot.html": "troubleshoot fix problems gaps peaking buckling noise squeak broken lock repair",
+    "guide/finish-care.html": "finish care cleaning how to clean mop steam mop vinegar cleaner rugs baseboards trim quarter round transitions maintenance",
+    "guide/troubleshoot.html": "troubleshoot fix problems gaps seams separating peaking buckling hollow sound noise squeak broken lock repair replace one plank",
 }
 
 ROOM_WORDS = {

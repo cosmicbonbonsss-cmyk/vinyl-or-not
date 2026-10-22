@@ -52,7 +52,8 @@ ROOMS = {
             ("Waste", "10% for a straight lay; more if the room has angled walls or a fireplace hearth"),
         ],
         "guide": [("../guide/measure-plan.html", "Measure & plan", "which way to run planks and where transitions go"),
-                  ("../guide/finish-care.html", "Finish & care", "baseboards, transitions, and furniture pads")],
+                  ("../guide/finish-care.html", "Finish & care", "baseboards, transitions, and furniture pads"),
+                  ("../guide/lvp-vs-laminate.html", "LVP vs laminate", "which floor suits a busy living room")],
     },
     "bedroom": {
         "label": "bedroom", "dims": (11, 12), "article": "an",
@@ -70,7 +71,8 @@ ROOMS = {
             ("Waste", "10%, plus a little extra if the closet has an odd shape"),
         ],
         "guide": [("../guide/prep.html", "Subfloor prep", "underlayment choices and flatness checks"),
-                  ("../guide/is-it-okay.html", "Is vinyl okay for my room?", "pets, kids, and renters")],
+                  ("../guide/is-it-okay.html", "Is vinyl okay for my room?", "pets, kids, and renters"),
+                  ("../guide/lvp-underlayment.html", "Do you need underlayment?", "attached pads and a quieter bedroom floor")],
     },
     "kitchen": {
         "label": "kitchen", "dims": (10, 12), "article": "a",
@@ -89,7 +91,8 @@ ROOMS = {
             ("Waste", "10%; cuts around the island and cabinet toe-kicks use most of it"),
         ],
         "guide": [("../guide/is-it-okay.html", "Is vinyl plank good for kitchens?", "water, spills, and pets"),
-                  ("../guide/lvp-over-tile.html", "LVP over tile", "if there's old tile on the floor now")],
+                  ("../guide/lvp-over-tile.html", "LVP over tile", "if there's old tile on the floor now"),
+                  ("../guide/glue-down-vs-click-lock.html", "Glue-down vs click-lock", "which install method fits a kitchen")],
     },
     "bathroom": {
         "label": "bathroom", "dims": (5, 8), "article": "a",
@@ -108,7 +111,8 @@ ROOMS = {
             ("Waste", "10%; in a 5 by 8 room you'll buy whole boxes, so the spare covers it"),
         ],
         "guide": [("../guide/is-it-okay.html", "Is vinyl plank good for bathrooms?", "water, steam, and wet zones"),
-                  ("../guide/lvp-over-tile.html", "LVP over tile", "covering old bathroom tile and grout lines")],
+                  ("../guide/lvp-over-tile.html", "LVP over tile", "covering old bathroom tile and grout lines"),
+                  ("../guide/how-to-cut-lvp.html", "How to cut LVP", "cuts around the toilet flange, pipes, and door jamb")],
     },
 }
 ROOM_ORDER = ["living-room", "bedroom", "kitchen", "bathroom"]
@@ -423,6 +427,7 @@ def build(look_key: str, room_key: str):
     )
     main = f"""  <main id="main" class="wrap">
     <section class="card">
+      <p class="guide-crumb"><a href="../">Home</a> · <a href="./">Floor looks</a> · {esc(h1)}</p>
       <p class="badge">Floor look</p>
       <h1 class="page-title">{esc(h1)}</h1>
       <p class="pitch">{{PITCH}}</p>
@@ -459,6 +464,7 @@ def build(look_key: str, room_key: str):
         <ul>
           <li><a href="{measure}">Measure your {esc(R['label'])}</a> — the tool opens with {a} by {b} filled in; change it to your real size</li>
 {guide_items}
+          <li><a href="../guide/lvp-cost.html">How much does LVP cost?</a> — price per square foot for a room this size</li>
           <li><a href="../guide/tools.html">Tools &amp; materials</a> — tapping block, pull bar, cutter, and spacers</li>
           <li><a href="../diy-install.html">How to install vinyl plank flooring yourself</a></li>
         </ul>
