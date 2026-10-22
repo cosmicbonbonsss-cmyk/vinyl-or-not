@@ -2006,3 +2006,24 @@ h3 {
 }
 
 .video-embed figcaption strong { color: var(--ink); }
+
+/* QA polish (Oct 2026) */
+@media (max-width: 760px) {
+  /* Phones: the header (logo, nav, search) scrolls away instead of
+     covering about a quarter of the screen while reading. */
+  .site-header { position: relative; }
+  /* Spread the nav row evenly and keep all six links visible on 360px phones. */
+  .site-nav { gap: 0.6rem; justify-content: space-between; }
+  /* 16px form text: easier to read and stops mobile browsers zooming on focus. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea { font-size: 16px; }
+}
+
+/* Larger screens keep the sticky header, so in-page jumps land below it. */
+@media (min-width: 761px) {
+  html { scroll-padding-top: 10rem; }
+}
+
+/* Floor looks index: roomier rows so each link is an easy tap. */
+.floor-index-list li { margin-bottom: 0.5rem; }

@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FLOORS = ROOT / "floors"
 # Cache-bust version for styles.css. Keep in sync with every other page when styles.css changes.
-STYLES_VERSION = "20261009a"
+STYLES_VERSION = "20261021w"
 SITE = "https://vinylornot.com/"
 BOX_SQFT = 20  # matches the measure tool default
 
